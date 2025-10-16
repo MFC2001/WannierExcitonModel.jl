@@ -32,6 +32,9 @@ Creat a object which can be provided to canstruct a BSE model.
 - `up(dn)_index`: the wannier basis index when contains spin.
 
 Its usage is similar to [`Kernal_UJ`](@ref).
+!!! note
+    For spinful case, we require that the electronic wannier basis satisfy time-reversal symmetry,
+	so that we can define which term is `U`.
 """
 function Kernal_U(kgrid::MonkhorstPack, paras...; kwards...)
 	kgrid = RedKgrid(kgrid)

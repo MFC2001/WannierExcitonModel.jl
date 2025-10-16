@@ -35,8 +35,8 @@ export Kernal_UJ
 
 """
 	Kernal_UJ(kgrid::Union{MonkhorstPack, RedKgrid}, 
-		Kᵈ_U::UwithLR, Kᵈ_J¹::Union{AbstractString, HR}, Kᵈ_J²::Union{AbstractString, HR},
-		Kˣ_U::UwithLR, Kˣ_J¹::Union{AbstractString, HR}, Kˣ_J²::Union{AbstractString, HR};
+		Kᵈ_U::UwithLR{UT_d, CT_d}, Kᵈ_J¹::AbstractReciprocalHoppings, Kᵈ_J²::AbstractReciprocalHoppings,
+		Kˣ_U::UwithLR{UT_x, CT_x}, Kˣ_J¹::AbstractReciprocalHoppings, Kˣ_J²::AbstractReciprocalHoppings;
 		upindex::Union{<:AbstractVector{<:Integer}, Nothing} = nothing,
 		dnindex::Union{<:AbstractVector{<:Integer}, Nothing} = nothing
 	) -> AbstractKernalInterAction
@@ -57,11 +57,17 @@ But for spinful case, you must provide at least one between `upindex` and `dnind
 For spinful case, note that the interaction should not contain spin(see more details in Theory.)
 
 	Kernal_UJ(kgrid::Union{MonkhorstPack, RedKgrid}, 
-		Kᵈ_U::UwithLR{UT_d, CT_d}, Kᵈ_J¹::AbstractReciprocalHoppings, Kᵈ_J²::AbstractReciprocalHoppings,
-		Kˣ_U::UwithLR{UT_x, CT_x}, Kˣ_J¹::AbstractReciprocalHoppings, Kˣ_J²::AbstractReciprocalHoppings;
+		Kᵈ_U::UwithLR, Kᵈ_J¹::Union{AbstractString, HR}, Kᵈ_J²::Union{AbstractString, HR},
+		Kˣ_U::UwithLR, Kˣ_J¹::Union{AbstractString, HR}, Kˣ_J²::Union{AbstractString, HR};
 		upindex::Union{<:AbstractVector{<:Integer}, Nothing} = nothing,
 		dnindex::Union{<:AbstractVector{<:Integer}, Nothing} = nothing
 	) -> AbstractKernalInterAction
+	
+This is a shortcut.
+
+!!! note
+    For spinful case, we require that the electronic wannier basis satisfy time-reversal symmetry,
+	so that we can define which term is `U` and which term is `J`.
 """
 function Kernal_UJ(kgrid::MonkhorstPack, paras...; kwards...)
 	kgrid = RedKgrid(kgrid)

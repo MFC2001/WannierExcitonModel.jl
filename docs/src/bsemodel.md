@@ -2,7 +2,30 @@
 
 The core of this package is providing a general solution for establishing a excitonic Bethe-Salpeter model based on electronic Wannier functions, allowing users to customize the model while also implementing several typical scenarios (see more details in Theory).
 
-some fields
+For periodic case:
+
+| Fields     | information                                                                               |
+| :--------- | :---------------------------------------------------------------------------------------- |
+| `TB`       | tight binding model                                                                       |
+| `scissor`  | band gap correction                                                                       |
+| `kgrid`    | list of kpoints `k`                                                                       |
+| `unitcell` | list of positive lattice vector `R`                                                       |
+| `vckmap`   | see behind                                                                                |
+| `ijRmap`   | see behind                                                                                |
+| `bandk`    | electronic band structure at each `k`, calculated when a BSE model is created             |
+| `bandkq`   | electronic band structure at each `k+q`, calculated when calculated excitonic Hamiltonian |
+| `Kernal`   | calculate $K^d$ and $K^x$ using electronic state which is without spin                    |
+
+For cluster case:
+
+| Fields    | information                                                                   |
+| :-------- | :---------------------------------------------------------------------------- |
+| `TB`      | tight binding model                                                           |
+| `scissor` | band gap correction                                                           |
+| `vcmap`   | see behind                                                                    |
+| `ijmap`   | see behind                                                                    |
+| `band`    | electronic band structure at each `k`, calculated when a BSE model is created |
+| `Kernal`  | calculate $K^d$ and $K^x$ using electronic state which is without spin        |
 
 ## Construct
 
@@ -17,23 +40,23 @@ BSE
 
 When any electronic state is doubly degenerate due to spin, excitonic states can be classified into the spin-singlet state and the spin-triplet state. In this case, you need to provide
 
-|           |                                                                       |
-|:----------|:----------------------------------------------------------------------|
-|`sym`      |`:spinless`                                                            |
-|`TB`       |only contain one spin part, i.e without spin                           |
-|`Kernal`   |calculate $K^d$ and $K^x$ using electronic state which is without spin |
-|`v` and `c`|the index of band which is without spin                                |
+|             |                                                                        |
+| :---------- | :--------------------------------------------------------------------- |
+| `sym`       | `:spinless`                                                            |
+| `TB`        | only contain one spin part, i.e without spin                           |
+| `Kernal`    | calculate $K^d$ and $K^x$ using electronic state which is without spin |
+| `v` and `c` | the index of band which is without spin                                |
 
 ### :spinful
 
 If any of the electronic states do not satisfy the spin degeneracy, we have to calculate the excitonic spin-singlet state and spin-triplet state at the same time. In this case, you need to provide
 
-|           |                                                                     |
-|:----------|:--------------------------------------------------------------------|
-|`sym`      |`:spinful`                                                           |
-|`TB`       |contain the whole electron structure, i.e with spin                  |
-|`Kernal`   |calculate $K^d$ and $K^x$ using electronic state which contains spin |
-|`v` and `c`|the index of band which is with spin                                 |
+|             |                                                                      |
+| :---------- | :------------------------------------------------------------------- |
+| `sym`       | `:spinful`                                                           |
+| `TB`        | contain the whole electron structure, i.e with spin                  |
+| `Kernal`    | calculate $K^d$ and $K^x$ using electronic state which contains spin |
+| `v` and `c` | the index of band which is with spin                                 |
 
 ### :cluster_spinless
 
@@ -45,19 +68,9 @@ This type is used when you model is a cluster and also not spin degenerate. In t
 
 ## Kernal
 
-Kernal is the most complex part of our BSE model, it's also the computational bottlenack because each elements of the BSE Hamiltonian corresponds to a multiple summation. Here we provided the Kernel implementation under the UJ approximation and the U approximation. Note for spinful case, we require that the electronic wannier basis satisfy time-reversal symmetry, so that we can define which term is `U` and which term is `J`.
-
-### UJ approximation
-
-```@docs
-Kernal_UJ(kgrid::MonkhorstPack, paras...; kwards...)
-```
-
-### U approximation
-
-```@docs
-Kernal_U(kgrid::MonkhorstPack, paras...; kwards...)
-```
+Kernal is the most complex part of our BSE model, it's also the computational bottlenack because each elements of the BSE Hamiltonian corresponds to a multiple summation. We provide two Kernel implementations under [UJ approximation](kernal.md#UJ-approximation) and the [U approximation](kernal.md#U-approximation) respectively. 
+!!! note
+    For spinful case, we require that the electronic wannier basis satisfy time-reversal symmetry, so that we can define which term is `U` and which term is `J`.
 
 ## Excitonic basis
 
@@ -72,10 +85,13 @@ If you already have a instance `bse` of type `AbstractBSE`, then you can get a `
 ```julia
 julia> bse.vckmap
 vckMap(v = [1, 2], c = [3, 4], nk = 9)
+
 julia> length(bse.vckmap) == 2 * 2 * 9
 true
+
 julia> size(bse.vckmap)
 (2, 2, 9)
+
 ```
 
 A object of `vckMap` supports bracket-based access to the basis's index.
@@ -83,6 +99,7 @@ A object of `vckMap` supports bracket-based access to the basis's index.
 ```julia
 julia> bse.vckmap[1]
 (1, 3, 1)
+
 ```
 
 This will give the `(vindex, cindex, kindex)`.
@@ -106,10 +123,13 @@ For cluster, replace `vckmap` with `vcmap`:
 ```julia
 julia> bse.vcmap
 vcMap(v = [1, 2], c = [3, 4])
+
 julia> length(bse.vcmap) == 2 * 2
 true
+
 julia> size(bse.vcmap)
 (2, 2)
+
 ```
 
 Also you can:
@@ -117,8 +137,10 @@ Also you can:
 ```julia
 julia> bse.vcmap[1]
 (1, 3)
+
 julia> bse.vcmap[1, 3]
 1
+
 ```
 
 ### $\left| ijR \right\rangle$
@@ -128,10 +150,13 @@ If you already have a instance `bse` of type `AbstractBSE`, then you can get a `
 ```julia
 julia> bse.ijRmap
 ijRMap(norb = 4, nR = 9)
+
 julia> length(bse.ijRmap) == 4^2 * 9
 true
+
 julia> size(bse.ijRmap)
 (4, 4, 9)
+
 ```
 
 A object of `ijRMap` supports bracket-based access to the basis's index.
@@ -139,6 +164,7 @@ A object of `ijRMap` supports bracket-based access to the basis's index.
 ```julia
 julia> bse.ijRmap[1]
 (1, 1, 1)
+
 ```
 
 This will give the `(i, j, Rindex)`.
@@ -146,6 +172,7 @@ This will give the `(i, j, Rindex)`.
 ```julia
 julia> bse.ijRmap[1, 1, 1]
 1
+
 ```
 
 This is a reverse access compared to the previous one.
@@ -161,10 +188,13 @@ For cluster, replace `ijRmap` with `ijmap`:
 ```julia
 julia> bse.ijmap
 ijMap(norb = 4)
+
 julia> length(bse.ijmap) == 4^2
 true
+
 julia> size(bse.ijmap)
 (4, 4)
+
 ```
 
 Also you can:

@@ -3,33 +3,48 @@ export AbstractKernalInterAction
 """
 	AbstractKernalInterAction
 
-	struct Kernal <: AbstractKernalInterAction
-		nk::Int
-		kgrid::RedKgrid
-		kgrid_Γ::RedKgrid
-		kgrid_addmap::Matrix{Int}
-		kgrid_minusmap::Matrix{Int}
-		...
-	end
-	kgrid[i] + kgrid[j] = kgrid_Γ[kgrid_addmap[i, j]]
-	kgrid[i] - kgrid[j] = kgrid_Γ[kgrid_minusmap[i, j]]
-	kgrid is your basis, kgrid_Γ don't have shift with the same size of kgrid.
+This abstract type is used to calculate kernal term in excitonic BSE model.
+You can design a concrete type of `AbstractKernalInterAction` according to your own needs.
 
-	You need to overload these three functions for your `Kernal`.
-	function (K::Kernal)(::Val{:initialize}) end
-	it's used to calculate some interaction matrix at first, for example W(k′-k).
-	function (K::Kernal)(q::ReducedCoordinates) end
-	it's used to calculate interaction matrix related to q, for example V(q) or J(k+k′+q)
-	function (K::Kernal)(k′, k, ψ_{c′}^{k′+q}, ψ_{v′}^{k′}, ψ_{v}^{k}, ψ_{c}^{k+q}) end
-	(K::Kernal)(k′, k, ψ₁, ψ₂, ψ₃, ψ₄) is used to calculate kernal matrix elements. 
+For `YourKernal`, it should have specific fields:
+- `nk::Int`: the number of kpoints;
+- `kgrid::RedKgrid`: the kgrid used to calculate excitonic BSE model;
+- `kgrid_Γ::RedKgrid`: with the same size of `kgrid` but without shift;
+- `kgrid_addmap::Matrix{Int}`: satisfy `kgrid[i] + kgrid[j] = kgrid_Γ[kgrid_addmap[i, j]]`
+- `kgrid_minusmap::Matrix{Int}`: satisfy `kgrid[i] - kgrid[j] = kgrid_Γ[kgrid_minusmap[i, j]]`
+
+`YourKernal` should support these methods:
+
+	(K::YourKernal)(::Val{:initialize})
+
+It's used to calculate some interaction matrix at first, for example W(k′-k); it will be run when create a BSE model.
+
+	(K::YourKernal)(q::ReducedCoordinates)
+
+It's used to calculate interaction matrix related to q, for example V(q) or J(k+k′+q); it will be run when calculate BSE Hamiltonian.
+
+	(K::YourKernal)(k′, k, ψ₁, ψ₂, ψ₃, ψ₄)
+
+It's used to calculate kernal matrix elements ``K_{v'c'k',vck}``,
+- `k′` and `k`: it's the index of kpoints in kgrid list;
+- `ψ`: is a numerical vector; from left to right, in sequence: ``ψ_{c′}^{k′+q}``, ``ψ_{v′}^{k′}``, ``ψ_{v}^{k}``, ``ψ_{c}^{k+q}``.
+
+!!! note
 	You can change inputs, but use local operation carefully.
 	Do not forget the minus of Kᵈ.
 
-	For the case only refer to q in a specified qgrid, 
-	function (K::Kernal)(::Val{:initialize_qgrid}) end
-	it's is a supplement to (K::Kernal)(::Val{:initialize}).
-	function (K::Kernal)(kq_kindex::Vector{Int}, kΓq_kΓindex::Vector{Int}, q::ReducedCoordinates) end
-	for each q, BSEqgrid will not use (K::Kernal)(q::ReducedCoordinates) any more, instead of using this function.
+For the case only refer to q in a specified qgrid, i.e. `isqgrid` is true, this also means `k+q` is in the kgrid for any q needed.
+In this case, `YourKernal` needs to support two more methods:
+
+	(K::YourKernal)(::Val{:initialize_qgrid})
+
+It's is a supplement to `(K::YourKernal)(::Val{:initialize})`; only run after `(K::YourKernal)(::Val{:initialize})` when create BSE model.
+
+	(K::YourKernal)(kq_kindex::Vector{Int}, kΓq_kΓindex::Vector{Int}, q::ReducedCoordinates)
+
+When `isqgrid` is true, BSEqgrid will not use (K::Kernal)(q::ReducedCoordinates) except when `q` equal to `[0, 0, 0]`, instead of using this function.
+- `kq_kindex::Vector{Int}`: `kgrid[i] + q = kgrid[kq_kindex[i]]`;
+- `kΓq_kΓindex::Vector{Int}`: `kgrid_Γ[i] + q = kgrid_Γ[kq_kindex[i]]`;
 """
 abstract type AbstractKernalInterAction end
 
