@@ -2,6 +2,8 @@
 
 [![Build Status](https://github.com/MFC2001/WannierExcitonModel.jl/actions/workflows/CI.yml/badge.svg?branch=master)](https://github.com/MFC2001/WannierExcitonModel.jl/actions/workflows/CI.yml?query=branch%3Amaster)
 
+[docs-url]: https://mfc2001.github.io/WannierExcitonModel.jl/
+
 A Julia package solving Excitonic BSE problem based on Electronic Wannier model.
 
 This package provides a general solution for establishing a BSE model based on electronic Wannier functions, allowing users to customize the model while also implementing several typical scenarios.
@@ -21,6 +23,10 @@ Or, equivalently, via [`Pkg.jl`](https://pkgdocs.julialang.org/v1/):
 ```julia
 julia> import Pkg; Pkg.add("WannierExcitonModel")
 ```
+
+## Documentation
+
+-   [**DEVEL**][docs-url] - *documentation of the in-development version.*
 
 ## Quick start
 
