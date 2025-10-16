@@ -14,7 +14,7 @@ It supports
 	(v::AbstractLRCorrection)(::Val{+}, A, k::AbstractVector)
 	(v::AbstractLRCorrection)(::Val{+}, A, k::AbstractVector, nk::Integer)
 
-The method needind `nk` can give head term when k is zero in all periodic directions.
+The methods involving `nk` can give head term when k is zero in all periodic directions.
 """
 abstract type AbstractLRCorrection end
 
@@ -39,17 +39,21 @@ Make sure your subtype has methods:
 	(v::yoursubtype)(::Val{+}, A, k::AbstractVector)
 	(v::yoursubtype)(::Val{+}, A, k::AbstractVector, nk::Integer)
 
-For a instance `u` of `UwithLR`, you can run:
+For an instance `u` of `UwithLR`, you can run:
+
 ```julia
 julia> u(k)
 julia> u(k, nk)
 ```
-This two method will create a new matrix. And `u(k, nk)` will judge whether head term or normal value by k.
+
+These two methods will create a new matrix. And `u(k, nk)` will judge whether head term or normal value by k.
+
 ```julia
 julia> u(A, k)
 julia> u(A, k, nk)
 ```
-This two method will change `A` instead of creating a new matrix.
+
+These two methods will change `A` instead of creating a new matrix.
 """
 struct UwithLR{S <: AbstractReciprocalHoppings, L <: AbstractLRCorrection} <: AbstractInterAction
 	norb::Int

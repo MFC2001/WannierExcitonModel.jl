@@ -8,7 +8,7 @@ AbstractLRCorrection
 UwithLR
 ```
 
-### construct
+## construct
 
 ```@docs
 UwithLR(U::AbstractReciprocalHoppings, TB::TightBindModel, rcut::Real; kwards...)

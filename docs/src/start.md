@@ -22,6 +22,6 @@ julia> using WannierExcitonModel
 ```
 
 ## Accessing documentation from REPL
-The documentation for all the methods `BanditOpt` provides is also accessible
+The documentation for all the methods in `WannierExcitonModel` provides is also accessible
 via REPL. You can use the standard Julia way of searching (by typing `?` followed
 by the function name) to get the documentation on REPL.

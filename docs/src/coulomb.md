@@ -1,6 +1,6 @@
 # Coulomb
 
-We provide some type to calculate different coulomb potential.
+We provide some types to calculate different coulomb potentials.
 
 ## Real space
 

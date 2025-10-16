@@ -28,10 +28,10 @@ end
 
 Create an `ORBITAL` object.
 
-- `location`: a vector contains all orbital's location, its length equal to ``N``;
-- `name` and `index` is the name and index of each orbital;
-- `atom_location` and `atom_name` is the location and name of each atom.
-- `belonging` is the index of atom which each orbital belongs to.
+- `location`: a vector contains all the locations of orbitals, its length equals ``N``;
+- `name` and `index`: its element is the name or index of each orbital;
+- `atom_location` and `atom_name`: its element is the location or name of each orbital;
+- `belonging`: the i-th orbital belongs to the `belonging[i]`-th atom.
 """
 function ORBITAL(
 	location::AbstractVector;

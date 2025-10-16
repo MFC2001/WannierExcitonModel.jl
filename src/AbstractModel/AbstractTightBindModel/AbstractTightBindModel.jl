@@ -77,7 +77,7 @@ end
 	)
 
 Create an `TightBindModel` object.
-A `AbstractString` is the path to aim file, and check docstrings of `HR`, `AbstractReciprocalHoppings`, `Cell` and `ORBITAL`.
+The `AbstractString` is the path to aim file, and check docstrings of `HR`, `AbstractReciprocalHoppings`, `Cell` and `ORBITAL`.
 """
 function TightBindModel(;
 	hops::Union{AbstractString, HR, AbstractReciprocalHoppings},

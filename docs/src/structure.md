@@ -2,7 +2,7 @@
 
 We provide a group of types to help you build a crystalline structure.
 We draw inspiration from [CrystallographyCore.jl](https://github.com/MineralsCloud/CrystallographyCore.jl) to design some types.
-Most time, these type is only a intermediate type, and we use these to construct a *Model* type.
+For most cases, these are only intermediate objects, and we use them to construct a *Model* type.
 
 ## Lattice
 

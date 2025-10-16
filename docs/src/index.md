@@ -1,6 +1,6 @@
 # WannierExcitonModel.jl
 
-A Julia package solving Excitonic BSE problem based on Electronic Wannier model.
+A Julia package solving Excitonic Bethe-Salpeter equation(BSE) based on Electronic Wannier model.
 
 ## Package Features
 

@@ -34,7 +34,7 @@ Create a new cell.
 - `index`: a list of ``N`` values, where the same kind of index need to be a Integer.
 - `period`: [1(0), 1(0), 1(0)].
 
-Make sure the basis at unperiodic direction is perpendicular to other basises.
+Make sure the basis at unperiodic direction is perpendicular to the other basis.
 """
 function Cell(lattice, location::AbstractVector; location_type, name = String[], index = Int[], period = [1, 1, 1])
 

@@ -16,7 +16,6 @@ pages = [
 		"UwithLR" => "uwithlr.md",
 		"Kernal" => "kernal.md",
 	],
-	"Kernal" => "kernal.md",
 	"Topology" => "topology.md",
 	"IO" => "io.md",
 ]

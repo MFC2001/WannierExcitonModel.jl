@@ -6,8 +6,8 @@ include("./core.jl")
 
 This method can calculate the band structure of a tight-binding model.
 - `kpoints` can be a `AbstractBrillouinZone` object, a vector of kpoints or a single kpoint, where kpoint should be a vector of 3 real numbers.
-- `vector` can be set as true, which decides whether to output wavefunction.
-- `wfctype` can be set as :Periodic, which decides the type of wavefunction.
+- `vector` can be set as `true`, which decides whether to output wavefunction.
+- `wfctype` can be set as ``:Periodic`, which decides the type of wavefunction.
 """
 function BAND(kpoints::AbstractVector{<:ReducedCoordinates}, TB::AbstractTightBindModel; vector::Bool = false, wfctype::Symbol = :Bloch)
 	return BAND_TB(kpoints, TB, Val(wfctype), vector)
