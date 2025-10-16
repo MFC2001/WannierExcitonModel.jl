@@ -1,0 +1,113 @@
+\documentclass[11pt,a4paper,oneside]{report}   % oneside 方便屏幕阅读
+
+%---------- 编码与字体 ----------
+\usepackage[utf8]{inputenc}   % pdfLaTeX 用，若 Xe/Lua 可删
+\usepackage[T1]{fontenc}
+\usepackage{lmodern}          % 高质量拉丁字体
+
+%---------- 英文微排版 ----------
+\usepackage[english]{babel}
+\usepackage{microtype}        % 字距微调，行末更好对齐
+
+%---------- 数学与代码 ----------
+\usepackage{amsmath,amsfonts,amssymb}
+\usepackage{listings}         % 代码高亮
+\usepackage{xcolor}
+\lstset{
+  basicstyle=\ttfamily\small,
+  keywordstyle=\color{blue!70!black},
+  stringstyle=\color{red!70!black},
+  commentstyle=\color{green!40!black},
+  breaklines=true,
+  columns=flexible,
+  numbers=left,
+  numberstyle=\tiny\color{gray}
+}
+
+%---------- 图表与浮动 ----------
+\usepackage{graphicx}
+\usepackage{caption,subcaption}
+\usepackage{float}            % 提供 [H] 强制位置
+
+%---------- 交叉引用与超链接 ----------
+\usepackage{hyperref}
+\hypersetup{
+  colorlinks=true,
+  linkcolor=blue,
+  filecolor=magenta,
+  urlcolor=cyan,
+  pdftitle={MyPackage Documentation},
+  pdfauthor={Your Name},
+  pdfsubject={LaTeX package user manual},
+  pdfkeywords={latex package documentation}
+}
+
+%---------- 页眉页脚 ----------
+\usepackage{fancyhdr}
+\pagestyle{fancy}
+\fancyhf{}
+\fancyhead[L]{\nouppercase\leftmark} % 章标题
+\fancyfoot[C]{\thepage}
+\renewcommand{\headrulewidth}{0.4pt}
+
+%---------- 索引（可选） ----------
+\usepackage{makeidx}
+\makeindex
+
+%公式中输出正体；
+\newcommand{\eqrm}[1]{
+	{\rm #1 }
+}
+
+%opening
+\title{WannierExcitonModel.jl - Theory}
+\author{}
+
+
+
+\begin{document}
+
+\maketitle
+
+\tableofcontents
+
+\newpage
+
+\chapter{Introduction}
+
+\section{Unit}
+
+\noindent
+
+
+
+\section{Majorana}
+
+\chapter{Tight Binding Model}
+
+\section{Band Structure}
+
+\subsection{Bloch Wave Function $\left| nk \right\rangle$}
+
+\subsection{$\left| u_{nk} \right\rangle = e^{-ikr} \left| nk \right\rangle$}
+
+\section{Topology}
+
+
+
+\newpage
+
+
+
+\chapter{Excitonic BSE Model}
+
+
+\chapter{Appendix}
+
+
+\bibliographystyle{unsrt}
+%输出参考文献
+\bibliography{bib/database}
+\nocite{*} %显示数据库中有的，但是正文没有引用的文献
+
+\end{document}
