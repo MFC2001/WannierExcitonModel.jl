@@ -35,7 +35,6 @@ include("./Tools/Tools.jl")
 
 
 function __init__()
-	@info "WannierExcitonModel.jl initialized."
 	@require KrylovKit = "0b1a1467-8014-51b9-945f-bf0ae24f4b77" include("../ext/KrylovKit/KrylovKit.jl")
 end
 
