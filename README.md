@@ -25,5 +25,5 @@ julia> import Pkg; Pkg.add("WannierExcitonModel")
 ## Quick start
 
 This package provides many types and methods which may confuse you.
-But if you purpose is to calculate the excitonic property, you only need to to clearly understand that the usage process involves creating a `BSE` object and then using it.
+But if you purpose is to calculate the excitonic property, you only need to to clearly understand that the calculate process involves creating a `BSE` object and then using it.
 See more details in Manual and Theory.

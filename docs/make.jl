@@ -32,3 +32,7 @@ makedocs(;
 	format,
 	pages,
 )
+
+deploydocs(
+    repo = "github.com/MFC2001/WannierExcitonModel.jl.git",
+)

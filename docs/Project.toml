@@ -1,6 +1,5 @@
 [deps]
 Documenter = "e30172f5-a6a5-5a46-863b-614d45cd2de4"
-WannierExcitonModel = "b427a48a-3e32-43b5-a614-63ff4457e590"
 
 [compat]
 Documenter = "1"
