@@ -37,33 +37,33 @@ BSE
 
 ## The type of BSE Model
 
-### :spinless
+### :SU2
 
 When any electronic state is doubly degenerated due to spin, excitonic states can be classified into the spin-singlet states and the spin-triplet states. In this case, you need to provide
 
 |             |                                                                          |
 | :---------- | :----------------------------------------------------------------------- |
-| `sym`       | `:spinless`                                                              |
+| `sym`       | `:SU2`                                                              |
 | `TB`        | only contains one spin part, i.e. without spin                           |
 | `Kernal`    | calculates $K^d$ and $K^x$ using electronic states that are without spin |
 | `v` and `c` | the index of bands that are without spin                                 |
 
-### :spinful
+### :general
 
 If any of the electronic states do not satisfy the spin degeneracy, we have to calculate the excitonic spin-singlet state and spin-triplet state at the same time. In this case, you need to provide
 
 |             |                                                                      |
 | :---------- | :------------------------------------------------------------------- |
-| `sym`       | `:spinful`                                                           |
+| `sym`       | `:general`                                                           |
 | `TB`        | contains the whole electron structure, i.e. with spin                |
 | `Kernal`    | calculates $K^d$ and $K^x$ using electronic states that contain spin |
 | `v` and `c` | the index of bands that contain spin                                 |
 
-### :cluster_spinless
+### :cluster_SU2
 
 This type is used when you model is a cluster and also spin degenerated. In this case, you only need to know that setting `kgrid` is a invalid operation. Remember to set `period` of `TB` as `[0, 0, 0]`.
 
-### :cluster_spinful
+### :cluster_general
 
 This type is used when you model is a cluster and also not spin degenerated. In this case, you only need to know that setting `kgrid` is a invalid operation. Remember to set `period` of `TB` as `[0, 0, 0]`.
 
@@ -225,13 +225,13 @@ julia> q = ReducedCoordinates(0, 0, 0)
 julia> bse(q)
 ```
 
-If the type of BSE is `:spinless`, `bse(q)` will return two matrixes at the same time:
+If the type of BSE is `:SU2`, `bse(q)` will return two matrixes at the same time:
 
 ```julia
 julia> (Htriplet, Hsinglet) = bse(q);
 ```
 
-If the type of BSE is `:spinful`, `bse(q)` will return one matrix:
+If the type of BSE is `:general`, `bse(q)` will return one matrix:
 
 ```julia
 julia> H = bse(q);
@@ -240,14 +240,14 @@ julia> H = bse(q);
 It also support changing a given matrix directly:
 
 ```julia
-julia> bse(Htriplet, Hsinglet, q) # For :spinless
+julia> bse(Htriplet, Hsinglet, q) # For :SU2
 julia> bse(H, q) # For :spinful
 ```
 
 ## BAND
 
 ```@docs
-BAND(kpoints::AbstractVector{<:ReducedCoordinates}, bse::WannierExcitonModel.BSEspinless; kwargs...)
+BAND(kpoints::AbstractVector{<:ReducedCoordinates}, bse::WannierExcitonModel.BSESU2; kwargs...)
 ```
 
 
