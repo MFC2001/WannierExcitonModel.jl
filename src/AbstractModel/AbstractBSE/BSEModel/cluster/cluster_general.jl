@@ -1,4 +1,4 @@
-struct BSEcluster_spinful{
+struct BSEcluster_general{
 	TBT <: AbstractTightBindModel,
 	KT <: AbstractKernalInterAction,
 } <: AbstractBSE
@@ -9,10 +9,10 @@ struct BSEcluster_spinful{
 	band::Eigen{ComplexF64, Float64, Matrix{ComplexF64}, Vector{Float64}}
 	Kernal::KT
 end
-function Base.show(io::IO, bse::BSEcluster_spinful)
+function Base.show(io::IO, bse::BSEcluster_general)
 	print(io, "$(count(bse.TB.period)) dimensinal BSE model with $(numatom(bse.TB)) atoms and $(numorb(bse.TB)) orbitals.")
 end
-function BSEcluster_spinful(TB::AbstractTightBindModel, Kernal::AbstractKernalInterAction;
+function BSEcluster_general(TB::AbstractTightBindModel, Kernal::AbstractKernalInterAction;
 	kgrid::RedKgrid = RedKgrid(MonkhorstPack([1, 1, 1])), v, c, scissor::Real = 0, isqgrid::Bool = false)
 
 	vcmap = vcMap(v, c)
@@ -23,22 +23,22 @@ function BSEcluster_spinful(TB::AbstractTightBindModel, Kernal::AbstractKernalIn
 
 	Kernal(Val(:initialize))
 
-	return BSEcluster_spinful(TB, Float64(scissor), vcmap, ijmap, band, Kernal)
+	return BSEcluster_general(TB, Float64(scissor), vcmap, ijmap, band, Kernal)
 end
-function (bse::BSEcluster_spinful)()
+function (bse::BSEcluster_general)()
 	N = length(bse.vcmap)
 	H = Matrix{ComplexF64}(undef, N, N)
 	return bse(H, ReducedCoordinates(0, 0, 0))
 end
-function (bse::BSEcluster_spinful)(q::ReducedCoordinates)
+function (bse::BSEcluster_general)(q::ReducedCoordinates)
 	N = length(bse.vcmap)
 	H = Matrix{ComplexF64}(undef, N, N)
 	return bse(H, q)
 end
-function (bse::BSEcluster_spinful)(H, q::ReducedCoordinates)
+function (bse::BSEcluster_general)(H, q::ReducedCoordinates)
 	return _BSE_Hamiltonian!(bse, H)
 end
-function _BSE_Hamiltonian!(bse::BSEcluster_spinful, H)
+function _BSE_Hamiltonian!(bse::BSEcluster_general, H)
 	vcmap = bse.vcmap
 	kernal = bse.Kernal
 	band = bse.band

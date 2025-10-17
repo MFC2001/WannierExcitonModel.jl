@@ -1,5 +1,5 @@
 
-function ExtractU(qpoints::AbstractVector{<:ReducedCoordinates}, band₁::AbstractVector{<:Eigen}, band₂::AbstractVector{<:Eigen}, bse::BSEspinless; η)
+function ExtractU(qpoints::AbstractVector{<:ReducedCoordinates}, band₁::AbstractVector{<:Eigen}, band₂::AbstractVector{<:Eigen}, bse::BSESU2; η)
 	length(qpoints) == length(band₁) == length(band₂) || error("Mismatched qpoints and band.")
 	ijRvck = _uijR_ψvck(bse, η)
 	band₁_u = similar(band₁)
@@ -13,7 +13,7 @@ function ExtractU(qpoints::AbstractVector{<:ReducedCoordinates}, band₁::Abstra
 	return band₁_u, band₂_u
 end
 
-function ExtractU(q::ReducedCoordinates, band₁::Eigen, band₂::Eigen, bse::BSEspinless; η)
+function ExtractU(q::ReducedCoordinates, band₁::Eigen, band₂::Eigen, bse::BSESU2; η)
 	ijRvck = _uijR_ψvck(bse, η)
 	q = _BSE_preprocess_eleband_q!(bse, q, Val(bse.isqgrid))
 	BM = ijRvck(bse.bandk, bse.bandkq, q)
@@ -21,4 +21,3 @@ function ExtractU(q::ReducedCoordinates, band₁::Eigen, band₂::Eigen, bse::BS
 	band₂_u = Eigen(copy(band₂.values), BM * band₂.vectors)
 	return band₁_u, band₂_u
 end
-

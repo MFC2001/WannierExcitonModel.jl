@@ -8,7 +8,7 @@ const _BSE_eigen_STRATEGY = Ref{Type{<:BSEeigenStrategy}}(LinearAlgebra_BSEeigen
 """
 Set the eigenvalue solving strategy for BSE calculations.
 """
-set_BSE_eigen_strategy!(::Type{S}) where {S <: BSEeigenStrategy} = _BSE_eigen_STRATEGY[] = S
+set_BSE_eigen_strategy!(::Type{S}) where {S <: BSEeigenStrategy} = (_BSE_eigen_STRATEGY[] = S)
 
 include("./core_LinearAlgebra/core_LinearAlgebra.jl")
 include("./ExtractU/ExtractU.jl")
@@ -43,17 +43,17 @@ You can switch the strategy by calling `set_BSE_eigen_strategy!(::Type{BSEeigenS
 When `KrylovKit_BSEeigenStrategy` is used, you can set parameters of `KrylovKit.eigsolve` by calling `eigsolveconfigure!(; kwards...)`.
 For excitonic Hamiltonian here, the relevant kwargs are: `howmany`, `which`, `verbosity`, `tol`, `krylovdim`, `maxiter`, `orth`.
 """
-function BAND(qpoints::AbstractVector{<:ReducedCoordinates}, bse::BSEspinless;
+function BAND(qpoints::AbstractVector{<:ReducedCoordinates}, bse::BSESU2;
 	vector::Bool = false, wfctype::Symbol = :Bloch, η::Real = 1 // 2, ηt::Real = η, ηs::Real = η)
 	return BAND_BSE(_BSE_eigen_STRATEGY[], qpoints, bse, Val(vector), Val(wfctype); ηt, ηs)
 end
-function BAND(qpoints::AbstractVector{<:ReducedCoordinates}, bse::BSEspinful;
+function BAND(qpoints::AbstractVector{<:ReducedCoordinates}, bse::BSEgeneral;
 	vector::Bool = false, wfctype::Symbol = :Bloch, η::Real = 1 // 2)
 	return BAND_BSE(_BSE_eigen_STRATEGY[], qpoints, bse, Val(vector), Val(wfctype); η)
 end
-function BAND(qpoints::AbstractVector{<:ReducedCoordinates}, bse::BSEcluster_spinless; vector::Bool = false)
+function BAND(qpoints::AbstractVector{<:ReducedCoordinates}, bse::BSEcluster_SU2; vector::Bool = false)
 	return BAND_BSE(_BSE_eigen_STRATEGY[], qpoints, bse, Val(vector))
 end
-function BAND(qpoints::AbstractVector{<:ReducedCoordinates}, bse::BSEcluster_spinful; vector::Bool = false)
+function BAND(qpoints::AbstractVector{<:ReducedCoordinates}, bse::BSEcluster_general; vector::Bool = false)
 	return BAND_BSE(_BSE_eigen_STRATEGY[], qpoints, bse, Val(vector))
 end

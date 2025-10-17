@@ -1,5 +1,5 @@
 
-include("./spinful.jl")
-include("./spinless.jl")
-include("./cluster_spinful.jl")
-include("./cluster_spinless.jl")
+include("./general.jl")
+include("./SU2.jl")
+include("./cluster_general.jl")
+include("./cluster_SU2.jl")

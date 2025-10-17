@@ -1,4 +1,4 @@
-function BAND_BSE(::Type{LinearAlgebra_BSEeigenStrategy}, qpoints, bse::BSEcluster_spinless, ::Val{true})
+function BAND_BSE(::Type{LinearAlgebra_BSEeigenStrategy}, qpoints, bse::BSEcluster_SU2, ::Val{true})
 	BSEband_t = Vector{Eigen{ComplexF64, Float64, Matrix{ComplexF64}, Vector{Float64}}}(undef, 1)
 	BSEband_s = Vector{Eigen{ComplexF64, Float64, Matrix{ComplexF64}, Vector{Float64}}}(undef, 1)
 
@@ -8,7 +8,7 @@ function BAND_BSE(::Type{LinearAlgebra_BSEeigenStrategy}, qpoints, bse::BSEclust
 
 	return BSEband_t, BSEband_s
 end
-function BAND_BSE(::Type{LinearAlgebra_BSEeigenStrategy}, qpoints, bse::BSEcluster_spinless, ::Val{false})
+function BAND_BSE(::Type{LinearAlgebra_BSEeigenStrategy}, qpoints, bse::BSEcluster_SU2, ::Val{false})
 	N = length(bse.vcmap)
 
 	BSEband_t = Matrix{Float64}(undef, N, 1)

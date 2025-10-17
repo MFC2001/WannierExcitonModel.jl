@@ -1,4 +1,4 @@
-function BAND_BSE(::Type{LinearAlgebra_BSEeigenStrategy}, qpoints, bse::BSEspinful, ::Val{true}, ::Val{:Bloch}; η)
+function BAND_BSE(::Type{LinearAlgebra_BSEeigenStrategy}, qpoints, bse::BSEgeneral, ::Val{true}, ::Val{:Bloch}; η)
 	Nq = length(qpoints)
 	BSEband = Vector{Eigen{ComplexF64, Float64, Matrix{ComplexF64}, Vector{Float64}}}(undef, Nq)
 
@@ -11,7 +11,7 @@ function BAND_BSE(::Type{LinearAlgebra_BSEeigenStrategy}, qpoints, bse::BSEspinf
 	end
 	return BSEband
 end
-function BAND_BSE(::Type{LinearAlgebra_BSEeigenStrategy}, qpoints, bse::BSEspinful, ::Val{false}, ::Val{:Bloch}; η)
+function BAND_BSE(::Type{LinearAlgebra_BSEeigenStrategy}, qpoints, bse::BSEgeneral, ::Val{false}, ::Val{:Bloch}; η)
 	Nq = length(qpoints)
 	N = length(bse.vckmap)
 
@@ -25,7 +25,7 @@ function BAND_BSE(::Type{LinearAlgebra_BSEeigenStrategy}, qpoints, bse::BSEspinf
 	end
 	return BSEband
 end
-function BAND_BSE(::Type{LinearAlgebra_BSEeigenStrategy}, qpoints, bse::BSEspinful, ::Val{true}, ::Val{:Periodic}; η)
+function BAND_BSE(::Type{LinearAlgebra_BSEeigenStrategy}, qpoints, bse::BSEgeneral, ::Val{true}, ::Val{:Periodic}; η)
 
 	ijRvck = _uijR_ψvck(bse, η)
 
@@ -44,10 +44,10 @@ function BAND_BSE(::Type{LinearAlgebra_BSEeigenStrategy}, qpoints, bse::BSEspinf
 
 	return BSEband
 end
-function BAND_BSE(::Type{LinearAlgebra_BSEeigenStrategy}, qpoints, bse::BSEspinful, ::Val{false}, ::Val{:Periodic}; η)
+function BAND_BSE(::Type{LinearAlgebra_BSEeigenStrategy}, qpoints, bse::BSEgeneral, ::Val{false}, ::Val{:Periodic}; η)
 	return BAND_BSE(LinearAlgebra_BSEeigenStrategy, qpoints, bse, Val(false), Val(:Bloch); η)
 end
-function BAND_BSE(::Type{LinearAlgebra_BSEeigenStrategy}, qpoints, bse::BSEspinful, ::Val{true}, ::Val{:BlochPeriodic}; η)
+function BAND_BSE(::Type{LinearAlgebra_BSEeigenStrategy}, qpoints, bse::BSEgeneral, ::Val{true}, ::Val{:BlochPeriodic}; η)
 
 	ijRvck = _uijR_ψvck(bse, η)
 

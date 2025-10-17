@@ -1,4 +1,4 @@
-struct BSEcluster_spinless{
+struct BSEcluster_SU2{
 	TBT <: AbstractTightBindModel,
 	KT <: AbstractKernalInterAction,
 } <: AbstractBSE
@@ -9,10 +9,10 @@ struct BSEcluster_spinless{
 	band::Eigen{ComplexF64, Float64, Matrix{ComplexF64}, Vector{Float64}}
 	Kernal::KT
 end
-function Base.show(io::IO, bse::BSEcluster_spinless)
+function Base.show(io::IO, bse::BSEcluster_SU2)
 	print(io, "$(count(bse.TB.period)) dimensinal BSE model with $(numatom(bse.TB)) atoms and $(numorb(bse.TB)) orbitals.")
 end
-function BSEcluster_spinless(TB::AbstractTightBindModel, Kernal::AbstractKernalInterAction;
+function BSEcluster_SU2(TB::AbstractTightBindModel, Kernal::AbstractKernalInterAction;
 	kgrid::RedKgrid = RedKgrid(MonkhorstPack([1, 1, 1])), v, c, scissor::Real = 0, isqgrid::Bool = false)
 
 	vcmap = vcMap(v, c)
@@ -23,24 +23,24 @@ function BSEcluster_spinless(TB::AbstractTightBindModel, Kernal::AbstractKernalI
 
 	Kernal(Val(:initialize))
 
-	return BSEcluster_spinless(TB, Float64(scissor), vcmap, ijmap, band, Kernal)
+	return BSEcluster_SU2(TB, Float64(scissor), vcmap, ijmap, band, Kernal)
 end
-function (bse::BSEcluster_spinless)()
+function (bse::BSEcluster_SU2)()
 	N = length(bse.vcmap)
 	Htriplet = Matrix{ComplexF64}(undef, N, N)
 	Hsinglet = Matrix{ComplexF64}(undef, N, N)
 	return bse(Htriplet, Hsinglet, ReducedCoordinates(0, 0, 0))
 end
-function (bse::BSEcluster_spinless)(q::ReducedCoordinates)
+function (bse::BSEcluster_SU2)(q::ReducedCoordinates)
 	N = length(bse.vcmap)
 	Htriplet = Matrix{ComplexF64}(undef, N, N)
 	Hsinglet = Matrix{ComplexF64}(undef, N, N)
 	return bse(Htriplet, Hsinglet, q)
 end
-function (bse::BSEcluster_spinless)(Htriplet, Hsinglet, q::ReducedCoordinates)
+function (bse::BSEcluster_SU2)(Htriplet, Hsinglet, q::ReducedCoordinates)
 	return _BSE_Hamiltonian!(bse, Htriplet, Hsinglet)
 end
-function _BSE_Hamiltonian!(bse::BSEcluster_spinless, Htriplet, Hsinglet)
+function _BSE_Hamiltonian!(bse::BSEcluster_SU2, Htriplet, Hsinglet)
 	vcmap = bse.vcmap
 	kernal = bse.Kernal
 	band = bse.band

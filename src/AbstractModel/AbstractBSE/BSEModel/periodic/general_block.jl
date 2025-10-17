@@ -1,4 +1,4 @@
-struct BSEspinful_block{
+struct BSEgeneral_block{
 	TBT_up <: AbstractTightBindModel,
 	TBT_dn <: AbstractTightBindModel,
 	KT <: AbstractKernalInterAction,

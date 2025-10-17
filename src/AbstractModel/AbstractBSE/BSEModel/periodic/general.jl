@@ -1,4 +1,4 @@
-struct BaseBSEspinful{
+struct BaseBSEgeneral{
 	TBT <: AbstractTightBindModel,
 	KT <: AbstractKernalInterAction,
 } <: AbstractBSE
@@ -12,11 +12,11 @@ struct BaseBSEspinful{
 	bandkq::Vector{Eigen{ComplexF64, Float64, Matrix{ComplexF64}, Vector{Float64}}}
 	Kernal::KT
 end
-mutable struct BSEspinful{T <: BaseBSEspinful} <: AbstractBSE
+mutable struct BSEgeneral{T <: BaseBSEgeneral} <: AbstractBSE
 	BSE::T
 	isqgrid::Bool
 end
-function Base.getproperty(bse::BSEspinful, sym::Symbol)
+function Base.getproperty(bse::BSEgeneral, sym::Symbol)
 	if sym === :BSE
 		return getfield(bse, :BSE)
 	elseif sym === :isqgrid
@@ -25,22 +25,23 @@ function Base.getproperty(bse::BSEspinful, sym::Symbol)
 		return getfield(bse.BSE, sym)
 	end
 end
-function Base.setproperty!(bse::BSEspinful, sym::Symbol, v)
+function Base.setproperty!(bse::BSEgeneral, sym::Symbol, v)
 	if sym === :isqgrid
 		setfield!(bse, :isqgrid, v)
 		if v
+			@info "run Kernal(:initialize_qgrid)"
 			bse.Kernal(Val(:initialize_qgrid))
 		end
 	else
 		setfield!(bse, sym, v)
 	end
 end
-function Base.show(io::IO, bse::BSEspinful)
+function Base.show(io::IO, bse::BSEgeneral)
 	print(io, "$(count(bse.TB.period)) dimensinal BSE model with $(numatom(bse.TB)) atoms and $(numorb(bse.TB)) orbitals.")
 end
 """
 """
-function BSEspinful(TB::AbstractTightBindModel, Kernal::AbstractKernalInterAction;
+function BSEgeneral(TB::AbstractTightBindModel, Kernal::AbstractKernalInterAction;
 	kgrid::RedKgrid, v, c, scissor::Real = 0, isqgrid::Bool = false)
 
 	unitcell = gridindex(kgrid.kgrid_size)
@@ -54,22 +55,22 @@ function BSEspinful(TB::AbstractTightBindModel, Kernal::AbstractKernalInterActio
 
 	Kernal(Val(:initialize))
 
-	bse = BaseBSEspinful(TB, Float64(scissor), kgrid, unitcell, vckmap, ijRmap, bandk, bandkq, Kernal)
+	bse = BaseBSEgeneral(TB, Float64(scissor), kgrid, unitcell, vckmap, ijRmap, bandk, bandkq, Kernal)
 	if isqgrid
 		bse.Kernal(Val(:initialize_qgrid))
 	end
-	return BSEspinful(bse, isqgrid)
+	return BSEgeneral(bse, isqgrid)
 end
-function (bse::BSEspinful)(q::ReducedCoordinates)
+function (bse::BSEgeneral)(q::ReducedCoordinates)
 	N = length(bse.vckmap)
 	H = Matrix{ComplexF64}(undef, N, N)
 	return bse(H, q)
 end
-function (bse::BSEspinful)(H, q::ReducedCoordinates)
+function (bse::BSEgeneral)(H, q::ReducedCoordinates)
 	_BSE_preprocess_q!(bse, q, Val(bse.isqgrid))
 	return _BSE_Hamiltonian!(bse, H)
 end
-function _BSE_preprocess_q!(bse::BSEspinful, q, ::Val{true})
+function _BSE_preprocess_q!(bse::BSEgeneral, q, ::Val{true})
 	if norm(q) < 1e-8
 		q = _BSE_preprocess_eleband_q!(bse, q, Val(false))
 		bse.Kernal(q)
@@ -79,12 +80,12 @@ function _BSE_preprocess_q!(bse::BSEspinful, q, ::Val{true})
 	end
 	return nothing
 end
-function _BSE_preprocess_q!(bse::BSEspinful, q, ::Val{false})
+function _BSE_preprocess_q!(bse::BSEgeneral, q, ::Val{false})
 	q = _BSE_preprocess_eleband_q!(bse, q, Val(false))
 	bse.Kernal(q)
 	return nothing
 end
-function _BSE_preprocess_eleband_q!(bse::BSEspinful, q, ::Val{true})
+function _BSE_preprocess_eleband_q!(bse::BSEgeneral, q, ::Val{true})
 	if norm(q) < 1e-8
 		q = _BSE_preprocess_eleband_q!(bse, q, Val(false))
 	else
@@ -92,7 +93,7 @@ function _BSE_preprocess_eleband_q!(bse::BSEspinful, q, ::Val{true})
 	end
 	return q
 end
-function _BSE_preprocess_eleband_q!(bse::BSEspinful, q, ::Val{false})
+function _BSE_preprocess_eleband_q!(bse::BSEgeneral, q, ::Val{false})
 	# We can't calculate Γ directly.
 	if norm(q) < 1e-8
 		q = _BSE_shiftΓ(bse.TB.period)
@@ -103,7 +104,7 @@ function _BSE_preprocess_eleband_q!(bse::BSEspinful, q, ::Val{false})
 	bse.bandkq .= bandkq
 	return q
 end
-function _BSE_preprocess_eleband_qnotΓ!(bse::BSEspinful, q, ::Val{true})
+function _BSE_preprocess_eleband_qnotΓ!(bse::BSEgeneral, q, ::Val{true})
 	kgrid = bse.kgrid
 	kgrid_Γ = bse.Kernal.kgrid_Γ
 
@@ -121,7 +122,7 @@ function _BSE_preprocess_eleband_qnotΓ!(bse::BSEspinful, q, ::Val{true})
 	return kq_kindex, kΓq_kΓindex
 end
 
-function _BSE_Hamiltonian!(bse::BSEspinful, H)
+function _BSE_Hamiltonian!(bse::BSEgeneral, H)
 	vckmap = bse.vckmap
 	kernal = bse.Kernal
 	bandk = bse.bandk
@@ -167,10 +168,10 @@ function _BSE_Hamiltonian!(bse::BSEspinful, H)
 end
 
 """
-	_uijR_ψvck(bse::BSEspinful, η)
+	_uijR_ψvck(bse::BSEgeneral, η)
 	return an instance, which is used to extract periodic part of exciton bloch wave function.
 """
-function _uijR_ψvck(bse::BSEspinful, η)
+function _uijR_ψvck(bse::BSEgeneral, η)
 
 	norb = length(bse.TB.orb_location)
 
@@ -188,10 +189,10 @@ function _uijR_ψvck(bse::BSEspinful, η)
 	UU = Array{ComplexF64}(undef, norb, norb, Nvck)
 	BM = Matrix{ComplexF64}(undef, NijR, Nvck)
 
-	return _uijR_ψvck_spinful(Nvck, NijR, vckmap, ijRmap, phase, ekR, ekqR, UU, BM)
+	return _uijR_ψvck_oneη(Nvck, NijR, vckmap, ijRmap, phase, ekR, ekqR, UU, BM)
 end
 
-function (bse::BSEspinful)(::Val{:spinmat_vck}, q::ReducedCoordinates, spinmat_ik::AbstractMatrix{<:Number})
+function (bse::BSEgeneral)(::Val{:spinmat_vck}, q::ReducedCoordinates, spinmat_ik::AbstractMatrix{<:Number})
 	norb = numorb(bse.TB)
 	size(spinmat_ik) == (norb, norb) || error("Wrong spinmat_ik, its size should be (norb, norb)!")
 
@@ -221,11 +222,11 @@ function (bse::BSEspinful)(::Val{:spinmat_vck}, q::ReducedCoordinates, spinmat_i
 
 	return Hermitian(spinmat_vck, :U)
 end
-function (bse::BSEspinful)(::Val{:spinmat_vck}, q::ReducedCoordinates, upindex::AbstractVector{<:Integer}, dnindex::AbstractVector{<:Integer} = setdiff(1:numorb(bse.TB), upindex))
+function (bse::BSEgeneral)(::Val{:spinmat_vck}, q::ReducedCoordinates, upindex::AbstractVector{<:Integer}, dnindex::AbstractVector{<:Integer} = setdiff(1:numorb(bse.TB), upindex))
 	spinmat_ik = bse.TB(Val(:spinmat), upindex, dnindex)
 	return bse(Val(:spinmat_vck), q, spinmat_ik)
 end
-function (bse::BSEspinful)(::Val{:spinmat_ijR}, upindex, dnindex = setdiff(1:numorb(bse.TB), upindex))
+function (bse::BSEgeneral)(::Val{:spinmat_ijR}, upindex, dnindex = setdiff(1:numorb(bse.TB), upindex))
 	# return the spin matrix of exciton state
 	return bse(H, q)
 end

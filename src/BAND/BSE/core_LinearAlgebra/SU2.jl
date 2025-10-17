@@ -1,4 +1,4 @@
-function BAND_BSE(::Type{LinearAlgebra_BSEeigenStrategy}, qpoints, bse::BSEspinless, ::Val{true}, ::Val{:Bloch}; ηt, ηs)
+function BAND_BSE(::Type{LinearAlgebra_BSEeigenStrategy}, qpoints, bse::BSESU2, ::Val{true}, ::Val{:Bloch}; ηt, ηs)
 	Nq = length(qpoints)
 	BSEband_t = Vector{Eigen{ComplexF64, Float64, Matrix{ComplexF64}, Vector{Float64}}}(undef, Nq)
 	BSEband_s = Vector{Eigen{ComplexF64, Float64, Matrix{ComplexF64}, Vector{Float64}}}(undef, Nq)
@@ -14,7 +14,7 @@ function BAND_BSE(::Type{LinearAlgebra_BSEeigenStrategy}, qpoints, bse::BSEspinl
 	end
 	return BSEband_t, BSEband_s
 end
-function BAND_BSE(::Type{LinearAlgebra_BSEeigenStrategy}, qpoints, bse::BSEspinless, ::Val{false}, ::Val{:Bloch}; ηt, ηs)
+function BAND_BSE(::Type{LinearAlgebra_BSEeigenStrategy}, qpoints, bse::BSESU2, ::Val{false}, ::Val{:Bloch}; ηt, ηs)
 	Nq = length(qpoints)
 	N = length(bse.vckmap)
 
@@ -31,7 +31,7 @@ function BAND_BSE(::Type{LinearAlgebra_BSEeigenStrategy}, qpoints, bse::BSEspinl
 	end
 	return BSEband_t, BSEband_s
 end
-function BAND_BSE(::Type{LinearAlgebra_BSEeigenStrategy}, qpoints, bse::BSEspinless, ::Val{true}, ::Val{:Periodic}; ηt, ηs)
+function BAND_BSE(::Type{LinearAlgebra_BSEeigenStrategy}, qpoints, bse::BSESU2, ::Val{true}, ::Val{:Periodic}; ηt, ηs)
 
 	ijRvck = _uijR_ψvck(bse, ηt, ηs)
 
@@ -54,10 +54,10 @@ function BAND_BSE(::Type{LinearAlgebra_BSEeigenStrategy}, qpoints, bse::BSEspinl
 
 	return BSEband_t, BSEband_s
 end
-function BAND_BSE(::Type{LinearAlgebra_BSEeigenStrategy}, qpoints, bse::BSEspinless, ::Val{false}, ::Val{:Periodic}; ηt, ηs)
+function BAND_BSE(::Type{LinearAlgebra_BSEeigenStrategy}, qpoints, bse::BSESU2, ::Val{false}, ::Val{:Periodic}; ηt, ηs)
 	return BAND_BSE(LinearAlgebra_BSEeigenStrategy, qpoints, bse, Val(false), Val(:Bloch); ηt, ηs)
 end
-function BAND_BSE(::Type{LinearAlgebra_BSEeigenStrategy}, qpoints, bse::BSEspinless, ::Val{true}, ::Val{:BlochPeriodic}; ηt, ηs)
+function BAND_BSE(::Type{LinearAlgebra_BSEeigenStrategy}, qpoints, bse::BSESU2, ::Val{true}, ::Val{:BlochPeriodic}; ηt, ηs)
 
 	ijRvck = _uijR_ψvck(bse, ηt, ηs)
 

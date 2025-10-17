@@ -19,7 +19,7 @@ include("./BSEModel/BSEModel.jl")
 Create a BSE model, the type depends on `sym`.
 - `TB::AbstractTightBindModel`: contains crystal structure and electronic band structure;
 - `Kernal::AbstractKernalInterAction`: describes how to calculate `Kᵈ` and `Kˣ`;
-- `sym::Symbol`: can be set as `:spinless`, `:spinful`, `:cluster_spinless`, `:cluster_spinful`;
+- `sym::Symbol`: can be set as `:SU2`, `:general`, `:cluster_SU2`, `:cluster_general`;
 - `kgrid::Union{MonkhorstPack, RedKgrid}`: defines the electronic kgrid used to construct the basis of exciton;
 - `v::AbstractVector{<:Integer}`: the valence band index used to construct the basis of exciton;
 - `c::AbstractVector{<:Integer}`: the conduction band index used to construct the basis of exciton;
@@ -33,27 +33,39 @@ function BSE(TB::AbstractTightBindModel, Kernal::AbstractKernalInterAction, sym:
 	end
 	return BSE(Val(sym), TB, Kernal; kgrid, v, c, scissor, isqgrid)
 end
-function BSE(::Val{:spinless}, TB, Kernal; kwards...)
-	return BSEspinless(TB, Kernal; kwards...)
+function BSE(::Val{:SU2}, TB, Kernal; kwards...)
+	return BSESU2(TB, Kernal; kwards...)
 end
-function BSE(::Val{:spinful}, TB, Kernal; kwards...)
+function BSE(::Val{:generel}, TB, Kernal; kwards...)
 	return BSEspinful(TB, Kernal; kwards...)
 end
-function BSE(::Val{:spinful_block}, TB, Kernal; kwards...)
+function BSE(::Val{:general_block}, TB, Kernal; kwards...)
 	error("To be continued.")
 	return BSEspinblock(TB, Kernal; kwards...)
 end
-function BSE(::Val{:cluster_spinless}, TB, Kernal; kwards...)
+function BSE(::Val{:cluster_SU2}, TB, Kernal; kwards...)
 	return BSEcluster_spinless(TB, Kernal; kwards...)
 end
-function BSE(::Val{:cluster_spinful}, TB, Kernal; kwards...)
+function BSE(::Val{:cluster_general}, TB, Kernal; kwards...)
 	return BSEcluster_spinful(TB, Kernal; kwards...)
 end
-function BSE(::Val{:cluster_spinful_block}, TB, Kernal; kwards...)
+function BSE(::Val{:cluster_general_block}, TB, Kernal; kwards...)
 	error("To be continued.")
 	return BSEcluster_spinful_block(TB, Kernal; kwards...)
 end
+"""
+	BSEwannier(TB::AbstractTightBindModel, Kernal::AbstractKernalInterAction, sym::Symbol;
+		qgrid::Union{MonkhorstPack, RedKgrid}, v, c, scissor::Real = 0)
 
+Create a BSE used to calculate excitonic maximally localized wannier function.
+This function is only a shortcut, it will help you set:
+- `kgrid`: is twice as much as `qgrid`;
+- `isqgrid`: set as `true`.
+Then you can run:
+```julia
+BSE_wannier(qgrid, bse; kwargs...)
+```
+"""
 function BSEwannier(TB::AbstractTightBindModel, Kernal::AbstractKernalInterAction, sym::Symbol;
 	qgrid::Union{MonkhorstPack, RedKgrid}, v, c, scissor::Real = 0)
 
