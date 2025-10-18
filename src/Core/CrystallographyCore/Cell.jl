@@ -23,7 +23,7 @@ Contains all the information of a crystalline unitcell. Fields:
 end
 
 """
-	Cell(lattice, location; location_type, name = String[], index = Int[], period = Bool[1, 1, 1])
+	Cell(lattice, location, location_type = "Cartesian"; name = String[], index = Int[], period = Bool[1, 1, 1])
 
 Create a new cell.
 
@@ -36,7 +36,7 @@ Create a new cell.
 
 Make sure the basis at unperiodic direction is perpendicular to the other basis.
 """
-function Cell(lattice, location::AbstractVector; location_type, name = String[], index = Int[], period = [1, 1, 1])
+function Cell(lattice, location::AbstractVector, location_type = "Cartesian"; name = String[], index = Int[], period = [1, 1, 1])
 
 	num = length(location)
 

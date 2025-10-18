@@ -33,3 +33,9 @@ julia> import Pkg; Pkg.add("WannierExcitonModel")
 This package provides many types and methods which may confuse you.
 But if you purpose is to calculate the excitonic property, you only need to to clearly understand that the calculate process involves creating a `BSE` object and then using it.
 See more details in Manual and Theory.
+
+## In development
+
+At present, we require users to provide the interaction between wannier bases.
+For me, I only know [RESPACK](https://www.sciencedirect.com/science/article/pii/S001046552030391X) give this function, but it's a little bit unstable.
+We are trying to calculate the interaction between wannier bases based on well-used open source software, such as [BerkeleyGW](https://berkeleygw.org/), by ourself.

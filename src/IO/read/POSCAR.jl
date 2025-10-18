@@ -38,5 +38,5 @@ function Base.read(io::IO, ::Type{POSCAR}; period = Bool[1, 1, 1])::Cell
 		append!(name, fill(elem_type, elem_num))
 	end
 
-	return Cell(lattice, location; location_type, name, period)
+	return Cell(lattice, location, location_type; name, period)
 end

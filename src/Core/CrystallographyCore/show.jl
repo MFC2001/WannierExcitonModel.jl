@@ -16,17 +16,17 @@ function Base.show(io::IO, cell::Cell)
 	println(io)
 	println(io, " lattice:")
 	for row in eachrow(parent(Lattice(cell)))
-		println(io, "   ", join(row, "  "))
+		@printf(io, "%13.5f %13.5f %13.5f\n", row...)
 	end
 	num_atom = numatom(cell)
 	println(io, " $num_atom atoms:")
 	if isempty(cell.name)
 		for x in cell.location
-			println(io, "   ", join(x, "  "))
+			@printf(io, "%13.5f %13.5f %13.5f\n", x...)
 		end
 	else
-		for (name, location) in zip(cell.name, cell.location)
-			println(io, "  ", name, "  ", join(location, "  "))
+		for (name, x) in zip(cell.name, cell.location)
+			@printf(io, "  %s %13.5f %13.5f %13.5f\n", name, x...)
 		end
 	end
 	return nothing

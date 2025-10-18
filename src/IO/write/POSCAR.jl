@@ -21,15 +21,28 @@ function Base.write(io::IO, cell::Cell, ::Type{POSCAR}; comment = "", format = "
 	end
 	println(io, "")
 
+	P = typeof(cell).parameters[1]
 	if format[1] ∈ ['C', 'c']
 		write(io, "Cartesian\n")
-		for r in cell.location
-			@printf(io, "%23.16f %23.16f %23.16f\n", cell.lattice * r...)
+		if P <: CartesianCoordinates
+			for r in cell.location
+				@printf(io, "%23.16f %23.16f %23.16f\n", r...)
+			end
+		else
+			for r in cell.location
+				@printf(io, "%23.16f %23.16f %23.16f\n", cell.lattice * r...)
+			end
 		end
-	elseif format[1] ∈ ['D', 'd']
+	elseif format[1] ∈ ['D', 'd', 'R', 'r']
 		write(io, "Direct\n")
-		for r in cell.location
-			@printf(io, "%23.16f %23.16f %23.16f\n", r...)
+		if P <: CartesianCoordinates
+			for r in cell.location
+				@printf(io, "%23.16f %23.16f %23.16f\n", cell.lattice \ r...)
+			end
+		else
+			for r in cell.location
+				@printf(io, "%23.16f %23.16f %23.16f\n", r...)
+			end
 		end
 	end
 
