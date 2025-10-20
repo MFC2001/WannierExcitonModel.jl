@@ -37,7 +37,7 @@ function StarCell(; a = 1, b = 2, c = 20)
 	location = CartesianCoordinates.([location1, location2, location3, location4, location5, location6])
 	location = map(x -> lattice \ x, location)
 
-	return Cell(lattice, location; location_type = "ReducedCoordinates", name = fill("X", 6), period = Bool[1, 1, 0])
+	return Cell(lattice, location, "ReducedCoordinates"; name = fill("X", 6), period = Bool[1, 1, 0])
 end
 function StarHR(; t₀ = 0, t₁ = 1.5, t₂ = 1, t₃ = 0, t₄ = 0, t₅ = 0, t_inverse = 0)
 	allpath = Matrix{Int}(undef, 0, 5)

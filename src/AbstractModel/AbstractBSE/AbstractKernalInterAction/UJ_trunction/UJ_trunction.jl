@@ -66,7 +66,7 @@ For spinful case, note that the interaction should not contain spin(see more det
 This is a shortcut.
 
 !!! note
-    For spinful case, we require that the electronic wannier basis satisfy time-reversal symmetry,
+	For spinful case, we require that the electronic wannier basis satisfy time-reversal symmetry,
 	so that we can define which term is `U` and which term is `J`.
 """
 function Kernal_UJ(kgrid::MonkhorstPack, paras...; kwards...)
@@ -78,22 +78,22 @@ function Kernal_UJ(kgrid::RedKgrid,
 	Kˣ_U::UwithLR, Kˣ_J¹::Union{AbstractString, HR}, Kˣ_J²::Union{AbstractString, HR};
 	kwards...)
 	if Kᵈ_J¹ isa AbstractString
-		Kᵈ_J¹ = ReciprocalHoppings(ReadHR(Kᵈ_J¹))
+		Kᵈ_J¹ = ReciprocalHoppings(read(Kᵈ_J¹, wannier90_hr))
 	elseif J¹ isa HR
 		Kᵈ_J¹ = ReciprocalHoppings(Kᵈ_J¹)
 	end
 	if Kᵈ_J² isa AbstractString
-		Kᵈ_J² = ReciprocalHoppings(ReadHR(Kᵈ_J²))
+		Kᵈ_J² = ReciprocalHoppings(read(Kᵈ_J², wannier90_hr))
 	elseif Kᵈ_J² isa HR
 		Kᵈ_J² = ReciprocalHoppings(Kᵈ_J²)
 	end
 	if Kˣ_J¹ isa AbstractString
-		Kˣ_J¹ = ReciprocalHoppings(ReadHR(Kˣ_J¹))
+		Kˣ_J¹ = ReciprocalHoppings(read(Kˣ_J¹, wannier90_hr))
 	elseif Kˣ_J¹ isa HR
 		Kˣ_J¹ = ReciprocalHoppings(Kˣ_J¹)
 	end
 	if Kˣ_J² isa AbstractString
-		Kˣ_J² = ReciprocalHoppings(ReadHR(Kˣ_J²))
+		Kˣ_J² = ReciprocalHoppings(read(Kˣ_J², wannier90_hr))
 	elseif Kˣ_J² isa HR
 		Kˣ_J² = ReciprocalHoppings(Kˣ_J²)
 	end

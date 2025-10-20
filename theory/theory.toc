@@ -1,11 +1,21 @@
 \babel@toc {english}{}\relax 
 \contentsline {chapter}{\numberline {1}Introduction}{2}{chapter.1}%
-\contentsline {section}{\numberline {1.1}Unit}{2}{section.1.1}%
-\contentsline {section}{\numberline {1.2}Majorana}{2}{section.1.2}%
 \contentsline {chapter}{\numberline {2}Tight Binding Model}{3}{chapter.2}%
-\contentsline {section}{\numberline {2.1}Band Structure}{3}{section.2.1}%
-\contentsline {subsection}{\numberline {2.1.1}Bloch Wave Function $\left | nk \right \rangle $}{3}{subsection.2.1.1}%
-\contentsline {subsection}{\numberline {2.1.2}$\left | u_{nk} \right \rangle = e^{-ikr} \left | nk \right \rangle $}{3}{subsection.2.1.2}%
-\contentsline {section}{\numberline {2.2}Topology}{3}{section.2.2}%
-\contentsline {chapter}{\numberline {3}Excitonic BSE Model}{4}{chapter.3}%
-\contentsline {chapter}{\numberline {4}Appendix}{5}{chapter.4}%
+\contentsline {section}{\numberline {2.1}Poison summation}{3}{section.2.1}%
+\contentsline {section}{\numberline {2.2}Band state}{3}{section.2.2}%
+\contentsline {subsection}{\numberline {2.2.1}Bloch function $\left | n\boldsymbol {k} \right \rangle $}{4}{subsection.2.2.1}%
+\contentsline {subsection}{\numberline {2.2.2}$\left | u_{n\boldsymbol {k}} \right \rangle = e^{-i\boldsymbol {k} \cdot \hat {\boldsymbol {r}}} \left | n\boldsymbol {k} \right \rangle $}{4}{subsection.2.2.2}%
+\contentsline {subsection}{\numberline {2.2.3}Finite case}{5}{subsection.2.2.3}%
+\contentsline {section}{\numberline {2.3}Topology}{6}{section.2.3}%
+\contentsline {chapter}{\numberline {3}Excitonic BSE Model}{7}{chapter.3}%
+\contentsline {section}{\numberline {3.1}BSE based on electronic wannier basis}{7}{section.3.1}%
+\contentsline {subsection}{\numberline {3.1.1}Kernal under UJ approximation}{8}{subsection.3.1.1}%
+\contentsline {section}{\numberline {3.2}Excitonic Band state}{8}{section.3.2}%
+\contentsline {section}{\numberline {3.3}Excitonic Topology}{8}{section.3.3}%
+\contentsline {chapter}{\numberline {4}Interaction parameters between wannier functions}{9}{chapter.4}%
+\contentsline {section}{\numberline {4.1}Direct terms}{9}{section.4.1}%
+\contentsline {subsection}{\numberline {4.1.1}Mirror Correction}{9}{subsection.4.1.1}%
+\contentsline {subsection}{\numberline {4.1.2}Long-range Correction}{9}{subsection.4.1.2}%
+\contentsline {section}{\numberline {4.2}The practical calculation of Interaction parameters}{9}{section.4.2}%
+\contentsline {chapter}{\numberline {5}Appendix}{10}{chapter.5}%
+\contentsline {section}{\numberline {5.1}Gaussian potential}{10}{section.5.1}%

@@ -1,4 +1,4 @@
-function BAND_BSE(::Type{KrylovKit_BSEeigenStrategy}, qpoints, bse::BSEspinless, ::Val{true})
+function BAND_BSE(::Type{KrylovKit_BSEeigenStrategy}, qpoints, bse::BSEcluster_SU2, ::Val{true})
 
 	BSEband_t = Vector{Eigen{ComplexF64, Float64, Matrix{ComplexF64}, Vector{Float64}}}(undef, 1)
 	BSEband_s = Vector{Eigen{ComplexF64, Float64, Matrix{ComplexF64}, Vector{Float64}}}(undef, 1)
@@ -9,7 +9,7 @@ function BAND_BSE(::Type{KrylovKit_BSEeigenStrategy}, qpoints, bse::BSEspinless,
 
 	return BSEband_t, BSEband_s
 end
-function BAND_BSE(::Type{KrylovKit_BSEeigenStrategy}, qpoints, bse::BSEspinless, ::Val{false})
+function BAND_BSE(::Type{KrylovKit_BSEeigenStrategy}, qpoints, bse::BSEcluster_SU2, ::Val{false})
 
 	(BSEband_t, BSEband_s) = BAND_BSE(KrylovKit_BSEeigenStrategy, qpoints, bse, Val(true))
 

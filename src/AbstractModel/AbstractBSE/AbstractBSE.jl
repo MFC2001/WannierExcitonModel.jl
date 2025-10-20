@@ -36,22 +36,22 @@ end
 function BSE(::Val{:SU2}, TB, Kernal; kwards...)
 	return BSESU2(TB, Kernal; kwards...)
 end
-function BSE(::Val{:generel}, TB, Kernal; kwards...)
-	return BSEspinful(TB, Kernal; kwards...)
+function BSE(::Val{:general}, TB, Kernal; kwards...)
+	return BSEgeneral(TB, Kernal; kwards...)
 end
 function BSE(::Val{:general_block}, TB, Kernal; kwards...)
 	error("To be continued.")
-	return BSEspinblock(TB, Kernal; kwards...)
+	return BSEgeneral_block(TB, Kernal; kwards...)
 end
 function BSE(::Val{:cluster_SU2}, TB, Kernal; kwards...)
-	return BSEcluster_spinless(TB, Kernal; kwards...)
+	return BSEcluster_SU2(TB, Kernal; kwards...)
 end
 function BSE(::Val{:cluster_general}, TB, Kernal; kwards...)
-	return BSEcluster_spinful(TB, Kernal; kwards...)
+	return BSEcluster_general(TB, Kernal; kwards...)
 end
 function BSE(::Val{:cluster_general_block}, TB, Kernal; kwards...)
 	error("To be continued.")
-	return BSEcluster_spinful_block(TB, Kernal; kwards...)
+	return BSEcluster_general_block(TB, Kernal; kwards...)
 end
 """
 	BSEwannier(TB::AbstractTightBindModel, Kernal::AbstractKernalInterAction, sym::Symbol;

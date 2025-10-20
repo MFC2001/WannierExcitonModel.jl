@@ -1,5 +1,6 @@
 
-using KrylovKit
+using ..KrylovKit
+using ..KrylovDefaults
 
 @info "Loaded KrylovKit support."
 include("./config.jl")
