@@ -1,7 +1,5 @@
 
-import Main.Plots: Plots, plot, plot!
-
-export PlotBAND, PlotDirectU
+@info "WannierExcitonModel load Plots support."
 
 include("./BAND.jl")
 include("./BerryCurvature.jl")

@@ -1,7 +1,7 @@
 
 function _eigsolve_Hmat(H)
 
-	(vals, vecs, info) = eigsolve(H, eigsolveconfig[:howmany], eigsolveconfig[:which];
+	(vals, vecs, info) = KrylovKit.eigsolve(H, eigsolveconfig[:howmany], eigsolveconfig[:which];
 		verbosity = eigsolveconfig[:verbosity],
 		tol = eigsolveconfig[:tol],
 		krylovdim = min(eigsolveconfig[:krylovdim], size(H, 1)),

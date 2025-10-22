@@ -38,7 +38,7 @@ function BAND_BSE(::Type{LinearAlgebra_BSEeigenStrategy}, qpoints, bse::BSEgener
 	for (qi, q) in enumerate(qpoints)
 		H_ = bse(H, q)
 		BSEband[qi] = eigen!(H_)
-		BM = ijRvck(bse.bandk, bse.bandkq, q)
+		(BM, _) = ijRvck(bse.bandk, bse.bandkq, q)
 		BSEband[qi] = Eigen(BSEband[qi].values, BM * BSEband[qi].vectors)
 	end
 
@@ -61,7 +61,7 @@ function BAND_BSE(::Type{LinearAlgebra_BSEeigenStrategy}, qpoints, bse::BSEgener
 	for (qi, q) in enumerate(qpoints)
 		H_ = bse(H, q)
 		BSEband[qi] = eigen!(H_)
-		BM = ijRvck(bse.bandk, bse.bandkq, q)
+		(BM, _) = ijRvck(bse.bandk, bse.bandkq, q)
 		BSEband_u[qi] = Eigen(copy(BSEband[qi].values), BM * BSEband[qi].vectors)
 	end
 

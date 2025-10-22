@@ -3,12 +3,12 @@ export eigsolveconfigure!
 
 const eigsolveconfig = Dict{Symbol, Any}(
 	:howmany => 1,
-	:which => EigSorter(abs; rev = false),
+	:which => KrylovKit.EigSorter(abs; rev = false),
 	:verbosity => 0,
-	:tol => KrylovDefaults.tol[],
-	:krylovdim => KrylovDefaults.krylovdim[],
+	:tol => KrylovKit.KrylovDefaults.tol[],
+	:krylovdim => KrylovKit.KrylovDefaults.krylovdim[],
 	:maxiter => 300,
-	:orth => KrylovDefaults.orth,
+	:orth => KrylovKit.KrylovDefaults.orth,
 	:issymmetric => false,
 	:ishermitian => false,
 	:eager => false,

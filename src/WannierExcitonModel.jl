@@ -36,6 +36,7 @@ include("./Tools/Tools.jl")
 
 function __init__()
 	@require KrylovKit = "0b1a1467-8014-51b9-945f-bf0ae24f4b77" include("../ext/KrylovKit/KrylovKit.jl")
+	@require Plots = "91a5bcdd-55d7-5caf-9e0b-520d859cae80" include("../ext/Plots/Plots.jl")
 end
 
 end

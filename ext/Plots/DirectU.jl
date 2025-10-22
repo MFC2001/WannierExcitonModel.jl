@@ -1,5 +1,5 @@
 function Plots.plot(U::HR, TB::AbstractTightBindModel; kwargs...)
-	return plot(U, TB.lattice, TB.orb_location; kwargs...)
+	return Plots.plot(U, TB.lattice, TB.orb_location; kwargs...)
 end
 function Plots.plot(U::HR, lattice::Lattice, orblocat::AbstractVector{<:AbstractVector}; ϵ::Real = 1,
 	_value = real.(U.value),
@@ -14,7 +14,7 @@ function Plots.plot(U::HR, lattice::Lattice, orblocat::AbstractVector{<:Abstract
 	V = RealInverseR(; ϵ)
 	V = V.(r)
 
-	p = plot(r, V;
+	p = Plots.plot(r, V;
 		title = "",
 		linewidth = 1.2,
 		linecolor = :black,
@@ -23,7 +23,7 @@ function Plots.plot(U::HR, lattice::Lattice, orblocat::AbstractVector{<:Abstract
 		legend = false,
 		size = (800, 600),
 	)
-	plot!(r_point, _value;
+	Plots.plot!(r_point, _value;
 		seriestype = :scatter,
 	)
 

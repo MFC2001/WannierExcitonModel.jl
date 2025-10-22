@@ -1,5 +1,5 @@
-function _eigen2vals(eigens::AbstractArray{T}) where {T <: Eigen}
-	isempty(eigens) || return Matrix{Int}(undef, 0, 0)
+function _eigen2val(eigens::AbstractArray{T}) where {T <: Eigen}
+	isempty(eigens) && return Matrix{Int}(undef, 0, 0)
 	len_values = [length(e.values) for e in eigens]
 	max_len = maximum(len_values)
 	n = length(eigens)

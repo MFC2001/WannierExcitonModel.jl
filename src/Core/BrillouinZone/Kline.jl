@@ -22,13 +22,14 @@ end
 function Kline(; basis = [1 0 0; 0 1 0; 0 0 1], kdirect::AbstractVector = ReducedCoordinates{Float64}[], line = Float64[], name = String[], index = Int[])
 
 	try
-		if length(kdirect) ≠ length(line) && !any(isempty, [kdirect, line])
+		if length(kdirect) ≠ length(line) && !isempty(kdirect) && !isempty(line)
 			throw(DimensionMismatch("The lengths of kcoords and klines are different!"))
 		end
 	catch err
-		println(err.msg, " Try to set kline = 1:Nk.")
+		println(err.msg, " Try to reset kline = 1:Nk.")
 		line = Float64.(collect(1:length(kdirect)))
 	end
+	line = collect(Float64, line)
 
 	if !isempty(kdirect)
 		P = reduce(promote_type, eltype.(kdirect))

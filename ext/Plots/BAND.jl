@@ -6,7 +6,7 @@ function Plots.plot(kline::Kline, band::AbstractVector{<:Eigen}; kwards...)
 	for i in eachindex(band)
 		bandmatrix[:, i] .= band[i].values
 	end
-	return plot(kline, bandmatrix; kwards...)
+	return Plots.plot(kline, bandmatrix; kwards...)
 end
 
 function Plots.plot(kline::Kline, band::AbstractMatrix{<:Real};
@@ -21,7 +21,7 @@ function Plots.plot(kline::Kline, band::AbstractMatrix{<:Real};
 	size = (600, 700),
 	fermienergy = nothing,
 )
-	p = plot(kline.line, transpose(band);
+	p = Plots.plot(kline.line, transpose(band);
 		title,
 		linewidth,
 		linecolor,
@@ -33,7 +33,7 @@ function Plots.plot(kline::Kline, band::AbstractMatrix{<:Real};
 		size,
 	)
 	if !isnothing(fermienergy)
-		plot!(kline.line[[1, end]], fermienergy * ones(2); linecolor = :black, linestyle = :dot)
+		Plots.plot!(kline.line[[1, end]], fermienergy * ones(2); linecolor = :black, linestyle = :dot)
 	end
 	return p
 end

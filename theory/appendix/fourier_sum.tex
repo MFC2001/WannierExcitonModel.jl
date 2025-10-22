@@ -1,0 +1,62 @@
+\section{Fourier transform of a sum function}
+
+Define a function with summation:
+
+\begin{equation}\label{sum-function-definition}
+    F(\mathbf{r}) = \sum_{\mathbf{R}} f(\mathbf{r}+\mathbf{R}) \\
+\end{equation}
+
+\noindent
+3D case:
+
+\begin{equation}\label{sum-function-fourier-3D}
+    \begin{gathered}
+        F(\mathbf{r}) = F(\mathbf{r}+\mathbf{R}) 
+            = \sum_{\mathbf{k}} F(\mathbf{k}) e^{i\mathbf{k}\cdot\mathbf{r}} , \, 
+            e^{i\mathbf{k}\cdot\mathbf{R}} = 1 \\
+        \begin{aligned}
+            F(\mathbf{k}) 
+            &= \frac{1}{\Omega} \int_{\Omega} \mathrm{d}\mathbf{r} \, F(\mathbf{r}) e^{-i\mathbf{k}\cdot\mathbf{r}} \\
+            &= \frac{1}{\Omega} \int_{\Omega} \mathrm{d}\mathbf{r} \sum_{\mathbf{R}} f(\mathbf{r}+\mathbf{R}) e^{-i\mathbf{k}\cdot(\mathbf{r}+\mathbf{R})} \\
+            &= \frac{1}{\Omega} \int \mathrm{d}\mathbf{r} \, f(\mathbf{r}) e^{-i\mathbf{k}\cdot\mathbf{r}} \\
+            &= \frac{1}{\Omega} f(\mathbf{k})
+        \end{aligned}
+    \end{gathered}
+\end{equation}
+
+\noindent
+2D case:
+
+\begin{equation}\label{sum-function-fourier-2D}
+    \begin{gathered}
+        F(\mathbf{r}) = F(x+R_x,y+R_y,z) 
+        = \sum_{\mathbf{k}} F(k_x, k_y, z) e^{i(k_x x + k_y y)} , \, 
+            e^{i(k_xR_x + k_yR_y)} = 1 \\
+        \begin{aligned}
+            F(k_x, k_y, z) 
+            &= \frac{1}{S} \int_{S} \mathrm{d}x \mathrm{d}y F(\mathbf{r}) e^{-i(k_x x + k_y y)} \\
+            &= \frac{1}{S} \int_{S} \mathrm{d}x \mathrm{d}y \sum_{R_xR_y} f(\mathbf{r}+\mathbf{R}) e^{-i\mathbf{k}\cdot(\mathbf{r}+\mathbf{R})} \\
+            &= \frac{1}{S} \int \mathrm{d}x \mathrm{d}y f(\mathbf{r}) e^{-i\mathbf{k}\cdot\mathbf{r}} \\
+            &= \frac{1}{S} f(\mathbf{k}, z) 
+        \end{aligned}
+    \end{gathered}
+\end{equation}
+
+
+\noindent
+1D case:
+
+\begin{equation}\label{sum-function-fourier-1D}
+    \begin{gathered}
+        F(\mathbf{r}) = F(x+R_x,y,z) 
+        = \sum_{\mathbf{k}} F(k_x, y, z) e^{ik_x x} , \, 
+            e^{ik_xR_x} = 1 \\
+        \begin{aligned}
+            F(k_x, y, z) 
+            &= \frac{1}{L} \int_{L} \mathrm{d}x F(\mathbf{r}) e^{-ik_xx} \\
+            &= \frac{1}{L} \int_{L} \mathrm{d}x \sum_{R_x} f(\mathbf{r}+\mathbf{R}) e^{-i\mathbf{k}\cdot(\mathbf{r}+\mathbf{R})} \\
+            &= \frac{1}{L} \int \mathrm{d}x f(\mathbf{r}) e^{-ik_xx} \\
+            &= \frac{1}{L} f(k_x, y, z)
+        \end{aligned}
+    \end{gathered}
+\end{equation}

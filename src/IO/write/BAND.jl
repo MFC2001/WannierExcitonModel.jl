@@ -1,18 +1,18 @@
 
 function Base.write(io::IO, band::Eigen, ::Type{BAND_dat}; kwargs...)
-	bandmatrix = _eigen2vals(band)
+	bandmatrix = _eigen2val(band)
 	write(io, bandmatrix, BAND_dat; kwargs...)
 end
-function Base.write(io::IO, band::AbstractVector{T}, ::Type{BAND_dat}; kwargs...) where {T <: Eigen}
-	bandmatrix = _eigen2vals(band)
+function Base.write(io::IO, band::AbstractVector{<:Eigen}, ::Type{BAND_dat}; kwargs...)
+	bandmatrix = _eigen2val(band)
 	write(io, bandmatrix, BAND_dat; kwargs...)
 end
 function Base.write(io::IO, band::AbstractVecOrMat{<:Real}, ::Type{BAND_dat}; comment = "",
 	kline = Kline(; line = collect(1:size(band, 2)), name = ["Γ"], index = [1]))
 
 	size(band, 2) == length(kline.line) || begin
+		@info "Mismatched kline and band. Reset to default."
 		kline = Kline(; line = collect(1:size(band, 2)), name = ["Γ"], index = [1])
-		println("Mismatched kline and band. Reset to default.")
 	end
 
 	Nband = size(band, 1)

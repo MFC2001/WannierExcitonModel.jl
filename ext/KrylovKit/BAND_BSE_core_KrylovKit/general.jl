@@ -29,7 +29,7 @@ function BAND_BSE(::Type{KrylovKit_BSEeigenStrategy}, qpoints, bse::BSEgeneral, 
 	for (qi, q) in enumerate(qpoints)
 		H_ = bse(H, q)
 		BSEband[qi] = _eigsolve_Hmat(H_)
-		BM = ijRvck(bse.bandk, bse.bandkq, q)
+		(BM, _) = ijRvck(bse.bandk, bse.bandkq, q)
 		BSEband[qi] = Eigen(BSEband[qi].values, BM * BSEband[qi].vectors)
 	end
 
@@ -52,7 +52,7 @@ function BAND_BSE(::Type{KrylovKit_BSEeigenStrategy}, qpoints, bse::BSEgeneral, 
 	for (qi, q) in enumerate(qpoints)
 		H_ = bse(H, q)
 		BSEband[qi] = _eigsolve_Hmat(H_)
-		BM = ijRvck(bse.bandk, bse.bandkq, q)
+		(BM, _) = ijRvck(bse.bandk, bse.bandkq, q)
 		BSEband_u[qi] = Eigen(copy(BSEband[qi].values), BM * BSEband[qi].vectors)
 	end
 

@@ -1,8 +1,8 @@
 
-using ..KrylovKit
-using ..KrylovDefaults
+# No need to `using KrylovKit`, Requires.jl will import it.
 
-@info "Loaded KrylovKit support."
+@info "WannierExcitonModel load KrylovKit support."
+
 include("./config.jl")
 include("./eigsolve.jl")
 

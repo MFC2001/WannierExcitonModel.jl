@@ -27,16 +27,17 @@ function Plots.plot(BC::BerryCurvature_wilsonloop)
 		error("Wrong BerryCurvature!")
 	end
 
-	p = plot(kx, ky;
+	p = Plots.plot(kx, ky;
+		aspect_ratio = :equal,
 		legend = false,
 		seriestype = :scatter,
 		marker_z = BC_v,
 		markersize = 3,
 		markerstrokewidth = 0,
 		color = :viridis,
-		aspect_ratio = :equal,
 		xlabel = "kx",
 		ylabel = "ky",
-		title = "")
+		title = "",
+		colorbar = true)
 	return p
 end

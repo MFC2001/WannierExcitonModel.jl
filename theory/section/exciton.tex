@@ -1,0 +1,619 @@
+\section{Excitonic Model}
+
+\subsection{BSE based on electronic wannier basis}\label{BSE-based-on-electronic-wannier-basis}
+
+In this section, we will start from the Bethe-Salpeter equation(BSE) in a system of infinite size.
+The infinite perspective can help us to understand the interaction clearly.
+
+\subsubsection{Excitonic Bloch state}\label{Excitonic-Bloch-state}
+
+Single excitonic bloch state can be expressed as
+
+\begin{equation}
+  \left| \alpha \boldsymbol{q} \right\rangle 
+    = \frac{V}{(2\pi)^3} \int \mathrm{d}\boldsymbol{k} \sum_{vc} \phi_{vc}^{\alpha \boldsymbol{q}}(\boldsymbol{k}) 
+      \left| \psi_{c \boldsymbol{k} + \boldsymbol{q}}^{e} \right\rangle \left| \psi_{v \boldsymbol{k}}^{h} \right\rangle 
+    = \frac{V}{(2\pi)^3} \int \mathrm{d}\boldsymbol{k} \sum_{vc} \phi_{vc}^{\alpha \boldsymbol{q}}(\boldsymbol{k}) 
+      \left| v c \boldsymbol{k}, \boldsymbol{q} \right\rangle 
+\end{equation}
+
+\noindent
+It's easy to get
+
+\begin{equation}
+  \begin{gathered}
+    \begin{aligned}
+      \left\langle v c \boldsymbol{k}, \boldsymbol{q} \middle| v c \boldsymbol{k}', \boldsymbol{q}' \right\rangle
+        &= \frac{(2\pi)^6}{V^2} \delta_{vv'} \delta_{cc'} \delta(\boldsymbol{k}-\boldsymbol{k}') \delta(\boldsymbol{q}-\boldsymbol{q}') \\
+      \left\langle \alpha \boldsymbol{q} \middle| \beta \boldsymbol{q}' \right\rangle
+        &= \frac{(2\pi)^3}{V} \delta_{\alpha\beta} \delta(\boldsymbol{q}-\boldsymbol{q}') 
+    \end{aligned} \\
+    \frac{V}{(2\pi)^3} \int \mathrm{d}\boldsymbol{k} \sum_{vc} 
+      \phi_{vc}^{\alpha \boldsymbol{q}*}(\boldsymbol{k}) \phi_{vc}^{\beta \boldsymbol{q}}(\boldsymbol{k}) 
+      = \delta_{\alpha\beta}
+  \end{gathered}
+\end{equation}
+
+\subsubsection{BSE}
+
+Under Tamm-Dancoff approximation (TDA), the Bethe-Salpeter equation(BSE) for exciton in a infinite system is
+
+\begin{equation}\label{BSE-infinite}
+  (E_{c\boldsymbol{k} + \boldsymbol{q}} - E_{v\boldsymbol{k}}) \phi_{vc}^{\alpha\boldsymbol{q}}(\boldsymbol{k}) 
+  + \frac{V^2}{(2\pi)^6} \iint \mathrm{d}\boldsymbol{q}' \mathrm{d}\boldsymbol{k}' \sum_{v'c'} 
+    K_{vc,v'c'}^{}(\boldsymbol{q}, \boldsymbol{k}, \boldsymbol{q}', \boldsymbol{k}') 
+    \phi_{v'c'}^{\alpha\boldsymbol{q}'} (\boldsymbol{k}') 
+  = E_{\alpha \boldsymbol{q}} \phi_{vc}^{\alpha\boldsymbol{q}}(\boldsymbol{k}) 
+\end{equation}
+
+\noindent
+where
+
+\begin{equation}
+  \begin{aligned}
+    K_{vc,v'c'}^{} 
+      &= K_{vcv'c'}^{d} + K_{vcv'c'}^{x} \\
+    K_{vcv'c'}^{d}(\boldsymbol{q}, \boldsymbol{k}, \boldsymbol{q}', \boldsymbol{k}') 
+      &= -\left\langle c\boldsymbol{k}+\boldsymbol{q};v'\boldsymbol{k}' \left| W \right| v\boldsymbol{k};c'\boldsymbol{k}'+\boldsymbol{q}' \right\rangle \\
+    K_{vcv'c'}^{x}(\boldsymbol{q}, \boldsymbol{k}, \boldsymbol{q}', \boldsymbol{k}')
+      &= \left\langle c\boldsymbol{k}+\boldsymbol{q};v'\boldsymbol{k}' \left| V \right| c'\boldsymbol{k}'+\boldsymbol{q}';v\boldsymbol{k} \right\rangle
+  \end{aligned}
+\end{equation}
+
+\noindent
+Here we define
+
+\begin{equation}
+  \left\langle i;j \left| F \right| k;l \right\rangle 
+    = \iint \mathrm{d} \boldsymbol{r} \mathrm{d} \boldsymbol{r}'
+      \psi_{i}^{*}(\boldsymbol{r}) \psi_{j}^{*}(\boldsymbol{r}') 
+      F(\boldsymbol{r},\boldsymbol{r}') 
+      \psi_{k}^{}(\boldsymbol{r}') \psi_{l}^{}(\boldsymbol{r})
+\end{equation}
+
+\noindent
+Obviously we have $K_{vc,v'c'}^{} \propto \frac{(2\pi)^3}{V} \delta(\boldsymbol{q} - \boldsymbol{q}')$, 
+which is consistent with the conservation of excitonic momentum.
+
+In a finite system with periodic boundary condition, \cref{BSE-infinite} simply becomes
+
+\begin{equation}\label{BSE-finite}
+  (E_{c\boldsymbol{k} + \boldsymbol{q}} - E_{v\boldsymbol{k}}) A_{vc\boldsymbol{k}}^{\alpha\boldsymbol{q}} 
+  + \sum_{v'c'\boldsymbol{k}'} K_{vc\boldsymbol{k},v'c'\boldsymbol{k}'}^{\boldsymbol{q}}
+    A_{v'c'\boldsymbol{k}'}^{\alpha\boldsymbol{q}}
+  = E_{\alpha \boldsymbol{q}} A_{vc\boldsymbol{k}}^{\alpha\boldsymbol{q}} 
+\end{equation}
+
+\noindent
+This is used for practical calculation. 
+We can catch the details by replacing the definition of electronic wave function and the substitution of summation and integration.
+With electronic wannier functions, we can see the explicit process.
+
+
+We can expand the Kernal terms with electronic wannier functions:
+
+\begin{equation*}
+  \begin{aligned}
+    K_{vcv'c'}^{d}(\boldsymbol{q}, \boldsymbol{k}, \boldsymbol{q}', \boldsymbol{k}') 
+      &= - \sum_{ijkl} U_{ic}^{\boldsymbol{k}+\boldsymbol{q}*} U_{jv'}^{\boldsymbol{k}'*} 
+        U_{kv}^{\boldsymbol{k}} U_{lc'}^{\boldsymbol{k}'+\boldsymbol{q}'} 
+        \left\langle i\boldsymbol{k}+\boldsymbol{q};j\boldsymbol{k}' \left| W \right| k\boldsymbol{k};l\boldsymbol{k}'+\boldsymbol{q}' \right\rangle \\
+      &= - \sum_{ijkl} U_{ic}^{\boldsymbol{k}+\boldsymbol{q}*} U_{jv'}^{\boldsymbol{k}'*} 
+        U_{kv}^{\boldsymbol{k}} U_{lc'}^{\boldsymbol{k}'+\boldsymbol{q}'} 
+        \sum_{\{\boldsymbol{R}\}} 
+        e^{-i(\boldsymbol{k}+\boldsymbol{q}) \cdot \boldsymbol{R}_1} 
+        e^{-i\boldsymbol{k}' \cdot \boldsymbol{R}_2} 
+        e^{i\boldsymbol{k} \cdot \boldsymbol{R}_3} 
+        e^{i(\boldsymbol{k}'+\boldsymbol{q}') \cdot \boldsymbol{R}_4} 
+        \left\langle i\boldsymbol{R}_1;j\boldsymbol{R}_2 \left| W \right| k\boldsymbol{R}_3;l\boldsymbol{R}_4 \right\rangle \\
+      &= - \sum_{ijkl} U_{ic}^{\boldsymbol{k}+\boldsymbol{q}*} U_{jv'}^{\boldsymbol{k}'*} 
+        U_{kv}^{\boldsymbol{k}} U_{lc'}^{\boldsymbol{k}'+\boldsymbol{q}'} 
+        \sum_{\{\boldsymbol{R}\}} 
+        e^{-i(\boldsymbol{k}+\boldsymbol{q}) \cdot \boldsymbol{R}_1} 
+        e^{-i\boldsymbol{k}' \cdot \boldsymbol{R}_2} 
+        e^{i\boldsymbol{k} \cdot \boldsymbol{R}_3} 
+        e^{i(\boldsymbol{k}'+\boldsymbol{q}') \cdot \boldsymbol{R}_4} 
+        W_{i\boldsymbol{R}_1,j\boldsymbol{R}_2,k\boldsymbol{R}_3,l\boldsymbol{R}_4} \\
+      &= - \sum_{ijkl} U_{ic}^{\boldsymbol{k}+\boldsymbol{q}*} U_{jv'}^{\boldsymbol{k}'*} 
+        U_{kv}^{\boldsymbol{k}} U_{lc'}^{\boldsymbol{k}'+\boldsymbol{q}'} 
+        \sum_{\boldsymbol{R}} e^{i(\boldsymbol{q}'-\boldsymbol{q}) \cdot \boldsymbol{R}} 
+        \sum_{\boldsymbol{R}_1\boldsymbol{R}_2\boldsymbol{R}_3} 
+        e^{-i\boldsymbol{k}' \cdot \boldsymbol{R}_1} 
+        e^{i\boldsymbol{k} \cdot \boldsymbol{R}_2} 
+        e^{i(\boldsymbol{k}'+\boldsymbol{q}') \cdot \boldsymbol{R}_3} 
+        W_{i\boldsymbol{0},j\boldsymbol{R}_1,k\boldsymbol{R}_2,l\boldsymbol{R}_3} \\
+      &= - \frac{(2\pi)^3}{V} \delta(\boldsymbol{q}'-\boldsymbol{q}) 
+        K_{vcv'c'}^{d \, \boldsymbol{q}}(\boldsymbol{k}, \boldsymbol{k}') \\
+  \end{aligned}
+\end{equation*}
+
+\begin{equation}\label{Kd-wannier}
+  K_{vcv'c'}^{d \, \boldsymbol{q}}(\boldsymbol{k}, \boldsymbol{k}') 
+  = \sum_{ijkl} U_{ic}^{\boldsymbol{k}+\boldsymbol{q}*} U_{jv'}^{\boldsymbol{k}'*} 
+      U_{kv}^{\boldsymbol{k}} U_{lc'}^{\boldsymbol{k}'+\boldsymbol{q}} 
+    \sum_{\boldsymbol{R}_1\boldsymbol{R}_2\boldsymbol{R}_3} 
+      e^{-i\boldsymbol{k}' \cdot \boldsymbol{R}_1} 
+      e^{i\boldsymbol{k} \cdot \boldsymbol{R}_2} 
+      e^{i(\boldsymbol{k}'+\boldsymbol{q}) \cdot \boldsymbol{R}_3} 
+      W_{i\boldsymbol{0},j\boldsymbol{R}_1,k\boldsymbol{R}_2,l\boldsymbol{R}_3}
+\end{equation}
+
+\begin{equation*}
+  \begin{aligned}
+    K_{vcv'c'}^{x}(\boldsymbol{q}, \boldsymbol{k}, \boldsymbol{q}', \boldsymbol{k}') 
+      &= \sum_{ijkl} U_{ic}^{\boldsymbol{k}+\boldsymbol{q}*} U_{jv'}^{\boldsymbol{k}'*} 
+        U_{kc'}^{\boldsymbol{k}'+\boldsymbol{q}'} U_{lv}^{\boldsymbol{k}} 
+        \left\langle i\boldsymbol{k}+\boldsymbol{q};j\boldsymbol{k}' \left| V \right| k\boldsymbol{k}'+\boldsymbol{q}';l\boldsymbol{k} \right\rangle \\
+      &= \sum_{ijkl} U_{ic}^{\boldsymbol{k}+\boldsymbol{q}*} U_{jv'}^{\boldsymbol{k}'*} 
+        U_{kc'}^{\boldsymbol{k}'+\boldsymbol{q}'} U_{lv}^{\boldsymbol{k}} 
+        \sum_{\{\boldsymbol{R}\}} 
+        e^{-i(\boldsymbol{k}+\boldsymbol{q}) \cdot \boldsymbol{R}_1} 
+        e^{-i\boldsymbol{k}' \cdot \boldsymbol{R}_2} 
+        e^{i(\boldsymbol{k}'+\boldsymbol{q}') \cdot \boldsymbol{R}_3} 
+        e^{i\boldsymbol{k} \cdot \boldsymbol{R}_4} 
+        \left\langle i\boldsymbol{R}_1;j\boldsymbol{R}_2 \left| V \right| k\boldsymbol{R}_3;l\boldsymbol{R}_4 \right\rangle \\
+      &= \sum_{ijkl} U_{ic}^{\boldsymbol{k}+\boldsymbol{q}*} U_{jv'}^{\boldsymbol{k}'*} 
+        U_{kc'}^{\boldsymbol{k}'+\boldsymbol{q}'} U_{lv}^{\boldsymbol{k}} 
+        \sum_{\{\boldsymbol{R}\}} 
+        e^{-i(\boldsymbol{k}+\boldsymbol{q}) \cdot \boldsymbol{R}_1} 
+        e^{-i\boldsymbol{k}' \cdot \boldsymbol{R}_2} 
+        e^{i(\boldsymbol{k}'+\boldsymbol{q}') \cdot \boldsymbol{R}_3} 
+        e^{i\boldsymbol{k} \cdot \boldsymbol{R}_4} 
+        V_{i\boldsymbol{R}_1,j\boldsymbol{R}_2,k\boldsymbol{R}_3,l\boldsymbol{R}_4} \\
+      &= \sum_{ijkl} U_{ic}^{\boldsymbol{k}+\boldsymbol{q}*} U_{jv'}^{\boldsymbol{k}'*} 
+        U_{kc'}^{\boldsymbol{k}'+\boldsymbol{q}'} U_{lv}^{\boldsymbol{k}} 
+        \sum_{\boldsymbol{R}} e^{i(\boldsymbol{q}'-\boldsymbol{q}) \cdot \boldsymbol{R}} 
+        \sum_{\boldsymbol{R}_1\boldsymbol{R}_2\boldsymbol{R}_3} 
+        e^{-i\boldsymbol{k}' \cdot \boldsymbol{R}_1} 
+        e^{i(\boldsymbol{k}'+\boldsymbol{q}') \cdot \boldsymbol{R}_2}
+        e^{i\boldsymbol{k} \cdot \boldsymbol{R}_3} 
+        V_{i\boldsymbol{0},j\boldsymbol{R}_1,k\boldsymbol{R}_2,l\boldsymbol{R}_3} \\
+      &= \frac{(2\pi)^3}{V} \delta(\boldsymbol{q}'-\boldsymbol{q}) 
+        K_{vcv'c'}^{x \, \boldsymbol{q}}(\boldsymbol{k}, \boldsymbol{k}') \\
+  \end{aligned}
+\end{equation*}
+
+\begin{equation}\label{Kx-wannier}
+  K_{vcv'c'}^{x \, \boldsymbol{q}}(\boldsymbol{k}, \boldsymbol{k}') 
+  = \sum_{ijkl} U_{ic}^{\boldsymbol{k}+\boldsymbol{q}*} U_{jv'}^{\boldsymbol{k}'*} 
+      U_{kc'}^{\boldsymbol{k}'+\boldsymbol{q}} U_{lv}^{\boldsymbol{k}} 
+    \sum_{\boldsymbol{R}_1\boldsymbol{R}_2\boldsymbol{R}_3} 
+      e^{-i\boldsymbol{k}' \cdot \boldsymbol{R}_1} 
+      e^{i(\boldsymbol{k}'+\boldsymbol{q}) \cdot \boldsymbol{R}_2}
+      e^{i\boldsymbol{k} \cdot \boldsymbol{R}_3} 
+      V_{i\boldsymbol{0},j\boldsymbol{R}_1,k\boldsymbol{R}_2,l\boldsymbol{R}_3}
+\end{equation}
+
+\noindent
+The Bethe-Salpeter equation becomes
+
+\begin{equation}
+  (E_{c\boldsymbol{k} + \boldsymbol{q}} - E_{v\boldsymbol{k}}) \phi_{vc}^{\alpha\boldsymbol{q}}(\boldsymbol{k}) 
+  + \frac{V}{(2\pi)^3} \int \mathrm{d}\boldsymbol{k}' \sum_{v'c'} 
+    K_{vc,v'c'}^{\boldsymbol{q}}(\boldsymbol{k},\boldsymbol{k}') 
+    \phi_{v'c'}^{\alpha\boldsymbol{q}} (\boldsymbol{k}') 
+  = E_{\alpha \boldsymbol{q}} \phi_{vc}^{\alpha\boldsymbol{q}}(\boldsymbol{k}) 
+\end{equation}
+
+For practical calculation, 
+the continuous integration with respect to $\boldsymbol{k}$ has to be replaced by a summation of discrete grid in Brillouion Zone.
+Actually this is the sampling scheme to calculate an integral in mathematics.
+Let we define
+
+\begin{equation}
+  \begin{gathered}
+    \frac{V}{(2\pi)^3} \int \mathrm{d}\boldsymbol{k} \sum_{vc} 
+      \phi_{vc}^{\alpha \boldsymbol{q}*}(\boldsymbol{k}) \phi_{vc}^{\beta \boldsymbol{q}}(\boldsymbol{k}) 
+      \approx \sum_{vc\boldsymbol{k}} \frac{V_{\boldsymbol{k}}}{V_{BZ}} 
+        \phi_{vc}^{\alpha \boldsymbol{q}*}(\boldsymbol{k}) \phi_{vc}^{\beta \boldsymbol{q}}(\boldsymbol{k}) 
+      = \sum_{vc\boldsymbol{k}} A_{vc\boldsymbol{k}}^{\alpha \boldsymbol{q}*} A_{vc\boldsymbol{k}}^{\beta \boldsymbol{q}}
+      = \delta_{\alpha\beta} \\
+    A_{vc\boldsymbol{k}}^{\alpha \boldsymbol{q}}
+      = \sqrt{\frac{V_{\boldsymbol{k}}}{V_{BZ}}} \phi_{vc}^{\alpha \boldsymbol{q}}(\boldsymbol{k}) 
+  \end{gathered}
+\end{equation}
+
+\begin{equation}
+  \begin{gathered}
+    (E_{c\boldsymbol{k} + \boldsymbol{q}} - E_{v\boldsymbol{k}}) \sqrt{\frac{V_{\boldsymbol{k}}}{V_{BZ}}} \phi_{vc}^{\alpha\boldsymbol{q}}(\boldsymbol{k}) 
+      + \sum_{v'c'\boldsymbol{k}'} \sqrt{\frac{V_{\boldsymbol{k}}}{V_{BZ}}} 
+      K_{vc,v'c'}^{\boldsymbol{q}}(\boldsymbol{k},\boldsymbol{k}') \sqrt{\frac{V_{\boldsymbol{k}'}}{V_{BZ}}} 
+      \sqrt{\frac{V_{\boldsymbol{k}'}}{V_{BZ}}} \phi_{v'c'}^{\alpha\boldsymbol{q}} (\boldsymbol{k}') 
+    = E_{\alpha \boldsymbol{q}} \sqrt{\frac{V_{\boldsymbol{k}}}{V_{BZ}}} \phi_{vc}^{\alpha\boldsymbol{q}}(\boldsymbol{k}) \\
+    \Rightarrow (E_{c\boldsymbol{k} + \boldsymbol{q}} - E_{v\boldsymbol{k}}) A_{vc\boldsymbol{k}}^{\alpha\boldsymbol{q}} 
+      + \sum_{v'c'\boldsymbol{k}'} K_{vc\boldsymbol{k},v'c'\boldsymbol{k}'}^{\boldsymbol{q}}
+      A_{v'c'\boldsymbol{k}'}^{\alpha\boldsymbol{q}} 
+    = E_{\alpha \boldsymbol{q}} A_{vc\boldsymbol{k}}^{\alpha\boldsymbol{q}} \\
+    K_{vc\boldsymbol{k},v'c'\boldsymbol{k}'}^{\boldsymbol{q}} 
+    = \sqrt{\frac{V_{\boldsymbol{k}}}{V_{BZ}}} K_{vc,v'c'}^{\boldsymbol{q}}(\boldsymbol{k},\boldsymbol{k}') \sqrt{\frac{V_{\boldsymbol{k}'}}{V_{BZ}}} 
+  \end{gathered}
+\end{equation}
+
+\noindent
+The weights $\sqrt{\frac{V_{\boldsymbol{k}}}{V_{BZ}}}$ is useful when using a group of irreducible points in Brillouion Zone.
+Usually, we select an MonkhorstPack grid as the sampling scheme in the BZ. 
+When we perform the calculation using the entire k-grid (that is, the reducible k-points), 
+we have $\sqrt{\frac{V_{\boldsymbol{k}}}{V_{BZ}}} = \frac{1}{\sqrt{N}}$, where $N$ represents the number of sampling points.
+In this situation we have $K_{vc\boldsymbol{k},v'c'\boldsymbol{k}'}^{\boldsymbol{q}} = \frac{1}{N} K_{vc,v'c'}^{\boldsymbol{q}}(\boldsymbol{k},\boldsymbol{k}')$.
+
+\subsubsection{Kernal under UJ approximation}
+
+The electron-hole interaction kernal under electronic basis have been demonstrated at \cref{Kd-wannier} and \cref{Kx-wannier}.
+If we already get the hopping terms, we only need the interaction terms between wannier functions to calculate exciton state.
+The interaction terms may be complicated, 
+but we have confirmed that only keeping direct-terms and exchange-terms is a good approximation for most system with SU2 symmetry.
+
+If we only keep the direct term and the exchange term, 
+
+\begin{equation}
+  \begin{aligned}
+    W_{i\boldsymbol{0},j\boldsymbol{R}_1,k\boldsymbol{R}_2,l\boldsymbol{R}_3}
+    &= \delta_{il}\delta_{jk}\delta_{\boldsymbol{R}_3\boldsymbol{0}}\delta_{\boldsymbol{R}_1\boldsymbol{R}_2} 
+      W_{i\boldsymbol{0},j\boldsymbol{R}}
+      +\delta_{ik}\delta_{jl}\delta_{\boldsymbol{R}_2\boldsymbol{0}}\delta_{\boldsymbol{R}_1\boldsymbol{R}_3} 
+      J^{1}_{i\boldsymbol{0},j\boldsymbol{R}}
+      +\delta_{ij}\delta_{kl}\delta_{\boldsymbol{R}_1\boldsymbol{0}}\delta_{\boldsymbol{R}_2\boldsymbol{R}_3} 
+      J^{2}_{i\boldsymbol{0},k\boldsymbol{R}} \\
+    V_{i\boldsymbol{0},j\boldsymbol{R}_1,k\boldsymbol{R}_2,l\boldsymbol{R}_3}
+    &= \delta_{il}\delta_{jk}\delta_{\boldsymbol{R}_3\boldsymbol{0}}\delta_{\boldsymbol{R}_1\boldsymbol{R}_2} 
+      V_{i\boldsymbol{0},j\boldsymbol{R}}
+      +\delta_{ik}\delta_{jl}\delta_{\boldsymbol{R}_2\boldsymbol{0}}\delta_{\boldsymbol{R}_1\boldsymbol{R}_3} 
+      X^{1}_{i\boldsymbol{0},j\boldsymbol{R}}
+      +\delta_{ij}\delta_{kl}\delta_{\boldsymbol{R}_1\boldsymbol{0}}\delta_{\boldsymbol{R}_2\boldsymbol{R}_3} 
+      X^{2}_{i\boldsymbol{0},k\boldsymbol{R}} \\
+  \end{aligned}
+\end{equation}
+
+\noindent
+With the definition $F_{ij}(\boldsymbol{k}) = \sum_{\boldsymbol{R}} e^{i\boldsymbol{k}\cdot\boldsymbol{R}} F_{i\boldsymbol{0},j\boldsymbol{R}}$,
+we can simplify the Kernal to
+
+\begin{equation}
+  \begin{aligned}
+    K_{vc\boldsymbol{k}v'c'\boldsymbol{k}'}^{d \, \boldsymbol{q}} = - \frac{1}{N}\sum_{ij}
+      &\left[ U_{ic}^{\boldsymbol{k}+\boldsymbol{q}*} U_{jv'}^{\boldsymbol{k}'*} 
+              U_{jv}^{\boldsymbol{k}} U_{ic'}^{\boldsymbol{k}'+\boldsymbol{q}} 
+              W_{ij}(\boldsymbol{k}-\boldsymbol{k}') \right. \\
+      &\left. + U_{ic}^{\boldsymbol{k}+\boldsymbol{q}*} U_{jv'}^{\boldsymbol{k}'*} 
+                U_{iv}^{\boldsymbol{k}} U_{jc'}^{\boldsymbol{k}'+\boldsymbol{q}} 
+                J_{ij}^{1}(\boldsymbol{q}) 
+              + U_{ic}^{\boldsymbol{k}+\boldsymbol{q}*} U_{iv'}^{\boldsymbol{k}'*} 
+                U_{jv}^{\boldsymbol{k}} U_{jc'}^{\boldsymbol{k}'+\boldsymbol{q}} 
+                J_{ij}^{2}(\boldsymbol{k}+\boldsymbol{k}'+\boldsymbol{q}) 
+      \right]
+  \end{aligned}
+\end{equation}
+
+\begin{equation}
+  \begin{aligned}
+    K_{vc\boldsymbol{k}v'c'\boldsymbol{k}'}^{x \, \boldsymbol{q}} = \frac{1}{N}\sum_{ij}
+      &\left[ U_{ic}^{\boldsymbol{k}+\boldsymbol{q}*} U_{jv'}^{\boldsymbol{k}'*} 
+              U_{jc'}^{\boldsymbol{k}'+\boldsymbol{q}} U_{iv}^{\boldsymbol{k}} 
+              V_{ij}(\boldsymbol{q}) \right. \\
+      &\left. + U_{ic}^{\boldsymbol{k}+\boldsymbol{q}*} U_{jv'}^{\boldsymbol{k}'*} 
+                U_{ic'}^{\boldsymbol{k}'+\boldsymbol{q}} U_{jv}^{\boldsymbol{k}} 
+                X_{ij}^{1}(\boldsymbol{k}-\boldsymbol{k}') 
+              + U_{ic}^{\boldsymbol{k}+\boldsymbol{q}*} U_{iv'}^{\boldsymbol{k}'*} 
+                U_{jc'}^{\boldsymbol{k}'+\boldsymbol{q}} U_{jv}^{\boldsymbol{k}} 
+                X_{ij}^{2}(\boldsymbol{k}+\boldsymbol{k}'+\boldsymbol{q}) 
+      \right]
+  \end{aligned}
+\end{equation}
+
+Here we emphasize that, direct term $W_{ij}(\boldsymbol{k})$ or $V_{ij}(\boldsymbol{k})$ contains the interaction over infinite distances
+due to the $\frac{1}{r}$ decay trend of direct term.
+Only in the infinite case we can see the summation of $\boldsymbol{R}$ contains the entire space clearly.
+This is why we start from the BSE in a system with infinite size.
+
+
+
+\subsubsection{Handle the divergency in Kernal}
+
+
+\subsection{Excitonic Band state}
+
+\subsubsection{Bloch state $\left| \alpha\boldsymbol{q} \right\rangle$}
+
+Actually, we have give the Bloch states of exciton in \cref{Excitonic-Bloch-state} for infinite case:
+
+\begin{equation}
+  \begin{gathered}
+    \left| \alpha \boldsymbol{q} \right\rangle 
+    = \frac{V}{(2\pi)^3} \int \mathrm{d}\boldsymbol{k} \sum_{vc} \phi_{vc}^{\alpha \boldsymbol{q}}(\boldsymbol{k}) 
+      \left| v c \boldsymbol{k}, \boldsymbol{q} \right\rangle \\
+    \begin{aligned}
+      \left\langle v c \boldsymbol{k}, \boldsymbol{q} \middle| v c \boldsymbol{k}', \boldsymbol{q}' \right\rangle
+        &= \frac{(2\pi)^6}{V^2} \delta_{vv'} \delta_{cc'} \delta(\boldsymbol{k}-\boldsymbol{k}') \delta(\boldsymbol{q}-\boldsymbol{q}') \\
+      \left\langle \alpha \boldsymbol{q} \middle| \beta \boldsymbol{q}' \right\rangle
+        &= \frac{(2\pi)^3}{V} \delta_{\alpha\beta} \delta(\boldsymbol{q}-\boldsymbol{q}') 
+    \end{aligned} \\
+    \frac{V}{(2\pi)^3} \int \mathrm{d}\boldsymbol{k} \sum_{vc} 
+      \phi_{vc}^{\alpha \boldsymbol{q}*}(\boldsymbol{k}) \phi_{vc}^{\beta \boldsymbol{q}}(\boldsymbol{k}) 
+      = \delta_{\alpha\beta}
+  \end{gathered}
+\end{equation}
+
+\noindent
+Similarly we can give the definition for the approximation of finite case:
+
+\begin{equation}
+  \begin{gathered}
+    \left| \alpha \boldsymbol{q} \right\rangle 
+    = \sum_{vc\boldsymbol{k}} A_{vc\boldsymbol{k}}^{\alpha \boldsymbol{q}}
+      \left| v c \boldsymbol{k}, \boldsymbol{q} \right\rangle \\
+    \begin{aligned}
+      \left\langle v c \boldsymbol{k}, \boldsymbol{q} \middle| v c \boldsymbol{k}', \boldsymbol{q}' \right\rangle
+        &= \frac{(2\pi)^3}{V} \delta_{vv'} \delta_{cc'} \delta_{\boldsymbol{k},\boldsymbol{k}'} \delta(\boldsymbol{q}-\boldsymbol{q}') \\
+      \left\langle \alpha \boldsymbol{q} \middle| \beta \boldsymbol{q}' \right\rangle
+        &= \frac{(2\pi)^3}{V} \delta_{\alpha\beta} \delta(\boldsymbol{q}-\boldsymbol{q}') 
+    \end{aligned} \\
+    \sum_{vc\boldsymbol{k}} A_{vc\boldsymbol{k}}^{\alpha \boldsymbol{q}*} A_{vc\boldsymbol{k}}^{\beta \boldsymbol{q}}
+      = \delta_{\alpha\beta}
+  \end{gathered}
+\end{equation}
+
+\noindent
+Note we retain $\frac{(2\pi)^3}{V}\delta(\boldsymbol{q}-\boldsymbol{q}')$ because we regard the finite case as the approximation of infinite case.
+This notion allows us to calculate the excitonic states of a random $\boldsymbol{q}$ by solving BSE on a finite grid in BZ numerically.
+
+
+
+\subsubsection{$\left| u_{\alpha\boldsymbol{q}} \right\rangle = e^{-i\boldsymbol{q} \cdot \hat{\boldsymbol{r}}_0} \left| \alpha\boldsymbol{q} \right\rangle$}
+
+Exciton have two spacial varialbes: $\boldsymbol{r}_e$ and $\boldsymbol{r}_h$.
+We can define $\lambda$ as the weight to calculate the center position of exciton:
+
+\begin{equation}
+  \begin{aligned}
+    \boldsymbol{r}_0 = (1-\lambda) \boldsymbol{r}_e + \lambda \boldsymbol{r}_h ,\, 
+    \boldsymbol{r} = \boldsymbol{r}_e-\boldsymbol{r}_h \\
+    \boldsymbol{r}_e = \boldsymbol{r}_0 + \lambda \boldsymbol{r} ,\,
+    \boldsymbol{r}_h = \boldsymbol{r}_0 - (1-\lambda) \boldsymbol{r} 
+  \end{aligned}
+\end{equation}
+
+\noindent
+Define:
+
+\begin{equation}
+  \begin{gathered}
+    \left| u_{\alpha\boldsymbol{q}}^{\lambda} \right\rangle 
+    = e^{-i\boldsymbol{q} \cdot \hat{\boldsymbol{r}}_0} \left| \alpha\boldsymbol{q} \right\rangle 
+    = \frac{V}{(2\pi)^3} \int \mathrm{d}\boldsymbol{k} \sum_{vc} \phi_{vc}^{\alpha \boldsymbol{q}}(\boldsymbol{k}) 
+      e^{-i\boldsymbol{q} \cdot \hat{\boldsymbol{r}}_0} \left| v c \boldsymbol{k}, \boldsymbol{q} \right\rangle
+    = \frac{V}{(2\pi)^3} \int \mathrm{d}\boldsymbol{k} \sum_{vc} \phi_{vc}^{\alpha \boldsymbol{q}}(\boldsymbol{k}) 
+      \left| u_{v c \boldsymbol{k}}^{\lambda\boldsymbol{q}} \right\rangle \\
+    \left| u_{v c \boldsymbol{k}}^{\lambda\boldsymbol{q}} \right\rangle 
+    = e^{-i\boldsymbol{q} \cdot \hat{\boldsymbol{r}}_0} \left| v c \boldsymbol{k}, \boldsymbol{q} \right\rangle 
+    = e^{-i\boldsymbol{q} \cdot \hat{\boldsymbol{r}}_0} 
+      \left| \psi_{c\boldsymbol{k}+\boldsymbol{q}}^{e} \right\rangle \left| \psi_{v\boldsymbol{k}}^{h} \right\rangle 
+    = e^{i(\boldsymbol{k}+\lambda\boldsymbol{q}) \cdot \hat{\boldsymbol{r}}} 
+      \left| u_{c\boldsymbol{k}+\boldsymbol{q}}^{e} \right\rangle \left| u_{v\boldsymbol{k}}^{h} \right\rangle 
+  \end{gathered}
+\end{equation}
+
+\noindent
+Under translation operator $\hat{T}_{\boldsymbol{R}}$, we have
+
+\begin{equation}
+  \begin{gathered}
+    \hat{T}_{\boldsymbol{R}} \left| v c \boldsymbol{k}, \boldsymbol{q} \right\rangle 
+    = e^{i(\boldsymbol{k} + \boldsymbol{q})\cdot\boldsymbol{R}}e^{-i\boldsymbol{k}\cdot\boldsymbol{R}} 
+      \left| v c \boldsymbol{k}, \boldsymbol{q} \right\rangle 
+    = e^{i\boldsymbol{q}\cdot\boldsymbol{R}} 
+      \left| v c \boldsymbol{k}, \boldsymbol{q} \right\rangle 
+    \Rightarrow \hat{T}_{\boldsymbol{R}} \left| \alpha\boldsymbol{q} \right\rangle 
+    = e^{i\boldsymbol{q}\cdot\boldsymbol{R}} \left| \alpha\boldsymbol{q} \right\rangle \\
+    \hat{T}_{\boldsymbol{R}} \left| u_{\alpha\boldsymbol{q}}^{\lambda} \right\rangle 
+    = e^{-i\boldsymbol{q} \cdot (\hat{\boldsymbol{r}}_0 + \boldsymbol{R})} e^{i\boldsymbol{q}\cdot\boldsymbol{R}} \left| \alpha\boldsymbol{q} \right\rangle 
+    = \left| u_{\alpha\boldsymbol{q}}^{\lambda} \right\rangle 
+  \end{gathered}
+\end{equation}
+
+\noindent
+This prove that $\left| u_{\alpha\boldsymbol{q}}^{\lambda} \right\rangle$ is a periodic function defined in an unitcell.
+
+
+Similarly, we need to calculate the inner product of $\left\langle u_{\alpha\boldsymbol{q}}^{\lambda} \middle| u_{\beta\boldsymbol{q}'}^{\lambda} \right\rangle$ in an unitcell,
+where $\boldsymbol{q}$ and $\boldsymbol{q}'$ is adjacent.
+We try to analyze the inner product of basis $\left| u_{v c \boldsymbol{k}}^{\lambda\boldsymbol{q}} \right\rangle$ firstly.
+
+\begin{equation}
+  \begin{aligned}
+    \lim_{\boldsymbol{q} \rightarrow \boldsymbol{q}'} 
+    \left\langle u_{v c \boldsymbol{k}}^{\lambda\boldsymbol{q}} \middle| u_{v' c' \boldsymbol{k}'}^{\lambda\boldsymbol{q}'} \right\rangle_{uc} 
+    &= \frac{1}{\sum_{\boldsymbol{R}}} 
+      \left\langle u_{c\boldsymbol{k}+\boldsymbol{q}}^{e} \right| \left\langle u_{v\boldsymbol{k}}^{h} \right| 
+      e^{i(\boldsymbol{k}'+\lambda\boldsymbol{q}' -\boldsymbol{k}-\lambda\boldsymbol{q}) \cdot \hat{\boldsymbol{r}}} 
+      \left| u_{c'\boldsymbol{k}'+\boldsymbol{q}'}^{e} \right\rangle \left| u_{v'\boldsymbol{k}'}^{h} \right\rangle \\
+    &= \frac{1}{\sum_{\boldsymbol{R}}} 
+      \left\langle u_{c\boldsymbol{k}+\boldsymbol{q}}^{e} \right|
+      e^{i(\boldsymbol{k}'+\lambda\boldsymbol{q}' -\boldsymbol{k}-\lambda\boldsymbol{q}) \cdot \hat{\boldsymbol{r}}_e} 
+      \left| u_{c'\boldsymbol{k}'+\boldsymbol{q}'}^{e} \right\rangle 
+      \left\langle u_{v\boldsymbol{k}}^{h} \right| 
+      e^{i(\boldsymbol{k}'+\lambda\boldsymbol{q}' -\boldsymbol{k}-\lambda\boldsymbol{q}) \cdot \hat{\boldsymbol{r}}_h} 
+      \left| u_{v'\boldsymbol{k}'}^{h} \right\rangle \\
+    &= \frac{1}{\sum_{\boldsymbol{R}}} 
+      \sum_{\boldsymbol{R}} 
+      e^{i(\boldsymbol{k}'+\lambda\boldsymbol{q}' -\boldsymbol{k}-\lambda\boldsymbol{q}) \cdot \boldsymbol{R}} 
+      \left\langle u_{c\boldsymbol{k}+\boldsymbol{q}}^{e} \right|
+      e^{i(\boldsymbol{k}'+\lambda\boldsymbol{q}' -\boldsymbol{k}-\lambda\boldsymbol{q}) \cdot \hat{\boldsymbol{r}}_e} 
+      \left| u_{c'\boldsymbol{k}'+\boldsymbol{q}'}^{e} \right\rangle_{uc} 
+      \left\langle u_{v\boldsymbol{k}}^{h} \right| 
+      e^{i(\boldsymbol{k}'+\lambda\boldsymbol{q}' -\boldsymbol{k}-\lambda\boldsymbol{q}) \cdot \hat{\boldsymbol{r}}_h} 
+      \left| u_{v'\boldsymbol{k}'}^{h} \right\rangle \\
+    &= \frac{1}{\sum_{\boldsymbol{R}}} 
+      \frac{(2\pi)^3}{V} \delta(\boldsymbol{k}'+\lambda\boldsymbol{q}' -\boldsymbol{k}-\lambda\boldsymbol{q})
+      \left\langle u_{c\boldsymbol{k}+\boldsymbol{q}}^{e} \middle| u_{c'\boldsymbol{k}'+\boldsymbol{q}'}^{e} \right\rangle_{uc} 
+      \left\langle u_{v\boldsymbol{k}}^{h} \middle| u_{v'\boldsymbol{k}'}^{h} \right\rangle \\
+    &= \frac{(2\pi)^3}{V} \delta(\boldsymbol{k}'+\lambda\boldsymbol{q}' -\boldsymbol{k}-\lambda\boldsymbol{q})
+      \left\langle u_{c\boldsymbol{k}+\boldsymbol{q}}^{e} \middle| u_{c'\boldsymbol{k}'+\boldsymbol{q}'}^{e} \right\rangle_{uc} 
+      \left\langle u_{v\boldsymbol{k}}^{h} \middle| u_{v'\boldsymbol{k}'}^{h} \right\rangle_{uc} \\
+  \end{aligned}
+\end{equation}
+
+\noindent
+Here, the $\delta$-function means we have to perform the conditional summation of $A_{vc\boldsymbol{k}}^{\alpha\boldsymbol{q}}$ 
+based on the specific values of $\boldsymbol{k}$ and $\boldsymbol{q}$ in numerical calculation.
+It's a little bit complicated.
+But we find another method to give a concrete form representing $\left| u_{\alpha\boldsymbol{q}} \right\rangle$:
+
+\begin{equation}
+  \begin{aligned}
+    \lim_{\boldsymbol{q} \rightarrow \boldsymbol{q}'} 
+    \left\langle u_{v c \boldsymbol{k}}^{\lambda\boldsymbol{q}} \middle| 
+    u_{v' c' \boldsymbol{k}'}^{\lambda\boldsymbol{q}'} \right\rangle_{uc} 
+    &= \frac{1}{\sum_{\boldsymbol{R}}} 
+      \left\langle \psi_{c\boldsymbol{k}+\boldsymbol{q}}^{e} \right| \left\langle \psi_{v\boldsymbol{k}}^{h} \right| 
+        e^{i(\boldsymbol{q} - \boldsymbol{q}') \cdot [(1-\lambda)\hat{\boldsymbol{r}}_e + \lambda\hat{\boldsymbol{r}}_h]} 
+      \left| \psi_{c'\boldsymbol{k}'+\boldsymbol{q}'}^{e} \right\rangle \left| \psi_{v'\boldsymbol{k}'}^{h} \right\rangle \\
+    &= \frac{1}{\sum_{\boldsymbol{R}}} 
+      \left\langle \psi_{c\boldsymbol{k}+\boldsymbol{q}}^{e} \right| 
+        e^{i(1-\lambda)(\boldsymbol{q} - \boldsymbol{q}') \cdot \hat{\boldsymbol{r}}_e} 
+      \left| \psi_{c'\boldsymbol{k}'+\boldsymbol{q}'}^{e} \right\rangle 
+      \left\langle \psi_{v\boldsymbol{k}}^{h} \right| 
+        e^{i\lambda(\boldsymbol{q} - \boldsymbol{q}') \cdot \hat{\boldsymbol{r}}_h} 
+      \left| \psi_{v'\boldsymbol{k}'}^{h} \right\rangle \\
+    &= \frac{1}{\sum_{\boldsymbol{R}}} \sum_{ij\boldsymbol{R}_e\boldsymbol{R}_h}\sum_{i'j'\boldsymbol{R}_e'\boldsymbol{R}_h'}
+      U_{ic}^{\boldsymbol{k}+\boldsymbol{q}*} U_{jv}^{\boldsymbol{k}} 
+      U_{i'c'}^{\boldsymbol{k}'+\boldsymbol{q}'} U_{j'v'}^{\boldsymbol{k}'*} 
+      e^{-i(\boldsymbol{k}+\boldsymbol{q}) \cdot \boldsymbol{R}_e} 
+      e^{i\boldsymbol{k} \cdot \boldsymbol{R}_h}
+      e^{i(\boldsymbol{k}'+\boldsymbol{q}') \cdot \boldsymbol{R}_e'}
+      e^{-i\boldsymbol{k}' \cdot \boldsymbol{R}_h'} \\
+    &\phantom{=\frac{1}{\sum_{R}} \sum_{ij\boldsymbol{R}_e\boldsymbol{R}_h}\sum_{i'j'\boldsymbol{R}_e'\boldsymbol{R}_h'}} 
+      \times \left\langle \psi_{i\boldsymbol{R}_e}^{e} \right| 
+        e^{i(1-\lambda)(\boldsymbol{q} - \boldsymbol{q}') \cdot \hat{\boldsymbol{r}}_e} 
+      \left| \psi_{i'\boldsymbol{R}_e'}^{e} \right\rangle 
+      \left\langle \psi_{j\boldsymbol{R}_h}^{h} \right| 
+        e^{i\lambda(\boldsymbol{q} - \boldsymbol{q}') \cdot \hat{\boldsymbol{r}}_h} 
+      \left| \psi_{j'\boldsymbol{R}_h'}^{h} \right\rangle 
+  \end{aligned}
+\end{equation}
+
+\noindent
+If electronic wannier function is MLWF, we have
+
+\begin{equation}
+  \lim_{\boldsymbol{k} \rightarrow 0} \left\langle \psi_{i\boldsymbol{R}}^{} \right| 
+      e^{i\boldsymbol{k} \cdot \hat{\boldsymbol{r}}} 
+    \left| \psi_{i'\boldsymbol{R}'}^{} \right\rangle 
+  = \delta_{ii'} \delta_{\boldsymbol{R}\boldsymbol{R}'} e^{i\boldsymbol{k} \cdot (\boldsymbol{R} + \boldsymbol{\tau}_i)} 
+\end{equation}
+
+\noindent
+then
+
+\begin{equation}
+  \begin{aligned}
+    \lim_{\boldsymbol{q} \rightarrow \boldsymbol{q}'} 
+    \left\langle u_{v c \boldsymbol{k}}^{\lambda\boldsymbol{q}} \middle| 
+    u_{v' c' \boldsymbol{k}'}^{\lambda\boldsymbol{q}'} \right\rangle_{uc} 
+    &= \frac{1}{\sum_{\boldsymbol{R}}} \sum_{ij\boldsymbol{R}_e\boldsymbol{R}_h}
+      U_{ic}^{\boldsymbol{k}+\boldsymbol{q}*} U_{jv}^{\boldsymbol{k}} 
+      U_{ic'}^{\boldsymbol{k}'+\boldsymbol{q}'} U_{jv'}^{\boldsymbol{k}'*} 
+      e^{-i(\boldsymbol{k}+\boldsymbol{q}) \cdot \boldsymbol{R}_e} 
+      e^{i\boldsymbol{k} \cdot \boldsymbol{R}_h}
+      e^{i(\boldsymbol{k}'+\boldsymbol{q}') \cdot \boldsymbol{R}_e}
+      e^{-i\boldsymbol{k}' \cdot \boldsymbol{R}_h}\\
+    &\phantom{=\frac{1}{\sum_{R}} \sum_{ij\boldsymbol{R}_e\boldsymbol{R}_h}} 
+      \times e^{i(1-\lambda)(\boldsymbol{q} - \boldsymbol{q}') \cdot (\boldsymbol{R}_e + \boldsymbol{\tau}_i)} 
+        e^{i\lambda(\boldsymbol{q} - \boldsymbol{q}') \cdot (\boldsymbol{R}_h + \boldsymbol{\tau}_j)} \\
+    &= \frac{1}{\sum_{\boldsymbol{R}}} \sum_{ij\boldsymbol{R}_e\boldsymbol{R}_h}
+      U_{ic}^{\boldsymbol{k}+\boldsymbol{q}*} U_{jv}^{\boldsymbol{k}} 
+      U_{ic'}^{\boldsymbol{k}'+\boldsymbol{q}'} U_{jv'}^{\boldsymbol{k}'*} 
+      e^{i(\boldsymbol{k} - \boldsymbol{k}') \cdot (\boldsymbol{R}_h - \boldsymbol{R}_e)}
+      e^{i\lambda(\boldsymbol{q} - \boldsymbol{q}') \cdot (\boldsymbol{R}_h - \boldsymbol{R}_e)} \\
+    &\phantom{=\frac{1}{\sum_{R}} \sum_{ij\boldsymbol{R}_e\boldsymbol{R}_h}} 
+      \times e^{i(\boldsymbol{q} - \boldsymbol{q}') \cdot [(1-\lambda)\boldsymbol{\tau}_i + \lambda\boldsymbol{\tau}_j]} \\
+    &= \frac{1}{\sum_{\boldsymbol{R}}} \sum_{\boldsymbol{R}_0}\sum_{ij\boldsymbol{R}}
+      U_{ic}^{\boldsymbol{k}+\boldsymbol{q}*} U_{jv}^{\boldsymbol{k}} 
+      U_{ic'}^{\boldsymbol{k}'+\boldsymbol{q}'} U_{jv'}^{\boldsymbol{k}'*} 
+      e^{i(\boldsymbol{k} - \boldsymbol{k}') \cdot \boldsymbol{R}}
+      e^{i\lambda(\boldsymbol{q} - \boldsymbol{q}') \cdot \boldsymbol{R}}
+      e^{i(\boldsymbol{q} - \boldsymbol{q}') \cdot [(1-\lambda)\boldsymbol{\tau}_i + \lambda\boldsymbol{\tau}_j]} \\
+    &= \sum_{ij\boldsymbol{R}}
+      U_{ic}^{\boldsymbol{k}+\boldsymbol{q}*} U_{jv}^{\boldsymbol{k}} 
+      U_{ic'}^{\boldsymbol{k}'+\boldsymbol{q}'} U_{jv'}^{\boldsymbol{k}'*} 
+      e^{i(\boldsymbol{k} - \boldsymbol{k}') \cdot \boldsymbol{R}}
+      e^{i\lambda(\boldsymbol{q} - \boldsymbol{q}') \cdot \boldsymbol{R}}
+      e^{i(\boldsymbol{q} - \boldsymbol{q}') \cdot [(1-\lambda)\boldsymbol{\tau}_i + \lambda\boldsymbol{\tau}_j]} \\
+    &= \sum_{ij\boldsymbol{R}} A_{ij\boldsymbol{R}}^{vc\boldsymbol{k},\boldsymbol{q}*} A_{ij\boldsymbol{R}}^{v'c'\boldsymbol{k}',\boldsymbol{q}'}
+  \end{aligned}
+\end{equation}
+
+\noindent
+where
+
+\begin{equation}
+    \begin{gathered}
+        A_{ij\boldsymbol{R}}^{vc\boldsymbol{k},\boldsymbol{q}}
+        = U_{ic}^{\boldsymbol{k}+\boldsymbol{q}} U_{jv}^{\boldsymbol{k}*} 
+            e^{-i (\boldsymbol{k} + \lambda \boldsymbol{q}) \cdot \boldsymbol{R}}
+            e^{- i\boldsymbol{q} \cdot [(1-\lambda)\boldsymbol{\tau}_i + \lambda\boldsymbol{\tau}_j]} \\
+        \sum_{ij\boldsymbol{R}} A_{ij\boldsymbol{R}}^{vc\boldsymbol{k},\boldsymbol{q}*} A_{ij\boldsymbol{R}}^{vc\boldsymbol{k},\boldsymbol{q}} = 1
+    \end{gathered}
+\end{equation}
+
+\noindent
+We can use $A_{ij\boldsymbol{R}}^{vc\boldsymbol{k}}$ to represent $\left| u_{vc\boldsymbol{k}}^{\lambda\boldsymbol{q}} \right\rangle$.
+For excitonic band state we have
+
+\begin{equation}
+  \begin{aligned}
+    A_{ij\boldsymbol{R}}^{\alpha\boldsymbol{q}}
+    &= e^{-i\lambda \boldsymbol{q} \cdot \boldsymbol{R}}
+      e^{- i\boldsymbol{q} \cdot [(1-\lambda)\boldsymbol{\tau}_i + \lambda\boldsymbol{\tau}_j]} 
+      \frac{V}{(2\pi)^3} \int \mathrm{d}\boldsymbol{k} \sum_{vc} \phi_{vc}^{\alpha \boldsymbol{q}}(\boldsymbol{k}) 
+      U_{ic}^{\boldsymbol{k}+\boldsymbol{q}} U_{jv}^{\boldsymbol{k}*} 
+      e^{-i \boldsymbol{k} \cdot \boldsymbol{R}} \\
+    &\approx e^{-i\lambda \boldsymbol{q} \cdot \boldsymbol{R}}
+      e^{- i\boldsymbol{q} \cdot [(1-\lambda)\boldsymbol{\tau}_i + \lambda\boldsymbol{\tau}_j]} 
+      \frac{1}{\sqrt{N}} \sum_{vc\boldsymbol{k}} A_{vc\boldsymbol{k}}^{\alpha \boldsymbol{q}} 
+      U_{ic}^{\boldsymbol{k}+\boldsymbol{q}} U_{jv}^{\boldsymbol{k}*} 
+      e^{-i \boldsymbol{k} \cdot \boldsymbol{R}} 
+  \end{aligned}
+\end{equation}
+
+There is only one thing need to be noticed. 
+$\boldsymbol{R}$ actually represents the distance between the cells where electron or hole locates. 
+The bigger $|\boldsymbol{R}|$ is, the smaller $|A_{ij\boldsymbol{R}}^{\alpha\boldsymbol{q}}|$ is.
+In infinite case, the value of $\boldsymbol{R}$ is infinitely numerous. 
+But in finite case, $\boldsymbol{R}$ has only $N$ possible values.
+Here $N$ is the number of kpoints and represents the size of system.
+So we have to ensure that $N$ is large enough 
+so that $A_{ij\boldsymbol{R}}^{\alpha\boldsymbol{q}}$ includes all the sufficiently large components.
+
+\subsection{Excitonic Topology}
+
+This subsection only give the simple deduce, then refer other paper.
+
+\subsubsection{Berry Connection}
+
+\begin{equation}
+    \begin{aligned}
+        \mathcal{A}_{\alpha \beta}^{0}(q) 
+        &= \frac{V}{(2\pi)^3} \int \mathrm{d}k \sum_{vc} \left[
+            i \phi_{vc}^{\alpha \boldsymbol{q}*}(\boldsymbol{k}) \boldsymbol{\nabla}_{\boldsymbol{q}} 
+            \phi_{vc}^{\beta \boldsymbol{q}} (\boldsymbol{k}) 
+            +\sum_{c'} A_{vck}^{\alpha q*} A_{vc'k}^{\beta q} A_{cc'}^{ele}(k+q) 
+            \right] \\
+        A_{\alpha \beta}^{1}(q) 
+        &= \frac{V}{(2\pi)^3} \int \mathrm{d}k \sum_{vc} \left[
+            i A_{vck}^{\alpha q*} \nabla_{q} A_{vck}^{\beta q} 
+            -i A_{vck}^{\alpha q*} \nabla_{k} A_{vck}^{\beta q} 
+            +\sum_{v'} A_{vck}^{\alpha q*} A_{v'ck}^{\beta q} A_{v'v}^{ele}(k) 
+            \right] 
+    \end{aligned}
+\end{equation}
+
+\begin{equation}
+    A_{\alpha \beta}^{\lambda}(q) 
+    = i \left\langle u_{\alpha q}^{\lambda} \right| \nabla_{q} \left| u_{\beta q}^{\lambda} \right\rangle_{uc} 
+    = (1-\lambda) A_{\alpha \beta}^{0}(q) + \lambda A_{\alpha \beta}^{1}(q) 
+\end{equation}
+
+
+\subsubsection{Berry Curvature}
+
+
