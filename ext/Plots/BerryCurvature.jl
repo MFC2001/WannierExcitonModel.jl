@@ -1,5 +1,6 @@
 
-function Plots.plot(BC::BerryCurvature_wilsonloop)
+function Plots.plot(BC::BerryCurvature_wilsonloop;
+		layout = Plots.@layout [a{0.95w} b])
 	kgrid_size = BC.center.kgrid_size
 	if kgrid_size[1] == 1
 		kx = 2
@@ -27,17 +28,26 @@ function Plots.plot(BC::BerryCurvature_wilsonloop)
 		error("Wrong BerryCurvature!")
 	end
 
+	x_range = extrema(kx)
+	y_range = extrema(ky)
+	common_range = (min(x_range[1], y_range[1]), max(x_range[2], y_range[2]))
+	δ = (common_range[2] - common_range[1]) / 20
+	common_range = (common_range[1] - δ, common_range[2] + δ)
+
 	p = Plots.plot(kx, ky;
+		size = (600, 600),
 		aspect_ratio = :equal,
+		xlims = common_range,
+		ylims = common_range,
 		legend = false,
 		seriestype = :scatter,
 		marker_z = BC_v,
 		markersize = 3,
 		markerstrokewidth = 0,
 		color = :viridis,
+		colorbar = false,
 		xlabel = "kx",
 		ylabel = "ky",
-		title = "",
-		colorbar = true)
+		title = "")
 	return p
 end

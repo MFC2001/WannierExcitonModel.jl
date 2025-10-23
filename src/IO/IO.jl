@@ -1,5 +1,5 @@
 export FileFormat
-export BAND_dat, POSCAR, RESPACKU, RESPACKJ, QEcell
+export BAND_dat, POSCAR, RESPACKU, RESPACKJ, QEcell, dat_eigenvalue
 export wannier90_chk, wannier90_eig, wannier90_xsf, wannier90_hr, wannier90_centres, wannier90_amn, wannier90_mmn, wannier90_win
 
 """
@@ -81,6 +81,14 @@ The format of cell structure block in `pw.in`.
 
 """
 struct QEcell <: FileFormat end
+"""
+File `dir-wfn/dat.eigenvalue` contains electronic band structure, output by wan2respack or RESPACK.
+
+	read(path/io, ::Type{dat_eigenvalue}) -> Matrix{Float64}
+	write(path/io, band::Matrix{<:Real}, ::Type{dat_eigenvalue})
+
+"""
+struct dat_eigenvalue <: FileFormat end
 """
 wannier90.chk
 

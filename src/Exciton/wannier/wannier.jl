@@ -1,14 +1,14 @@
 
-include("./spinless.jl")
+include("./SU2.jl")
 # include("./SP.jl")
 # include("./wannier_pp.jl")
 
-# include("./mmn.jl")
+include("./mmn.jl")
 include("./amn.jl")
 include("./guess.jl")
 
-export BSE_wannier
+export BSEwannier
 
-function BSE_wannier(qgrid::MonkhorstPack, bse::AbstractBSE; kwargs...)
-	return BSE_wannier(RedKgrid(qgrid), bse; kwargs...)
+function BSEwannier(qgrid::MonkhorstPack, bse::AbstractBSE; kwargs...)
+	return BSEwannier(RedKgrid(qgrid), bse; kwargs...)
 end

@@ -15,14 +15,12 @@ include("./ExtractU/ExtractU.jl")
 
 
 """
-	BAND(qpoints, bse::AbstractBSE; vector::Bool = false, wfctype::Symbol = :Bloch, 
-		η::Real = 1 // 2, ηt::Real = η, ηs::Real = η)
+	BAND(qpoints, bse::AbstractBSE; vector::Bool = false, wfctype::Symbol = :Bloch)
 
 This function can calculate the band structure of a BSE model.
 - `qpoints` can be a `AbstractBrillouinZone` object, a vector of qpoints or a single qpoint, where qpoint should be a vector of 3 real numbers.
 - `vector` can be set as true, which decides whether to output wavefunction.
 - `wfctype` can be set as :Periodic, which decides the type of wavefunction.
-- `η` is the parameter of excitonic periodic wavefunction, also determines the excitonic center position. For spinless BSE model, `ηt` and `ηs` can be set separately.
 
 We provide two strategies to solve the BSE Hamiltonian eigenvalue problem: 
 
@@ -44,12 +42,12 @@ When `KrylovKit_BSEeigenStrategy` is used, you can set parameters of `KrylovKit.
 For excitonic Hamiltonian here, the relevant kwargs are: `howmany`, `which`, `verbosity`, `tol`, `krylovdim`, `maxiter`, `orth`.
 """
 function BAND(qpoints::AbstractVector{<:ReducedCoordinates}, bse::BSESU2;
-	vector::Bool = false, wfctype::Symbol = :Bloch, η::Real = 1 // 2, ηt::Real = η, ηs::Real = η)
-	return BAND_BSE(_BSE_eigen_STRATEGY[], qpoints, bse, Val(vector), Val(wfctype); ηt, ηs)
+	vector::Bool = false, wfctype::Symbol = :Bloch)
+	return BAND_BSE(_BSE_eigen_STRATEGY[], qpoints, bse, Val(vector), Val(wfctype))
 end
 function BAND(qpoints::AbstractVector{<:ReducedCoordinates}, bse::BSEgeneral;
-	vector::Bool = false, wfctype::Symbol = :Bloch, η::Real = 1 // 2)
-	return BAND_BSE(_BSE_eigen_STRATEGY[], qpoints, bse, Val(vector), Val(wfctype); η)
+	vector::Bool = false, wfctype::Symbol = :Bloch)
+	return BAND_BSE(_BSE_eigen_STRATEGY[], qpoints, bse, Val(vector), Val(wfctype))
 end
 function BAND(qpoints::AbstractVector{<:ReducedCoordinates}, bse::BSEcluster_SU2; vector::Bool = false)
 	return BAND_BSE(_BSE_eigen_STRATEGY[], qpoints, bse, Val(vector))

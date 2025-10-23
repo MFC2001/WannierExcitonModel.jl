@@ -19,7 +19,6 @@ function BSEcluster_general(TB::AbstractTightBindModel, Kernal::AbstractKernalIn
 	ijmap = ijMap(numorb(TB))
 
 	band = BAND([ReducedCoordinates(0, 0, 0)], TB; vector = true)[1]
-	_sum_wave_is_real!(band)
 
 	Kernal(Val(:initialize))
 

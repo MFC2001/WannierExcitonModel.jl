@@ -50,7 +50,6 @@ function BSESU2(TB::AbstractTightBindModel, Kernal::AbstractKernalInterAction;
 	ijRmap = ijRMap(numorb(TB), length(unitcell))
 
 	bandk = BAND(kgrid, TB; vector = true)
-	_sum_wave_is_real!.(bandk)
 	bandkq = similar(bandk)
 
 	Kernal(Val(:initialize))
@@ -100,7 +99,6 @@ function _BSE_preprocess_eleband_q!(bse::BSESU2, q, ::Val{false})
 		q = _BSE_shiftΓ(bse.TB.period)
 	end
 	bandkq = BAND(map(k -> k + q, bse.kgrid), bse.TB; vector = true)
-	_sum_wave_is_real!.(bandkq)
 
 	bse.bandkq .= bandkq
 	return q

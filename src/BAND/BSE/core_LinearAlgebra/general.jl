@@ -1,4 +1,4 @@
-function BAND_BSE(::Type{LinearAlgebra_BSEeigenStrategy}, qpoints, bse::BSEgeneral, ::Val{true}, ::Val{:Bloch}; η)
+function BAND_BSE(::Type{LinearAlgebra_BSEeigenStrategy}, qpoints, bse::BSEgeneral, ::Val{true}, ::Val{:Bloch})
 	Nq = length(qpoints)
 	BSEband = Vector{Eigen{ComplexF64, Float64, Matrix{ComplexF64}, Vector{Float64}}}(undef, Nq)
 
@@ -11,7 +11,7 @@ function BAND_BSE(::Type{LinearAlgebra_BSEeigenStrategy}, qpoints, bse::BSEgener
 	end
 	return BSEband
 end
-function BAND_BSE(::Type{LinearAlgebra_BSEeigenStrategy}, qpoints, bse::BSEgeneral, ::Val{false}, ::Val{:Bloch}; η)
+function BAND_BSE(::Type{LinearAlgebra_BSEeigenStrategy}, qpoints, bse::BSEgeneral, ::Val{false}, ::Val{:Bloch})
 	Nq = length(qpoints)
 	N = length(bse.vckmap)
 
@@ -25,21 +25,19 @@ function BAND_BSE(::Type{LinearAlgebra_BSEeigenStrategy}, qpoints, bse::BSEgener
 	end
 	return BSEband
 end
-function BAND_BSE(::Type{LinearAlgebra_BSEeigenStrategy}, qpoints, bse::BSEgeneral, ::Val{true}, ::Val{:Periodic}; η)
+function BAND_BSE(::Type{LinearAlgebra_BSEeigenStrategy}, qpoints, bse::BSEgeneral, ::Val{true}, ::Val{:Periodic})
 
-	ijRvck = _uijR_ψvck(bse, η)
+	e_kR = [cis(-2π * (k ⋅ R)) for R in bse.unitcell, k in bse.kgrid]
 
 	Nq = length(qpoints)
-	BSEband = Vector{Eigen{ComplexF64, Float64, Matrix{ComplexF64}, Vector{Float64}}}(undef, Nq)
+	BSEband = Vector{BSE_uEigen}(undef, Nq)
 
 	N = length(bse.vckmap)
 	H = Matrix{ComplexF64}(undef, N, N)
 
 	for (qi, q) in enumerate(qpoints)
 		H_ = bse(H, q)
-		BSEband[qi] = eigen!(H_)
-		(BM, _) = ijRvck(bse.bandk, bse.bandkq, q)
-		BSEband[qi] = Eigen(BSEband[qi].values, BM * BSEband[qi].vectors)
+		BSEband[qi] = BSE_uEigen(bse, q, eigen!(H_), e_kR)
 	end
 
 	return BSEband
@@ -49,11 +47,11 @@ function BAND_BSE(::Type{LinearAlgebra_BSEeigenStrategy}, qpoints, bse::BSEgener
 end
 function BAND_BSE(::Type{LinearAlgebra_BSEeigenStrategy}, qpoints, bse::BSEgeneral, ::Val{true}, ::Val{:BlochPeriodic}; η)
 
-	ijRvck = _uijR_ψvck(bse, η)
+	e_kR = [cis(-2π * (k ⋅ R)) for R in bse.unitcell, k in bse.kgrid]
 
 	Nq = length(qpoints)
 	BSEband = Vector{Eigen{ComplexF64, Float64, Matrix{ComplexF64}, Vector{Float64}}}(undef, Nq)
-	BSEband_u = Vector{Eigen{ComplexF64, Float64, Matrix{ComplexF64}, Vector{Float64}}}(undef, Nq)
+	BSEband_u = Vector{BSE_uEigen}(undef, Nq)
 
 	N = length(bse.vckmap)
 	H = Matrix{ComplexF64}(undef, N, N)
@@ -61,8 +59,7 @@ function BAND_BSE(::Type{LinearAlgebra_BSEeigenStrategy}, qpoints, bse::BSEgener
 	for (qi, q) in enumerate(qpoints)
 		H_ = bse(H, q)
 		BSEband[qi] = eigen!(H_)
-		(BM, _) = ijRvck(bse.bandk, bse.bandkq, q)
-		BSEband_u[qi] = Eigen(copy(BSEband[qi].values), BM * BSEband[qi].vectors)
+		BSEband_u[qi] = BSE_uEigen(bse, q, BSEband[qi], e_kR)
 	end
 
 	return BSEband, BSEband_u
