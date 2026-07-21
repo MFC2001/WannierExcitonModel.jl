@@ -1,34 +1,35 @@
 module WannierExcitonModel
 
-using Requires
+using WannierInterActionBase
 
-using SpecialFunctions
+using WannierInterActionBase.Requires
+
+using WannierInterActionBase.SpecialFunctions
+
+using WannierInterActionBase.StaticArrays
+using WannierInterActionBase.StructEquality
+
+Base_exports = names(WannierInterActionBase; all = false)
+for sym in Base_exports
+    @eval export $sym
+end
 
 using LinearAlgebra
 
-using StaticArrays
-using StructEquality
-
-using DelimitedFiles
 using Printf
-using Dates: Dates
-
 using Serialization
 
-include("./Core/Core.jl")
-include("./AbstractInterAction/AbstractInterAction.jl")
+
 include("./Topology/Topology.jl")
-include("./AbstractModel/AbstractModel.jl")
+abstract type AbstractModel end
+include("./AbstractTightBindModel/AbstractTightBindModel.jl")
+include("./AbstractBSE/AbstractBSE.jl")
 include("./HR/HR.jl")
-include("./IO/IO.jl")
-include("./BrillouinZone/BrillouinZone.jl")
+include("./IdealLattice/IdealLattice.jl")
 include("./BAND/BAND.jl")
 include("./Exciton/Exciton.jl")
-include("./IdealLattice/IdealLattice.jl")
-include("./shell/shell.jl")
 # include("./Spglib/Spglib.jl")
 include("./Symmetry/Symmetry.jl")
-include("./wannier/wannier.jl")
 include("./WaveFunction/WaveFunction.jl")
 include("./Tools/Tools.jl")
 

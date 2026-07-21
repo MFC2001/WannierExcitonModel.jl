@@ -64,5 +64,5 @@ function LatticeCoulomb(
 		Uhrvalue[I] = map(x -> Coulomb(B[x[1], x[2]] + R[i]), eachcol(orbpath))
 	end
 
-	return HR(Uhrpath', Uhrvalue)
+	return HR(Uhrpath, Uhrvalue; orbindex = collect(1:norb))
 end

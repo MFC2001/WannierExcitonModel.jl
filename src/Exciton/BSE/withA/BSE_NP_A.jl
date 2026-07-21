@@ -71,9 +71,9 @@ function BSE_NP_A(
 	A_unscreened_kq = A_unscreened_k[kqindex]
 
 
-	Kᵈ = CreatKernal_A(bandkq, bandk, bandk, bandkq, U_screened_k, J_screened_kq, J_screened_kq,
+	Kᵈ = CreatKernel_A(bandkq, bandk, bandk, bandkq, U_screened_k, J_screened_kq, J_screened_kq,
 		A_screened_kq, A_screened_k, A_screened_k, A_screened_kq, addmap, minusmap)
-	Kˣ = CreatKernal_A(bandkq, bandk, bandkq, bandk, U_unscreened_kq, J_unscreened_k, J_unscreened_kq,
+	Kˣ = CreatKernel_A(bandkq, bandk, bandkq, bandk, U_unscreened_kq, J_unscreened_k, J_unscreened_kq,
 		A_unscreened_kq, A_unscreened_k, A_unscreened_kq, A_unscreened_k, addmap, minusmap)
 
 
@@ -211,9 +211,9 @@ function BSE_NP_A(
 		end
 
 
-		Kᵈ = CreatKernal_A(bandkq, bandk, bandk, bandkq, U_screened_k, J_screened_kq, J_screened_kq,
+		Kᵈ = CreatKernel_A(bandkq, bandk, bandk, bandkq, U_screened_k, J_screened_kq, J_screened_kq,
 			A_screened_kq, A_screened_k, A_screened_k, A_screened_kq, addmap, minusmap)
-		Kˣ = CreatKernal_A(bandkq, bandk, bandkq, bandk, U_unscreened_kq, J_unscreened_k, J_unscreened_kq,
+		Kˣ = CreatKernel_A(bandkq, bandk, bandkq, bandk, U_unscreened_kq, J_unscreened_k, J_unscreened_kq,
 			A_unscreened_kq, A_unscreened_k, A_unscreened_kq, A_unscreened_k, addmap, minusmap)
 
 		BSE_NP_Hamilton!(Htriplet, Hsinglet, ittr, vckindex, bandk, bandkq, Kᵈ, Kˣ, scissor)

@@ -1,7 +1,5 @@
 
-export γgraphyneTB, γgraphyneCell, γgraphyneHR
-export HexagonalTB, HexagonalCell, HexagonalHR
-export StarTB, StarCell, StarHR
+export γgraphyneTB, HexagonalTB, StarTB
 
 include("./GammaGraphyne.jl")
 include("./HexagonalLattice.jl")

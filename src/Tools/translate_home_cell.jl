@@ -1,10 +1,10 @@
 export translate_home_cell
 """
-    translate_home_cell(lattvec::AbstractMatrix{<:Real}, orbital::ORBITAL, hr::HR, translatepair::Pair{<:Integer,<:AbstractVector{<:Integer}}...)
+    translate_home_cell(lattvec::AbstractMatrix{<:Real}, orbital::wannier90_centres, hr::HR, translatepair::Pair{<:Integer,<:AbstractVector{<:Integer}}...)
 
     translatepair is "orbital index" => "orbital's location in positive lattice", orbital's location = orbital.location["orbital index"].
 """
-function translate_home_cell(lattvec::AbstractMatrix{<:Real}, orbital::ORBITAL, hr::HR, translatepair::Pair{<:Integer,<:AbstractVector{<:Integer}}...)
+function translate_home_cell(lattvec::AbstractMatrix{<:Real}, orbital::wannier90_centres, hr::HR, translatepair::Pair{<:Integer,<:AbstractVector{<:Integer}}...)
 
     neworbital = translate_home_cell_orbital(lattvec, orbital, translatepair...)
     newhr = translate_home_cell_hr(hr, translatepair...)
@@ -36,7 +36,7 @@ function translate_home_cell_hr(hr::HR, translatepair::Pair{<:Integer,<:Abstract
 
     return newhr
 end
-function translate_home_cell_orbital(lattvec::AbstractMatrix{<:Real}, orbital::ORBITAL, translatepair::Pair{<:Integer,<:AbstractVector{<:Integer}}...)
+function translate_home_cell_orbital(lattvec::AbstractMatrix{<:Real}, orbital::wannier90_centres, translatepair::Pair{<:Integer,<:AbstractVector{<:Integer}}...)
 
     neworbital = deepcopy(orbital)
 

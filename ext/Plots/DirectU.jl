@@ -7,7 +7,7 @@ function Plots.plot(U::HR, lattice::Lattice, orblocat::AbstractVector{<:Abstract
 
 	r_point = Vector{Float64}(undef, length(_value))
 	for i in eachindex(_value)
-		r_point[i] = norm(lattice * (U.path[i, 1:3] + orblocat[U.path[i, 5]] - orblocat[U.path[i, 4]]))
+		r_point[i] = norm(lattice * (U.path[1:3, i] + orblocat[U.path[5, i]] - orblocat[U.path[4, i]]))
 	end
 
 	r = range(0.01, maximum(r_point) + 5, length = 101)

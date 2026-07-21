@@ -11,9 +11,9 @@ function (w::RealSpaceWannierExciton)(ei, Rₑ, hi, Rₕ, R = [0, 0, 0])
 	w_iR = Vector{ComplexF64}(undef, w.nq)
 	Threads.@threads for q in Base.OneTo(w.nq)
 		w_iR[q] = sum(Base.OneTo(w.nk)) do k
-			w.WU[k, q, ei, hi] * cis(2π * (w.kgrid[w.kq_kindex[k, q]] ⋅ Rₑ - w.kgrid[k] ⋅ Rₕ))
+			w.WU[k, q, ei, hi] * cispi(2 * (w.kgrid[w.kq_kindex[k, q]] ⋅ Rₑ - w.kgrid[k] ⋅ Rₕ))
 		end
-		w_iR[q] *= cis(-2π * (w.qgrid[q] ⋅ R))
+		w_iR[q] *= cispi(-2 * (w.qgrid[q] ⋅ R))
 	end
 	return sum(w_iR) / w.nk
 end

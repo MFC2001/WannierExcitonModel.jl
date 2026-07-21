@@ -8,6 +8,6 @@ function BAND_BSE(::Type{KrylovKit_BSEeigenStrategy}, qpoints, bse::BSEcluster_g
 end
 function BAND_BSE(::Type{KrylovKit_BSEeigenStrategy}, qpoints, bse::BSEcluster_general, ::Val{false})
 	BSEband = BAND_BSE(KrylovKit_BSEeigenStrategy, qpoints, bse, Val(true))
-	BSEband = _eigen2vals(BSEband)
+	BSEband = _eigen2val(BSEband)
 	return BSEband
 end

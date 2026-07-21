@@ -8,6 +8,8 @@ function BAND_BSE(::Type{LinearAlgebra_BSEeigenStrategy}, qpoints, bse::BSEgener
 	for (qi, q) in enumerate(qpoints)
 		H_ = bse(H, q)
 		BSEband[qi] = eigen!(H_)
+		println("$qi, band of $q calculation end")
+		flush(stdout)
 	end
 	return BSEband
 end
@@ -21,13 +23,15 @@ function BAND_BSE(::Type{LinearAlgebra_BSEeigenStrategy}, qpoints, bse::BSEgener
 
 	for (qi, q) in enumerate(qpoints)
 		H_ = bse(H, q)
-		BSEband_t[:, qi] = eigvals!(H_)
+		BSEband[:, qi] = eigvals!(H_)
+		println("$qi, band of $q calculation end")
+		flush(stdout)
 	end
 	return BSEband
 end
 function BAND_BSE(::Type{LinearAlgebra_BSEeigenStrategy}, qpoints, bse::BSEgeneral, ::Val{true}, ::Val{:Periodic})
 
-	e_kR = [cis(-2π * (k ⋅ R)) for R in bse.unitcell, k in bse.kgrid]
+	e_kR = [cispi(-2 * (k ⋅ R)) for R in bse.unitcell, k in bse.kgrid]
 
 	Nq = length(qpoints)
 	BSEband = Vector{BSE_uEigen}(undef, Nq)
@@ -38,6 +42,8 @@ function BAND_BSE(::Type{LinearAlgebra_BSEeigenStrategy}, qpoints, bse::BSEgener
 	for (qi, q) in enumerate(qpoints)
 		H_ = bse(H, q)
 		BSEband[qi] = BSE_uEigen(bse, q, eigen!(H_), e_kR)
+		println("$qi, band of $q calculation end")
+		flush(stdout)
 	end
 
 	return BSEband
@@ -47,7 +53,7 @@ function BAND_BSE(::Type{LinearAlgebra_BSEeigenStrategy}, qpoints, bse::BSEgener
 end
 function BAND_BSE(::Type{LinearAlgebra_BSEeigenStrategy}, qpoints, bse::BSEgeneral, ::Val{true}, ::Val{:BlochPeriodic}; η)
 
-	e_kR = [cis(-2π * (k ⋅ R)) for R in bse.unitcell, k in bse.kgrid]
+	e_kR = [cispi(-2 * (k ⋅ R)) for R in bse.unitcell, k in bse.kgrid]
 
 	Nq = length(qpoints)
 	BSEband = Vector{Eigen{ComplexF64, Float64, Matrix{ComplexF64}, Vector{Float64}}}(undef, Nq)
@@ -60,6 +66,8 @@ function BAND_BSE(::Type{LinearAlgebra_BSEeigenStrategy}, qpoints, bse::BSEgener
 		H_ = bse(H, q)
 		BSEband[qi] = eigen!(H_)
 		BSEband_u[qi] = BSE_uEigen(bse, q, BSEband[qi], e_kR)
+		println("$qi, band of $q calculation end")
+		flush(stdout)
 	end
 
 	return BSEband, BSEband_u

@@ -4,9 +4,11 @@
 
 [docs-url]: https://mfc2001.github.io/WannierExcitonModel.jl/
 
-A Julia package solving Excitonic BSE problem based on Electronic Wannier model.
+A Julia package solving excitonic Bethe-Salpeter equation(BSE) in electronic Wannier basis.
 
-This package provides a general solution for establishing a BSE model based on electronic Wannier functions, allowing users to customize the model while also implementing several typical scenarios.
+This package offers a general-purpose framework for constructing a BSE Hamiltonian in the electronic Wannier basis, 
+with flexibility for user-defined model customization. 
+In addition, it includes some post-processing utilities for further analysis and interpretation.
 
 ## Installation
 
@@ -31,11 +33,9 @@ julia> import Pkg; Pkg.add("WannierExcitonModel")
 ## Quick start
 
 This package provides many types and methods which may confuse you.
-But if you purpose is to calculate the excitonic property, you only need to to clearly understand that the calculate process involves creating a `BSE` object and then using it.
+But if you purpose is to calculate the excitonic property, 
+you only need to to clearly understand that the calculate process involves creating a `BSE` object and then using it.
 See more details in Manual and Theory.
 
-## In development
-
-At present, we require users to provide the interaction between wannier bases.
-For me, I only know [RESPACK](https://www.sciencedirect.com/science/article/pii/S001046552030391X) give this function, but it's a little bit unstable.
-We are trying to calculate the interaction between wannier bases based on well-used open source software, such as [BerkeleyGW](https://berkeleygw.org/), by ourself.
+We require users to provide the Coulomb interaction matrix elements in Wannier basis.
+which can be calculated by  `WannierInterAction.jl`.

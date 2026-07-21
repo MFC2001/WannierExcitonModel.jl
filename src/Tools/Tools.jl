@@ -4,13 +4,11 @@
 
 # include("./blockdiagm.jl")
 
-include("_eigen2vals.jl")
+include("_eigen2val.jl")
 include("./Density_of_states.jl")
 # include("./Fourier.jl")
 include("./Gaussian.jl")
-include("./gridindex.jl")
 include("./gridmap.jl")
-include("./little_tools.jl")
 include("./kronecker.jl")
 include("./NP2SP.jl")
 include("./smooth_AngleSingular.jl")

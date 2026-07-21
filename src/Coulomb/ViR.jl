@@ -37,8 +37,8 @@ function interaction_hr2array(hr::HR{T}, R) where {T}
 	norb = numorb(hr)
 	array = zeros(T, norb, norb, length(R))
 	for (i, v) in enumerate(hr.value)
-		Ri = findfirst(x -> x[1] == hr.path[i, 1] && x[2] == hr.path[i, 2] && x[3] == hr.path[i, 3], R)
-		array[hr.path[i, 4], hr.path[i, 5], Ri] = v
+		Ri = findfirst(x -> x[1] == hr.path[1, i] && x[2] == hr.path[2, i] && x[3] == hr.path[3, i], R)
+		array[hr.path[4, i], hr.path[5, i], Ri] = v
 	end
 	return array
 end

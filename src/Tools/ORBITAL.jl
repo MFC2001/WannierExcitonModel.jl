@@ -1,8 +1,8 @@
 export atom_orbindex, atom2orbindex
 """
-    atom_orbindex(orbital::ORBITAL, poscar::POSCAR; deps::Real=0.5, spinindex::AbstractVector{<:Pair}=Pair[])
+    atom_orbindex(orbital::wannier90_centres, poscar::POSCAR; deps::Real=0.5, spinindex::AbstractVector{<:Pair}=Pair[])
 """
-function atom_orbindex(orbital::ORBITAL, poscar::POSCAR; deps::Real=0.5, spinindex::AbstractVector{<:Pair}=Pair[])
+function atom_orbindex(orbital::wannier90_centres, poscar::POSCAR; deps::Real=0.5, spinindex::AbstractVector{<:Pair}=Pair[])
 
     error("To be continued.")
     #Classify all orbitals of unitcell.
@@ -25,7 +25,7 @@ function atom_orbindex(orbital::ORBITAL, poscar::POSCAR; deps::Real=0.5, spinind
         end
 
         if sum(length.(orbital_index)) ≠ orbital.num
-            error("The ORBITAL or POSCAR may be incompatible.")
+            error("The wannier90_centres or POSCAR may be incompatible.")
         end
 
     else
@@ -56,7 +56,7 @@ function atom_orbindex(orbital::ORBITAL, poscar::POSCAR; deps::Real=0.5, spinind
             end
 
             if sum(length.(Torbital_index)) ≠ length(si.second)
-                error("The ORBITAL or POSCAR may be incompatible.")
+                error("The wannier90_centres or POSCAR may be incompatible.")
             end
 
             push!(orbital_index, si.first => Torbital_index)

@@ -51,7 +51,7 @@ function _mmn_BSE_double_kgrid(qgrid, bse, BSEband, bandindex, nnkpts)
 	#Calculate Mc and Mv
 	eb2orb = Matrix{ComplexF64}(undef, norb_ele, nqb)
 	Threads.@threads for i in 1:nqb
-		eb2orb[:, i] = map(x -> cis(-2π * (b2[i] ⋅ x)), bse.TB.orb_location)
+		eb2orb[:, i] = map(x -> cispi(-2 * (b2[i] ⋅ x)), bse.TB.orb_location)
 	end
 	band = bse.bandk
 	#Mc
@@ -129,7 +129,7 @@ function _mmn_BSE_random_kgrid(qgrid, bse, BSEband, bandindex, nnkpts, η)
 	for i in 1:nqb, k′ in 1:nk, k in 1:nk
 		tasks[k, k′, i] = Threads.@spawn begin
 			kkb2 = kgrid[k′] - kgrid[k] + η * b[i]
-			sum(R -> cis(2π * (kkb2 ⋅ R)), R) / nk
+			sum(R -> cispi(2 * (kkb2 ⋅ R)), R) / nk
 		end
 	end
 	Pk = fetch.(tasks)
@@ -139,9 +139,9 @@ function _mmn_BSE_random_kgrid(qgrid, bse, BSEband, bandindex, nnkpts, η)
 	eborb_δ = Matrix{ComplexF64}(undef, norb_ele, nqb)
 	eborb_η = Matrix{ComplexF64}(undef, norb_ele, nqb)
 	Threads.@threads for i in 1:nqb
-		borb = map(x -> 2π * (b[i] ⋅ x), bse.TB.orb_location)
-		eborb_δ[:, i] = map(x -> cis(-δ * x), borb)
-		eborb_η[:, i] = map(x -> cis(-η * x), borb)
+		borb = map(x -> 2 * (b[i] ⋅ x), bse.TB.orb_location)
+		eborb_δ[:, i] = map(x -> cispi(-δ * x), borb)
+		eborb_η[:, i] = map(x -> cispi(-η * x), borb)
 	end
 	band = bse.bandk
 	#Mc

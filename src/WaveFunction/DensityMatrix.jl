@@ -27,8 +27,8 @@ function DensityMatrix_R(redkgrid::RedKgrid, Distribution::Function)
 		ρR = Array{ComplexF64}(undef, norb, norb, Nk)
 		for (Ri, Rv) in enumerate(R)
 			for i in 1:norb, j in 1:norb
-				# ρR[i, j, Ri] = sum((ki, kv) -> ρk[i, j, ki] * cis(2π * (kv ⋅ Rv)), enumerate(redkgrid.kdirect)) / Nk
-				ρR[i, j, Ri] = sum(ki -> ρk[i, j, ki] * cis(2π * (redkgrid.kdirect[ki] ⋅ Rv)), 1:Nk) / Nk
+				# ρR[i, j, Ri] = sum((ki, kv) -> ρk[i, j, ki] * cispi(2 * (kv ⋅ Rv)), enumerate(redkgrid.kdirect)) / Nk
+				ρR[i, j, Ri] = sum(ki -> ρk[i, j, ki] * cispi(2 * (redkgrid.kdirect[ki] ⋅ Rv)), 1:Nk) / Nk
 			end
 		end
 
@@ -65,7 +65,7 @@ function DensityMatrix_R(irredkgrid::IrredKgrid, Distribution::Function)
 		ρR = Array{ComplexF64}(undef, norb, norb, Nk)
 		Threads.@threads for (Ri, Rv) in enumerate(R)
 			for i in 1:norb, j in 1:norb
-				ρR[i, j, Ri] = sum((ki, kv) -> ρk[i, j, ki] * cis(2π * (kv ⋅ Rv)), enumerate(irredkgrid.redkdirect)) / Nk
+				ρR[i, j, Ri] = sum((ki, kv) -> ρk[i, j, ki] * cispi(2 * (kv ⋅ Rv)), enumerate(irredkgrid.redkdirect)) / Nk
 			end
 		end
 

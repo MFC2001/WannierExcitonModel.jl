@@ -11,6 +11,8 @@ function BAND_BSE(::Type{KrylovKit_BSEeigenStrategy}, qpoints, bse::BSESU2, ::Va
 		(H_t, H_s) = bse(Htriplet, Hsinglet, q)
 		BSEband_t[qi] = _eigsolve_Hmat(H_t)
 		BSEband_s[qi] = _eigsolve_Hmat(H_s)
+		println("$qi, band of $q calculation end")
+		flush(stdout)
 	end
 	return BSEband_t, BSEband_s
 end
@@ -18,14 +20,14 @@ function BAND_BSE(::Type{KrylovKit_BSEeigenStrategy}, qpoints, bse::BSESU2, ::Va
 
 	(BSEband_t, BSEband_s) = BAND_BSE(KrylovKit_BSEeigenStrategy, qpoints, bse, Val(true), Val(:Bloch))
 
-	BSEband_t = _eigen2vals(BSEband_t)
-	BSEband_s = _eigen2vals(BSEband_s)
+	BSEband_t = _eigen2val(BSEband_t)
+	BSEband_s = _eigen2val(BSEband_s)
 
 	return BSEband_t, BSEband_s
 end
 function BAND_BSE(::Type{KrylovKit_BSEeigenStrategy}, qpoints, bse::BSESU2, ::Val{true}, ::Val{:Periodic})
 
-	e_kR = [cis(-2π * (k ⋅ R)) for R in bse.unitcell, k in bse.kgrid]
+	e_kR = [cispi(-2 * (k ⋅ R)) for R in bse.unitcell, k in bse.kgrid]
 
 	Nq = length(qpoints)
 	BSEband_t = Vector{BSE_uEigen}(undef, Nq)
@@ -39,6 +41,8 @@ function BAND_BSE(::Type{KrylovKit_BSEeigenStrategy}, qpoints, bse::BSESU2, ::Va
 		(H_t, H_s) = bse(Htriplet, Hsinglet, q)
 		BSEband_t[qi] = BSE_uEigen(bse, q, _eigsolve_Hmat(H_t), e_kR)
 		BSEband_s[qi] = BSE_uEigen(bse, q, _eigsolve_Hmat(H_s), e_kR)
+		println("$qi, band of $q calculation end")
+		flush(stdout)
 	end
 
 	return BSEband_t, BSEband_s
@@ -48,7 +52,7 @@ function BAND_BSE(::Type{KrylovKit_BSEeigenStrategy}, qpoints, bse::BSESU2, ::Va
 end
 function BAND_BSE(::Type{KrylovKit_BSEeigenStrategy}, qpoints, bse::BSESU2, ::Val{true}, ::Val{:BlochPeriodic})
 
-	e_kR = [cis(-2π * (k ⋅ R)) for R in bse.unitcell, k in bse.kgrid]
+	e_kR = [cispi(-2 * (k ⋅ R)) for R in bse.unitcell, k in bse.kgrid]
 
 	Nq = length(qpoints)
 	BSEband_t = Vector{Eigen{ComplexF64, Float64, Matrix{ComplexF64}, Vector{Float64}}}(undef, Nq)
@@ -66,6 +70,8 @@ function BAND_BSE(::Type{KrylovKit_BSEeigenStrategy}, qpoints, bse::BSESU2, ::Va
 		BSEband_s[qi] = _eigsolve_Hmat(H_s)
 		BSEband_u_t[qi] = BSE_uEigen(bse, q, BSEband_t[qi], e_kR)
 		BSEband_u_s[qi] = BSE_uEigen(bse, q, BSEband_s[qi], e_kR)
+		println("$qi, band of $q calculation end")
+		flush(stdout)
 	end
 
 	return BSEband_t, BSEband_u_t, BSEband_s, BSEband_u_s

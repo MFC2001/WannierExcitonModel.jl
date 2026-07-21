@@ -26,8 +26,8 @@ function FoldUnitMat(kmesh::KData, Kₕ::KData, lattvec::Matrix{<:Real}, norb::I
         U[i, j] = Kmeshindex[i, :] ⋅ Kmeshindex[j, :]
     end
 
-    dK = 2π / NK
-    U = cis.(dK .* U) ./ sqrt(NK)
+    dK = 2 / NK
+    U = cispi.(dK .* U) ./ sqrt(NK)
 
     I = diagm(ones(Int, norb))
 
@@ -44,8 +44,8 @@ function FoldUnitTran!(Hk::Array{<:Number}, kmesh::KData, Kₕ::KData, lattvec::
         U[i, j] = Kmeshindex[i, :] ⋅ Kmeshindex[j, :]
     end
 
-    dK = 2π / NK
-    U = cis.(dK .* U) ./ sqrt(NK)
+    dK = 2 / NK
+    U = cispi.(dK .* U) ./ sqrt(NK)
 
     norb = size(Hk, 1) ÷ NK
     I = diagm(ones(Int, norb))

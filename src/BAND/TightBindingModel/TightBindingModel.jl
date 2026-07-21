@@ -67,6 +67,6 @@ function ExtractU(kpoint::ReducedCoordinates, band::Eigen, orblocat::AbstractVec
 	return Eigen(copy(band.values), ExtractU_TB(kpoint, band.vectors, orblocat))
 end
 function ExtractU_TB(kpoint, band, orblocat)
-	ekτ = map(τ -> cis(-2π * (kpoint ⋅ τ)), orblocat)
+	ekτ = map(τ -> cispi(-2 * (kpoint ⋅ τ)), orblocat)
 	return ekτ .* band
 end

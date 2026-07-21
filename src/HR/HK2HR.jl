@@ -20,7 +20,7 @@ function HK2HR(Hk::AbstractArray{<:Number}, kgrid::RedKgrid, heps::Real = 1e-6)
 
 		t = zeros(ComplexF64, norb, norb)
 		for k in 1:Nk
-			t .+= Hk[:, :, k] .* cis(-2π * (kgrid.kdirect[k] ⋅ aimpath))
+			t .+= Hk[:, :, k] .* cispi(-2 * (kgrid.kdirect[k] ⋅ aimpath))
 		end
 		t ./= Nk
 
@@ -40,7 +40,7 @@ function HK2HR(Hk::AbstractArray{<:Number}, kgrid::RedKgrid, heps::Real = 1e-6)
 		end
 	end
 
-	return HR(path', value; hrsort = "Y")
+	return HR(path, value; hrsort = true)
 end
 
 function HK2HR(Hk_irred::AbstractVector{<:AbstractMatrix{<:Number}}, irredkgrid::IrredKgrid, heps::Real = 1e-6)
@@ -58,7 +58,7 @@ function HK2HR(Hk_irred::AbstractVector{<:AbstractMatrix{<:Number}}, irredkgrid:
 
 	heps2 = heps^2
 
-	path = Matrix{Int}(undef, 0, 5)
+	path = Matrix{Int}(undef, 5, 0)
 	value = Vector{ComplexF64}(undef, 0)
 
 	lk = ReentrantLock()
@@ -66,7 +66,7 @@ function HK2HR(Hk_irred::AbstractVector{<:AbstractMatrix{<:Number}}, irredkgrid:
 
 		t = zeros(ComplexF64, norb, norb)
 		for k in 1:Nk
-			t .+= Hk[k][:, :] .* cis(-2π * (irredkgrid.redkcoord[k] ⋅ aimpath))
+			t .+= Hk[k][:, :] .* cispi(-2 * (irredkgrid.redkcoord[k] ⋅ aimpath))
 		end
 		t ./= Nk
 
@@ -81,12 +81,12 @@ function HK2HR(Hk_irred::AbstractVector{<:AbstractMatrix{<:Number}}, irredkgrid:
 		end
 
 		lock(lk) do
-			path = [path; transpose(path_t)]
+			path = [path path_t]
 			append!(value, value_t)
 		end
 	end
 
-	return HR(path, value; hrsort = "Y")
+	return HR(path, value; hrsort = true)
 end
 
 # function getucpathfromkmesh(counter, kmesh)

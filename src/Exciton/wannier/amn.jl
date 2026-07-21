@@ -60,27 +60,30 @@ function _guess_iR_to_vck(qgrid, bse, guess::AbstractVector)
 	nq = length(qgrid)
 	nk = length(kgrid)
 
-	k_plus_q_kindex = Matrix{Int}(undef, nk, nq)
-	Threads.@threads for qi in eachindex(qgrid)
-		for ki in 1:nk
-			k_plus_q = kgrid.kdirect[ki] + qgrid[qi]
-			k_plus_q_kindex[ki, qi] = findfirst(k -> all(isinteger, k - k_plus_q), kgrid.kdirect)
-		end
-	end
+	# k_plus_q_kindex = Matrix{Int}(undef, nk, nq)
+	# Threads.@threads for qi in eachindex(qgrid)
+	# 	for ki in 1:nk
+	# 		k_plus_q = kgrid.kdirect[ki] + qgrid[qi]
+	# 		k_plus_q_kindex[ki, qi] = findfirst(k -> all(isinteger, k - k_plus_q), kgrid.kdirect)
+	# 	end
+	# end
+
+	kq = [k + q for k in kgrid, q in qgrid]
+	bandkq = BAND(kq[:], bse.TB; vector = true)
+	bandkq = reshape(bandkq, nk, nq)
 
 
 	nR_inv = 1 / nR
-	band = bse.bandk
+	bandk = bse.bandk
 	tasks = Array{Task}(undef, length(bse.vckmap), nq, nw)
 	for wi in 1:nw, q in eachindex(qgrid), (i, (v, c, k)) in enumerate(bse.vckmap.idx2vck)
 		tasks[i, q, wi] = Threads.@spawn begin
-			kq = k_plus_q_kindex[k, q]
-			U = conj.(band[kq].vectors[:, c]) * transpose(band[k].vectors[:, v])
-			k_frac = kgrid.kdirect[k]
-			kq_frac = kgrid.kdirect[kq]
+			U = conj.(bandkq[k, q].vectors[:, c]) * transpose(bandk[k].vectors[:, v])
+			k_frac = kgrid[k]
+			kq_frac = k_frac + qgrid[q]
 			nR_inv * sum(eachindex(WR_main[wi])) do ii
 				(ei, Rₑ, hi, Rₕ) = WR_main_idx[wi][ii]
-				return WR_main[wi][ii] * U[ei, hi] * cis(2π * (k_frac ⋅ R[Rₕ] - kq_frac ⋅ R[Rₑ]))
+				return WR_main[wi][ii] * U[ei, hi] * cispi(2 * (k_frac ⋅ R[Rₕ] - kq_frac ⋅ R[Rₑ]))
 			end
 		end
 	end

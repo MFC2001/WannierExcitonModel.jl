@@ -14,7 +14,7 @@ For periodic cases:
 | `ijRmap`   | see behind                                                                                |
 | `bandk`    | electronic band structure at each `k`, calculated when a BSE model is created             |
 | `bandkq`   | electronic band structure at each `k+q`, calculated when calculated excitonic Hamiltonian |
-| `Kernal`   | calculate $K^d$ and $K^x$ using electronic state which is without spin                    |
+| `Kernel`   | calculate $K^d$ and $K^x$ using electronic state which is without spin                    |
 
 For cluster cases:
 
@@ -25,7 +25,7 @@ For cluster cases:
 | `vcmap`   | see behind                                                                    |
 | `ijmap`   | see behind                                                                    |
 | `band`    | electronic band structure at each `k`, calculated when a BSE model is created |
-| `Kernal`  | calculate $K^d$ and $K^x$ using electronic state which is without spin        |
+| `Kernel`  | calculate $K^d$ and $K^x$ using electronic state which is without spin        |
 
 ## Construct
 
@@ -45,7 +45,7 @@ When any electronic state is doubly degenerated due to spin, excitonic states ca
 | :---------- | :----------------------------------------------------------------------- |
 | `sym`       | `:SU2`                                                              |
 | `TB`        | only contains one spin part, i.e. without spin                           |
-| `Kernal`    | calculates $K^d$ and $K^x$ using electronic states that are without spin |
+| `Kernel`    | calculates $K^d$ and $K^x$ using electronic states that are without spin |
 | `v` and `c` | the index of bands that are without spin                                 |
 
 ### :general
@@ -56,7 +56,7 @@ If any of the electronic states do not satisfy the spin degeneracy, we have to c
 | :---------- | :------------------------------------------------------------------- |
 | `sym`       | `:general`                                                           |
 | `TB`        | contains the whole electron structure, i.e. with spin                |
-| `Kernal`    | calculates $K^d$ and $K^x$ using electronic states that contain spin |
+| `Kernel`    | calculates $K^d$ and $K^x$ using electronic states that contain spin |
 | `v` and `c` | the index of bands that contain spin                                 |
 
 ### :cluster_SU2
@@ -67,9 +67,9 @@ This type is used when you model is a cluster and also spin degenerated. In this
 
 This type is used when you model is a cluster and also not spin degenerated. In this case, you only need to know that setting `kgrid` is a invalid operation. Remember to set `period` of `TB` as `[0, 0, 0]`.
 
-## Kernal
+## Kernel
 
-Kernal is the most complex part of our BSE model, it is also the computational bottleneck because each element of the BSE Hamiltonian corresponds to a multiple summation. We provide two Kernel implementations under [UJ approximation](kernal.md#UJ-approximation) and the [U approximation](kernal.md#U-approximation) respectively.
+Kernel is the most complex part of our BSE model, it is also the computational bottleneck because each element of the BSE Hamiltonian corresponds to a multiple summation. We provide two Kernel implementations under [UJ approximation](kernel.md#UJ-approximation) and the [U approximation](kernel.md#U-approximation) respectively.
 
 !!! note
     For spinful cases, we require that the electronic wannier basis satisfy time-reversal symmetry, so that we can define which term is `U` and which is `J`.

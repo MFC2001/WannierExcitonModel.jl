@@ -8,7 +8,12 @@ const _BSE_eigen_STRATEGY = Ref{Type{<:BSEeigenStrategy}}(LinearAlgebra_BSEeigen
 """
 Set the eigenvalue solving strategy for BSE calculations.
 """
-set_BSE_eigen_strategy!(::Type{S}) where {S <: BSEeigenStrategy} = (_BSE_eigen_STRATEGY[] = S)
+function set_BSE_eigen_strategy!(::Type{S}) where {S <: BSEeigenStrategy}
+	_BSE_eigen_STRATEGY[] = S
+	S == LinearAlgebra_BSEeigenStrategy && @info "Will use LinearAlgebra to calculate the eigen problem of BSE Hamiltonian."
+	S == KrylovKit_BSEeigenStrategy && @info "Will use KrylovKit to calculate the eigen problem of BSE Hamiltonian."
+	return S
+end
 
 include("./core_LinearAlgebra/core_LinearAlgebra.jl")
 include("./ExtractU/ExtractU.jl")
@@ -45,13 +50,17 @@ function BAND(qpoints::AbstractVector{<:ReducedCoordinates}, bse::BSESU2;
 	vector::Bool = false, wfctype::Symbol = :Bloch)
 	return BAND_BSE(_BSE_eigen_STRATEGY[], qpoints, bse, Val(vector), Val(wfctype))
 end
+function BAND(qpoints::AbstractVector{<:ReducedCoordinates}, bse::BSESz;
+	vector::Bool = false, wfctype::Symbol = :Bloch)
+	return BAND_BSE(_BSE_eigen_STRATEGY[], qpoints, bse, Val(vector), Val(wfctype))
+end
 function BAND(qpoints::AbstractVector{<:ReducedCoordinates}, bse::BSEgeneral;
 	vector::Bool = false, wfctype::Symbol = :Bloch)
 	return BAND_BSE(_BSE_eigen_STRATEGY[], qpoints, bse, Val(vector), Val(wfctype))
 end
-function BAND(qpoints::AbstractVector{<:ReducedCoordinates}, bse::BSEcluster_SU2; vector::Bool = false)
-	return BAND_BSE(_BSE_eigen_STRATEGY[], qpoints, bse, Val(vector))
-end
-function BAND(qpoints::AbstractVector{<:ReducedCoordinates}, bse::BSEcluster_general; vector::Bool = false)
-	return BAND_BSE(_BSE_eigen_STRATEGY[], qpoints, bse, Val(vector))
-end
+# function BAND(qpoints::AbstractVector{<:ReducedCoordinates}, bse::BSEcluster_SU2; vector::Bool = false)
+# 	return BAND_BSE(_BSE_eigen_STRATEGY[], qpoints, bse, Val(vector))
+# end
+# function BAND(qpoints::AbstractVector{<:ReducedCoordinates}, bse::BSEcluster_general; vector::Bool = false)
+# 	return BAND_BSE(_BSE_eigen_STRATEGY[], qpoints, bse, Val(vector))
+# end

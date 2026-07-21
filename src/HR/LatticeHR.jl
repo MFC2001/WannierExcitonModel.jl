@@ -1,4 +1,3 @@
-export LatticeHR
 """
 
 F(i,j,R) = tᵢⱼ(R), e.g. i0 and jR, R is reduced coordinate.
@@ -36,5 +35,5 @@ function LatticeHR(F, ucpath::AbstractVector{<:AbstractVector}, norb::Integer)
 	end
 
 
-	return HR(transpose(hr_path), hr_value; orbindex = collect(1:norb), hrsort = 'Y')
+	return HR(hr_path, hr_value; orbindex = collect(1:norb), hrsort = true)
 end

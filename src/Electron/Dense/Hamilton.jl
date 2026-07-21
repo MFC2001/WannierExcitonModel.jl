@@ -7,7 +7,7 @@ function Hamilton(k, TB::AbstractTightBindModel)
 	H = Matrix{ComplexF64}(undef, n, n)
 
 	for j in 1:n, i in 1:j #Access by column.
-		H[i, j] = iszero(TB.Nhop[i, j]) ? 0 : sum(hop -> hop.t * cis(2π * (k ⋅ hop.R)), TB.hop[i, j])
+		H[i, j] = iszero(TB.Nhop[i, j]) ? 0 : sum(hop -> hop.t * cispi(2 * (k ⋅ hop.R)), TB.hop[i, j])
 	end
 
 	return Hermitian(H, :U)
@@ -20,7 +20,7 @@ function Hamilton(k, TB::AbstractTightBindModel, orblocat::AbstractVector{<:Redu
 	H = Matrix{ComplexF64}(undef, n, n)
 
 	for j in 1:n, i in 1:j #Access by column.
-		H[i, j] = iszero(TB.Nhop[i, j]) ? 0 : cis(2π * (k ⋅ (orblocat[j] - orblocat[i]))) * sum(hop -> hop.t * cis(2π * (k ⋅ hop.R)), TB.hop[i, j])
+		H[i, j] = iszero(TB.Nhop[i, j]) ? 0 : cispi(2 * (k ⋅ (orblocat[j] - orblocat[i]))) * sum(hop -> hop.t * cispi(2 * (k ⋅ hop.R)), TB.hop[i, j])
 	end
 
 	return Hermitian(H, :U)
@@ -34,7 +34,7 @@ function Hamilton(k, hr::HR)
 	H = Matrix{ComplexF64}(undef, norb, norb)
 
 	for j in 1:norb, i in 1:j
-		H[i, j] = iszero(hr.Nhop[i, j]) ? 0 : sum(hop -> hop.t * cis(2π * (k ⋅ hop.R)), hr.hop[i, j])
+		H[i, j] = iszero(hr.Nhop[i, j]) ? 0 : sum(hop -> hop.t * cispi(2 * (k ⋅ hop.R)), hr.hop[i, j])
 	end
 
 	return Hermitian(H, :U)
@@ -48,7 +48,7 @@ function Hamilton(k, hr::HR, orblocat::AbstractVector{<:ReducedCoordinates{<:Rea
 	H = Matrix{ComplexF64}(undef, norb, norb)
 
 	for j in 1:norb, i in 1:j
-		H[i, j] = iszero(hr.Nhop[i, j]) ? 0 : cis(2π * (k ⋅ (orblocat[j] - orblocat[i]))) * sum(hop -> hop.t * cis(2π * (k ⋅ hop.R)), hr.hop[i, j])
+		H[i, j] = iszero(hr.Nhop[i, j]) ? 0 : cispi(2 * (k ⋅ (orblocat[j] - orblocat[i]))) * sum(hop -> hop.t * cispi(2 * (k ⋅ hop.R)), hr.hop[i, j])
 	end
 
 	return Hermitian(H, :U)

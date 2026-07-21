@@ -40,10 +40,10 @@ function ContinuationHR(hr::HR, F::Function, ucpath::AbstractVector{<:AbstractVe
 		end
 	end
 
-	hr_path = [hr.path; transpose(hr_path)]
+	hr_path = [hr.path hr_path]
 	hr_value = [hr.value; hr_value]
 
-	return HR(hr_path, hr_value; hrsort = 'Y')
+	return HR(hr_path, hr_value; hrsort = true)
 end
 function ContinuationHR(hr::HR, F::Function, ucpath::AbstractMatrix{<:AbstractVector{<:AbstractVector}})
 
@@ -72,8 +72,8 @@ function ContinuationHR(hr::HR, F::Function, ucpath::AbstractMatrix{<:AbstractVe
 		end
 	end
 
-	hr_path = [hr.path; transpose(hr_path)]
+	hr_path = [hr.path hr_path]
 	hr_value = [hr.value; hr_value]
 
-	return HR(hr_path, hr_value; hrsort = 'Y')
+	return HR(hr_path, hr_value; hrsort = true)
 end

@@ -8,14 +8,14 @@ struct RealSpaceBlochExciton <: RealSpaceExciton
 end
 function (ψ::RealSpaceBlochExciton)(ei, Rₑ, hi, Rₕ)
 	return ψ.inv_nk * sum(Base.OneTo(ψ.nk)) do k
-		ψ.AU[k, ei, hi] * cis(2π * (ψ.kgrid[k] ⋅ (Rₑ - Rₕ) + q ⋅ Rₑ))
+		ψ.AU[k, ei, hi] * cispi(2 * (ψ.kgrid[k] ⋅ (Rₑ - Rₕ) + q ⋅ Rₑ))
 	end
 end
 function RealSpaceBlochExciton(bse::AbstractBSE, q, A)
 
-	if norm(q) < 1e-8
-		q = _BSE_shiftΓ(bse.TB.period)
-	end
+	# if norm(q) < 1e-8
+	# 	q = _BSE_shiftΓ(bse.TB.period)
+	# end
 
 	vckmap = bse.vckmap
 	kgrid = bse.kgrid

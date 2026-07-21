@@ -14,7 +14,7 @@ pages = [
 		"Coulomb" => "coulomb.md",
 		"Mirror Correction" => "mirror_correction.md",
 		"UwithLR" => "uwithlr.md",
-		"Kernal" => "kernal.md",
+		"Kernel" => "kernel.md",
 	],
 	"Topology" => "topology.md",
 	"IO" => "io.md",

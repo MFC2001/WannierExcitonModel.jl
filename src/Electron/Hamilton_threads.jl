@@ -23,7 +23,7 @@ function Hamilton(k::AbstractVector{<:Real}, hr::HR, lattvec::AbstractMatrix{<:R
 
     return Hermitian(H, :U)
 end
-function Hamilton(k::AbstractVector{<:Real}, hr::HR, orbital::ORBITAL, lattvec::AbstractMatrix{<:Real})
+function Hamilton(k::AbstractVector{<:Real}, hr::HR, orbital::wannier90_centres, lattvec::AbstractMatrix{<:Real})
     kl = transpose(lattvec) * k
     orblocat = orbital.location
 

@@ -273,7 +273,7 @@ function _Wilsonloop_mmn_BSE_NP(qgrid, bse, BSEband, bandindex, nnkpts)
 				(v, v′, c, c′, k) = Tuple(I)
 				conj(BSEband[q_qindex].vectors[vck2i[v, c, k], bandindex[α]]) *
 				BSEband[q_plus_b_qindex].vectors[vck2i[v′, c′, k_minus_b2_kindex[k]], bandindex[β]] *
-				(sum(ii -> cis(2π * (ΔG[k] ⋅ bse.TB.orb_location[ii])) * conj(uband[k_plus_q_kindex[k]].vectors[ii, bse.c[c]]) * uband[kb2_plus_qb_kindex[k]].vectors[ii, bse.c[c′]], Base.OneTo(norb_ele))) *
+				(sum(ii -> cispi(2 * (ΔG[k] ⋅ bse.TB.orb_location[ii])) * conj(uband[k_plus_q_kindex[k]].vectors[ii, bse.c[c]]) * uband[kb2_plus_qb_kindex[k]].vectors[ii, bse.c[c′]], Base.OneTo(norb_ele))) *
 				(uband[k_minus_b2_kindex[k]].vectors[:, bse.vindex[v′]] ⋅ uband[k].vectors[:, bse.vindex[v]])
 			end
 		end

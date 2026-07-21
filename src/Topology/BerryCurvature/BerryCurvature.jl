@@ -5,8 +5,8 @@ function BerryCurvature(sym::Symbol, args...; kwargs...)
 	return BerryCurvature(Val(sym), args...; kwargs...)
 end
 
-function BerryCurvature(::Union{Val{:QuantumGeometry}, Val{:QG}}, args...)
-	QG = QuantumGeometry(args...)
+function BerryCurvature(::Union{Val{:QuantumGeometry}, Val{:QG}}, args...; kwargs...)
+	QG = QuantumGeometry(args...; kwargs...)
 	return BerryCurvature(QG)
 end
 function BerryCurvature(QG::AbstractArray{<:Number, 3})

@@ -39,7 +39,7 @@ function _mmn_BSE_uband(qgrid, bse, uband, η, bandindex, nnkpts)
 	#Calculate Mc and Mv
 	eb2orb = Matrix{ComplexF64}(undef, norb_ele, nqb)
 	Threads.@threads for i in 1:nqb
-		eb2orb[:, i] = map(x -> cis(-2π * (b2[i] ⋅ x)), bse.TB.orb_location)
+		eb2orb[:, i] = map(x -> cispi(-2 * (b2[i] ⋅ x)), bse.TB.orb_location)
 	end
 	band = bse.bandk
 	#Mc

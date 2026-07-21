@@ -9,6 +9,8 @@ function _mmn_BSE_uband(bse, uband, λ, bandindex, nnkpts)
 	tasks = Array{Task}(undef, nband, nband, nqb)
 	for i in 1:nqb, β in 1:nband, α in 1:nband
 		tasks[α, β, i] = Threads.@spawn begin
+			q = nnkpts[1, i]
+			qb = nnkpts[2, i]
 			G = ReducedCoordinates(nnkpts[3:5, i])
 			if iszero(G)
 				M = uband[q].vectors[:, α] ⋅ uband[qb].vectors[:, β]

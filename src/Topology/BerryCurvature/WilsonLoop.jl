@@ -1,11 +1,20 @@
 
 mutable struct BerryCurvature_wilsonloop
-	lattice::Lattice
+	lattice::Lattice{Float64}
+	rlattice::ReciprocalLattice{Float64}
 	center::RedKgrid
 	vertex::Vector{ReducedCoordinates{Rational{Int}}}
 	center_vertex_loop::Vector{Vector{Int}}
 	δS::Float64
 	buffer::Any
+end
+function Base.setproperty!(BC::BerryCurvature_wilsonloop, sym::Symbol, v)
+	if sym == :buffer
+		@info "Replace BerryCurvature buffer."
+		setfield!(BC, sym, v)
+	else
+		@warn "Don't allow to change filed excpet buffer!"
+	end
 end
 function (BC::BerryCurvature_wilsonloop)(u_getter::WilsonLoopWaveGetter{1})
 	BC_value = similar(BC.center_vertex_loop, Float64)
@@ -27,17 +36,66 @@ function (BC::BerryCurvature_wilsonloop)(sym::Symbol, args...)
 	return BC(Val(sym), args...)
 end
 function (BC::BerryCurvature_wilsonloop)(::Union{Val{:ChernNumber}, Val{:CN}})
-	return _BerryCurvature_wilsonloop_ChernNumber(BC, BC.buffer)
+	return _BerryCurvature_ChernNumber(BC.buffer, BC.δS)
 end
-function _BerryCurvature_wilsonloop_ChernNumber(BC::BerryCurvature_wilsonloop, BC_v::AbstractVector{<:Real})
-	return sum(BC_v) * BC.δS / 2π
-end
-function _BerryCurvature_wilsonloop_ChernNumber(BC::BerryCurvature_wilsonloop, BC_v::AbstractArray{<:Number, 3})
-	TBC = similar(BC_v, size(BC_v, 3))
-	Threads.@threads for k in axes(BC_v, 3)
-		TBC[k] = tr(view(BC_v, :, :, k))
+function (BC::BerryCurvature_wilsonloop)(::Union{Val{:ChernNumber}, Val{:CN}}, aimkpoint::AbstractVector{<:Real}, range::Real)
+	range_square = range^2
+	rlattice = parent(BC.rlattice)
+	rldot = transpose(rlattice) * rlattice
+	sumkindex = findall(BC.center) do center
+		dk = center - aimkpoint
+		dk2 = dk ⋅ (rldot * dk)
+		return dk2 <= range_square
 	end
-	return sum(TBC) * BC.δS / 2π
+	return _BerryCurvature_ChernNumber(BC.buffer, BC.δS, sumkindex)
+end
+function (BC::BerryCurvature_wilsonloop)(::Union{Val{:ChernNumber}, Val{:CN}}, aimkpoints::AbstractVector{<:AbstractVector{<:Real}}, range::Real)
+	range_square = range^2
+	rlattice = parent(BC.rlattice)
+	rldot = transpose(rlattice) * rlattice
+	sumkindex = findall(BC.center) do center
+		return any(aimkpoints) do aimk
+			dk = center - aimk
+			dk2 = dk ⋅ (rldot * dk)
+			return dk2 <= range_square
+		end
+	end
+	return _BerryCurvature_ChernNumber(BC.buffer, BC.δS, sumkindex)
+end
+# function (BC::BerryCurvature_wilsonloop)(::Union{Val{:ChernNumber_half}, Val{:CN_half}})
+# 	sumkindex_positive = Vector{Int}(undef, 0)
+# 	zpindex = findall(k -> k[3] > 0, BC.center)
+# 	append!(sumkindex_positive, zpindex)
+# 	z0index = findall(k -> iszero(k[3]), BC.center)
+# 	ypz0index = findall(ik -> BC.center[ik][2] > 0, z0index)
+# 	append!(sumkindex_positive, ypz0index)
+# 	y0z0index = findall(ik -> iszero(BC.center[ik][2]), z0index)
+# 	xpy0z0index = findall(ik -> BC.center[ik][1] > 0, y0z0index)
+# 	append!(sumkindex_positive, xpy0z0index)
+# 	k0index = findall(ik -> iszero(BC.center[ik][1]), y0z0index)
+# 	sumkindex_negative = setdiff(collect(eachindex(BC.center)), sumkindex_positive, k0index)
+
+# 	CN_p = _BerryCurvature_ChernNumber(BC.buffer, BC.δS, sumkindex_positive)
+# 	CN_n = _BerryCurvature_ChernNumber(BC.buffer, BC.δS, sumkindex_negative)
+# 	if isempty(k0index)
+# 		CN_0 = 0
+# 	else
+# 		CN_0 = _BerryCurvature_ChernNumber(BC.buffer, BC.δS, k0index)
+# 	end
+
+# 	return CN_p + CN_0 / 2, CN_n + CN_0 / 2
+# end
+function _BerryCurvature_ChernNumber(BC_v::AbstractVector{<:Real}, δS::Float64, sumkindex = eachindex(BC_v))
+	return sum(BC_v[sumkindex]) * δS / 2π
+end
+function _BerryCurvature_ChernNumber(BC_v::AbstractArray{<:Number, 3}, δS::Float64, sumkindex = axes(BC_v, 3))
+	# (nband, nband, nk) = size(BC_v)
+	sumkindex = collect(sumkindex)
+	TBC = similar(BC_v, length(sumkindex))
+	for (ik, k) in enumerate(sumkindex)
+		TBC[ik] = tr(view(BC_v, :, :, k))
+	end
+	return sum(TBC) * δS / 2π
 end
 # function (BC::BerryCurvature_wilsonloop)(::Union{Val{:ChernNumber}, Val{:CN}}, BC_v::AbstractVector{<:Real})
 # 	return sum(BC_v) * BC.δS / 2π
@@ -50,7 +108,7 @@ end
 # 	return sum(TBC) * BC.δS / 2π
 # end
 function (BC::BerryCurvature_wilsonloop)(::Union{Val{:ChernNumber}, Val{:CN}}, u_getter::WilsonLoopWaveGetter{N}) where {N}
-	return _BerryCurvature_wilsonloop_ChernNumber(BC, BC(u_getter))
+	return _BerryCurvature_ChernNumber(BC(u_getter), BC.δS)
 end
 """
 	BC = BerryCurvature(::Val{:WilsonLoop}, kgrid::MonkhorstPack, lattice::Lattice, kz::Real = 0)
@@ -67,11 +125,12 @@ function BerryCurvature(::Union{Val{:WilsonLoop}, Val{:WL}}, kgrid::MonkhorstPac
 	δS = _BerryCurvature_microsurface(kgrid.kgrid_size, lattice)
 
 	# fold all kpoints into the first Brillouin zone
-	center = fold2FBZ(reciprocal(lattice), center)
+	rlattice = reciprocal(lattice)
+	center = fold2FBZ(rlattice, center)
 	kshift = map(nk -> isodd(nk) ? 0 : 1 // 2, kgrid.kgrid_size)
 	center = RedKgrid(center, kgrid.kgrid_size, kshift)
 
-	return BerryCurvature_wilsonloop(lattice, center, vertex, center_vertex_loop, δS, nothing)
+	return BerryCurvature_wilsonloop(lattice, rlattice, center, vertex, center_vertex_loop, δS, nothing)
 end
 function _BerryCurvature_center_vertex(kgrid_size, kz::T) where {T <: Real}
 	count(kgrid_size .== 1) == 1 || error("Only 2D kgrid are supported.")

@@ -1,6 +1,6 @@
 function setonsiteto0!(Uhr::HR{T}) where {T}
 
-	I = findall(x -> iszero(x[1:3]) && isequal(x[4], x[5]), eachrow(Uhr.path))
+	I = findall(x -> iszero(x[1:3]) && isequal(x[4], x[5]), eachcol(Uhr.path))
 	Uhr.value[I] .= 0
 
 	for i in eachindex(Uhr.orbindex)
