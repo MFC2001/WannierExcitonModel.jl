@@ -1,0 +1,60 @@
+
+abstract type BSEeigenStrategy end
+struct LinearAlgebra_BSEeigenStrategy <: BSEeigenStrategy end
+struct KrylovKit_BSEeigenStrategy <: BSEeigenStrategy end
+
+const _BSE_eigen_STRATEGY = Ref{Type{<:BSEeigenStrategy}}(LinearAlgebra_BSEeigenStrategy)
+
+"""
+Set the eigenvalue solving strategy for BSE calculations.
+"""
+function set_BSE_eigen_strategy!(::Type{S}) where {S <: BSEeigenStrategy}
+	_BSE_eigen_STRATEGY[] = S
+	S == LinearAlgebra_BSEeigenStrategy && @info "Will use LinearAlgebra to calculate the eigen problem of BSE Hamiltonian."
+	S == KrylovKit_BSEeigenStrategy && @info "Will use KrylovKit to calculate the eigen problem of BSE Hamiltonian."
+	return S
+end
+
+include("./core_LinearAlgebra/core_LinearAlgebra.jl")
+include("./ExtractU/ExtractU.jl")
+
+
+"""
+	BAND(qpoints, bse::AbstractBSE; vector::Bool = false, wfctype::Symbol = :Bloch)
+
+This function can calculate the band structure of a BSE model.
+- `qpoints` can be a `AbstractBrillouinZone` object, a vector of qpoints or a single qpoint, where qpoint should be a vector of 3 real numbers.
+- `vector` can be set as true, which decides whether to output wavefunction.
+- `wfctype` can be set as :Periodic, which decides the type of wavefunction.
+
+We provide two strategies to solve the BSE Hamiltonian eigenvalue problem: 
+
+	LinearAlgebra_BSEeigenStrategy <: BSEeigenStrategy
+	KrylovKit_BSEeigenStrategy <: BSEeigenStrategy
+
+- `LinearAlgebra_BSEeigenStrategy`: use LinearAlgebra to solve eigenvalue equation;
+- `KrylovKit_BSEeigenStrategy`: use KrylovKit to solve eigenvalue equation.
+The default strategy is `LinearAlgebra_BSEeigenStrategy`, which uses the built-in `eigen` function in Julia.
+When `KrylovKit` package is used, the default strategy is set as `KrylovKit_BSEeigenStrategy` automatically.
+
+```julia
+julia> using KrylovKit; using ExcitonicWannierModel;
+```
+
+You can switch the strategy by calling `set_BSE_eigen_strategy!(::Type{BSEeigenStrategy})` manually.
+
+When `KrylovKit_BSEeigenStrategy` is used, you can set parameters of `KrylovKit.eigsolve` by calling `eigsolveconfigure!(; kwards...)`.
+For excitonic Hamiltonian here, the relevant kwargs are: `howmany`, `which`, `verbosity`, `tol`, `krylovdim`, `maxiter`, `orth`.
+"""
+function BAND(qpoints::AbstractVector{<:ReducedCoordinates}, bse::BSESU2_wiTDA;
+	vector::Bool = false, wfctype::Symbol = :Bloch)
+	return BAND_BSE(_BSE_eigen_STRATEGY[], qpoints, bse, Val(vector), Val(wfctype))
+end
+function BAND(qpoints::AbstractVector{<:ReducedCoordinates}, bse::BSESz_wiTDA;
+	vector::Bool = false, wfctype::Symbol = :Bloch)
+	return BAND_BSE(_BSE_eigen_STRATEGY[], qpoints, bse, Val(vector), Val(wfctype))
+end
+function BAND(qpoints::AbstractVector{<:ReducedCoordinates}, bse::BSEgeneral_wiTDA;
+	vector::Bool = false, wfctype::Symbol = :Bloch)
+	return BAND_BSE(_BSE_eigen_STRATEGY[], qpoints, bse, Val(vector), Val(wfctype))
+end

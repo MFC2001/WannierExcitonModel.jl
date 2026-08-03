@@ -1,0 +1,74 @@
+function BAND_BSE(::Type{LinearAlgebra_BSEeigenStrategy}, qpoints, bse::BSEgeneral_wiTDA, ::Val{true}, ::Val{:Bloch})
+	Nq = length(qpoints)
+	BSEband = Vector{Eigen{ComplexF64, Float64, Matrix{ComplexF64}, Vector{Float64}}}(undef, Nq)
+
+	N = length(bse.vckmap)
+	H = Matrix{ComplexF64}(undef, N, N)
+
+	for (qi, q) in enumerate(qpoints)
+		H_ = bse(H, q)
+		BSEband[qi] = eigen!(H_)
+		println("$qi, band of $q calculation end")
+		flush(stdout)
+	end
+	return BSEband
+end
+function BAND_BSE(::Type{LinearAlgebra_BSEeigenStrategy}, qpoints, bse::BSEgeneral_wiTDA, ::Val{false}, ::Val{:Bloch})
+	Nq = length(qpoints)
+	N = length(bse.vckmap)
+
+	BSEband = Matrix{Float64}(undef, N, Nq)
+
+	H = Matrix{ComplexF64}(undef, N, N)
+
+	for (qi, q) in enumerate(qpoints)
+		H_ = bse(H, q)
+		BSEband[:, qi] = eigvals!(H_)
+		println("$qi, band of $q calculation end")
+		flush(stdout)
+	end
+	return BSEband
+end
+function BAND_BSE(::Type{LinearAlgebra_BSEeigenStrategy}, qpoints, bse::BSEgeneral_wiTDA, ::Val{true}, ::Val{:Periodic})
+
+	e_kR = [cispi(-2 * (k ⋅ R)) for R in bse.unitcell, k in bse.kgrid]
+
+	Nq = length(qpoints)
+	BSEband = Vector{BSE_uEigen}(undef, Nq)
+
+	N = length(bse.vckmap)
+	H = Matrix{ComplexF64}(undef, N, N)
+
+	for (qi, q) in enumerate(qpoints)
+		H_ = bse(H, q)
+		BSEband[qi] = BSE_uEigen(bse, q, eigen!(H_), e_kR)
+		println("$qi, band of $q calculation end")
+		flush(stdout)
+	end
+
+	return BSEband
+end
+function BAND_BSE(::Type{LinearAlgebra_BSEeigenStrategy}, qpoints, bse::BSEgeneral_wiTDA, ::Val{false}, ::Val{:Periodic}; η)
+	return BAND_BSE(LinearAlgebra_BSEeigenStrategy, qpoints, bse, Val(false), Val(:Bloch); η)
+end
+function BAND_BSE(::Type{LinearAlgebra_BSEeigenStrategy}, qpoints, bse::BSEgeneral_wiTDA, ::Val{true}, ::Val{:BlochPeriodic}; η)
+
+	e_kR = [cispi(-2 * (k ⋅ R)) for R in bse.unitcell, k in bse.kgrid]
+
+	Nq = length(qpoints)
+	BSEband = Vector{Eigen{ComplexF64, Float64, Matrix{ComplexF64}, Vector{Float64}}}(undef, Nq)
+	BSEband_u = Vector{BSE_uEigen}(undef, Nq)
+
+	N = length(bse.vckmap)
+	H = Matrix{ComplexF64}(undef, N, N)
+
+	for (qi, q) in enumerate(qpoints)
+		H_ = bse(H, q)
+		BSEband[qi] = eigen!(H_)
+		BSEband_u[qi] = BSE_uEigen(bse, q, BSEband[qi], e_kR)
+		println("$qi, band of $q calculation end")
+		flush(stdout)
+	end
+
+	return BSEband, BSEband_u
+end
