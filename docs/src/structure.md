@@ -53,12 +53,13 @@ Cell(lattice, location::AbstractVector; kwargs...)
 
 ## ORBITAL
 
-```@docs
-ORBITAL
-```
-
 ### construct
 
 ```@docs
-ORBITAL(location::AbstractVector; kwargs...)
+wannier90_centres(location::AbstractVector; kwargs...)
+```
+
+
+```@docs
+check_lattice_period(lattice, period)
 ```

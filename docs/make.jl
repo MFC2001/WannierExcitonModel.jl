@@ -13,7 +13,8 @@ pages = [
 	"Interaction" => [
 		"Coulomb" => "coulomb.md",
 		"Mirror Correction" => "mirror_correction.md",
-		"UwithLR" => "uwithlr.md",
+		"Direct" => "direct.md",
+		"Pair" => "pair.md",
 		"Kernel" => "kernel.md",
 	],
 	"Topology" => "topology.md",

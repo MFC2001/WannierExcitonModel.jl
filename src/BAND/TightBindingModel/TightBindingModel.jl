@@ -24,10 +24,10 @@ end
 
 The second function will return the periodic part of the wavefunction if `vector` = true.
 """
-function BAND(kpoints::AbstractVector{<:ReducedCoordinates}, hr::HR; vector::Bool = false)
+function BAND(kpoints::AbstractVector{<:ReducedCoordinates}, hr::AbstractHR; vector::Bool = false)
 	return BAND_hrh(kpoints, HermitianReciprocalHoppings(hr), Val(vector))
 end
-function BAND(kpoints::AbstractVector{<:ReducedCoordinates}, hr::HR, orblocat::AbstractVector{<:ReducedCoordinates}; vector::Bool = false)
+function BAND(kpoints::AbstractVector{<:ReducedCoordinates}, hr::AbstractHR, orblocat::AbstractVector{<:ReducedCoordinates}; vector::Bool = false)
 	return BAND_hrh(kpoints, HermitianReciprocalHoppings(hr), orblocat, Val(vector))
 end
 """

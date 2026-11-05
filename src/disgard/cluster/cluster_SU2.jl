@@ -19,7 +19,7 @@ function BSEcluster_SU2(TB::AbstractTightBindModel, kernel::KernelInterAction;
 	ijmap = ijMap(numorb(TB))
 
 	band = BAND([ReducedCoordinates(0, 0, 0)], TB; vector = true)[1]
-	phase_normalize!(:real_sum, band)
+	phase_normalize!(:positive_maxabs, band)
 
 	kernel(Val(:initialize))
 

@@ -50,7 +50,7 @@ function BSEgeneral(TB::AbstractTightBindModel, Kernel::KernelInterAction;
 	ijRmap = ijRMap(numorb(TB), length(unitcell))
 
 	bandk = BAND(kgrid, TB; vector = true)
-	phase_normalize!(:real_sum, bandk)
+	phase_normalize!(:positive_maxabs, bandk)
 	bandkq = similar(bandk)
 
 	Kernel(Val(:initialize))
@@ -99,7 +99,7 @@ function _BSE_preprocess_eleband_q!(bse::BSEgeneral, q, ::Val{false})
 		q = _BSE_shiftΓ(bse.TB.period)
 	end
 	bandkq = BAND(map(k -> k + q, bse.kgrid), bse.TB; vector = true)
-	phase_normalize!(:real_sum, bandkq)
+	phase_normalize!(:positive_maxabs, bandkq)
 
 	bse.bandkq .= bandkq
 	return q

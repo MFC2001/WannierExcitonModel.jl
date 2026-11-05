@@ -8,16 +8,14 @@ const _BSE_eigen_STRATEGY = Ref{Type{<:BSEeigenStrategy}}(LinearAlgebra_BSEeigen
 """
 Set the eigenvalue solving strategy for BSE calculations.
 """
-function set_BSE_eigen_strategy!(::Type{S}) where {S <: BSEeigenStrategy}
-	_BSE_eigen_STRATEGY[] = S
-	S == LinearAlgebra_BSEeigenStrategy && @info "Will use LinearAlgebra to calculate the eigen problem of BSE Hamiltonian."
-	S == KrylovKit_BSEeigenStrategy && @info "Will use KrylovKit to calculate the eigen problem of BSE Hamiltonian."
-	return S
+function set_BSE_eigen_strategy!(::Type{S}) where {S<:BSEeigenStrategy}
+    _BSE_eigen_STRATEGY[] = S
+    S == LinearAlgebra_BSEeigenStrategy && @info "Will use LinearAlgebra to solve the eigen problem of BSE Hamiltonian, see also [`eigsolveconfigure!`]."
+    S == KrylovKit_BSEeigenStrategy && @info "Will use KrylovKit to solve the eigen problem of BSE Hamiltonian."
+    return S
 end
 
 include("./core_LinearAlgebra/core_LinearAlgebra.jl")
-include("./ExtractU/ExtractU.jl")
-
 
 """
 	BAND(qpoints, bse::AbstractBSE; vector::Bool = false, wfctype::Symbol = :Bloch)
@@ -25,7 +23,9 @@ include("./ExtractU/ExtractU.jl")
 This function can calculate the band structure of a BSE model.
 - `qpoints` can be a `AbstractBrillouinZone` object, a vector of qpoints or a single qpoint, where qpoint should be a vector of 3 real numbers.
 - `vector` can be set as true, which decides whether to output wavefunction.
-- `wfctype` can be set as :Periodic, which decides the type of wavefunction.
+- `wfctype` can be set as `:Periodic`, which decides the type of wavefunction.
+
+See also [`BSE_uEigen`](@ref).
 
 We provide two strategies to solve the BSE Hamiltonian eigenvalue problem: 
 
@@ -46,15 +46,11 @@ You can switch the strategy by calling `set_BSE_eigen_strategy!(::Type{BSEeigenS
 When `KrylovKit_BSEeigenStrategy` is used, you can set parameters of `KrylovKit.eigsolve` by calling `eigsolveconfigure!(; kwards...)`.
 For excitonic Hamiltonian here, the relevant kwargs are: `howmany`, `which`, `verbosity`, `tol`, `krylovdim`, `maxiter`, `orth`.
 """
-function BAND(qpoints::AbstractVector{<:ReducedCoordinates}, bse::BSESU2_wiTDA;
-	vector::Bool = false, wfctype::Symbol = :Bloch)
-	return BAND_BSE(_BSE_eigen_STRATEGY[], qpoints, bse, Val(vector), Val(wfctype))
+function BAND(qpoints::AbstractVector{<:ReducedCoordinates}, bse::BSEspinblind_wiTDA;
+    vector::Bool=false, wfctype::Symbol=:Bloch)
+    return BAND_BSE(_BSE_eigen_STRATEGY[], qpoints, bse, Val(vector), Val(wfctype))
 end
-function BAND(qpoints::AbstractVector{<:ReducedCoordinates}, bse::BSESz_wiTDA;
-	vector::Bool = false, wfctype::Symbol = :Bloch)
-	return BAND_BSE(_BSE_eigen_STRATEGY[], qpoints, bse, Val(vector), Val(wfctype))
-end
-function BAND(qpoints::AbstractVector{<:ReducedCoordinates}, bse::BSEgeneral_wiTDA;
-	vector::Bool = false, wfctype::Symbol = :Bloch)
-	return BAND_BSE(_BSE_eigen_STRATEGY[], qpoints, bse, Val(vector), Val(wfctype))
+function BAND(qpoints::AbstractVector{<:ReducedCoordinates}, bse::BSEspinaware_wiTDA;
+    vector::Bool=false, wfctype::Symbol=:Bloch)
+    return BAND_BSE(_BSE_eigen_STRATEGY[], qpoints, bse, Val(vector), Val(wfctype))
 end

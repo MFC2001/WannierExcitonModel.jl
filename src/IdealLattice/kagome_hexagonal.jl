@@ -1,4 +1,4 @@
-function IdealTB(::Val{:kagome_hexagonal}; a = 1, b = 2, c = 20, kwargs...)
+function IdealTB(::Val{:kagome_hexagonal}; a = 1, b = a, c = 20, kwargs...)
 
 	cell = IdealCell(Val(:kagome_hexagonal); a, b, c)
 	hr = IdealHR(Val(:kagome_hexagonal); kwargs...)

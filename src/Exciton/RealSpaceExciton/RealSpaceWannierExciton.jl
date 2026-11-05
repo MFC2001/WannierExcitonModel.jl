@@ -1,4 +1,4 @@
-
+# TODO: 可以直接存储ijReRh的格式，用户需要指定wannier所在的元胞
 struct RealSpaceWannierExciton <: RealSpaceExciton
 	nq::Int
 	nk::Int

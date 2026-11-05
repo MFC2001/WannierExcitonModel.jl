@@ -1,7 +1,7 @@
-function Plots.plot(U::HR, TB::AbstractTightBindModel; kwargs...)
+function Plots.plot(U::AbstractHR, TB::AbstractTightBindModel; kwargs...)
 	return Plots.plot(U, TB.lattice, TB.orb_location; kwargs...)
 end
-function Plots.plot(U::HR, lattice::Lattice, orblocat::AbstractVector{<:AbstractVector}; ϵ::Real = 1,
+function Plots.plot(U::AbstractHR, lattice::Lattice, orblocat::AbstractVector{<:AbstractVector}; ϵ::Real = 1,
 	_value = real.(U.value),
 	ylims = (-0.1, maximum(_value) + 0.5))
 
@@ -23,7 +23,7 @@ function Plots.plot(U::HR, lattice::Lattice, orblocat::AbstractVector{<:Abstract
 		legend = false,
 		size = (800, 600),
 	)
-	Plots.plot!(r_point, _value;
+	Plots.plot!(p, r_point, _value;
 		seriestype = :scatter,
 	)
 

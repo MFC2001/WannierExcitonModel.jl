@@ -1,3 +1,11 @@
+"""
+	WannierExcitonModel
+
+A Julia package used to construct exciton BSE Hamiltonian 
+based on electronic Wannier Hamiltonian and Coulomb interaction between Wannier pairs.
+
+See also [`TightBindModel`](@ref), [`BSE`](@ref) and [`BAND`](@ref).
+"""
 module WannierExcitonModel
 
 using WannierInterActionBase
@@ -15,7 +23,8 @@ for sym in Base_exports
 end
 
 using LinearAlgebra
-
+using TriangularIndices
+using Mmap
 using Printf
 using Serialization
 
@@ -24,7 +33,6 @@ include("./Topology/Topology.jl")
 abstract type AbstractModel end
 include("./AbstractTightBindModel/AbstractTightBindModel.jl")
 include("./AbstractBSE/AbstractBSE.jl")
-include("./HR/HR.jl")
 include("./IdealLattice/IdealLattice.jl")
 include("./BAND/BAND.jl")
 include("./Exciton/Exciton.jl")
@@ -32,7 +40,7 @@ include("./Exciton/Exciton.jl")
 include("./Symmetry/Symmetry.jl")
 include("./WaveFunction/WaveFunction.jl")
 include("./Tools/Tools.jl")
-
+include("./IO/IO.jl")
 
 
 function __init__()

@@ -1,4 +1,3 @@
-
 function BAND_hrh(kpoints, hrh, ::Val{true})
 	band = Vector{Eigen{ComplexF64, Float64, Matrix{ComplexF64}, Vector{Float64}}}(undef, length(kpoints))
 	Threads.@threads for i in eachindex(kpoints)

@@ -14,12 +14,6 @@ FileFormat
 POSCAR
 ```
 
-## QEcell
-
-```@docs
-QEcell
-```
-
 ## wannier90_centres.dat
 
 ```@docs

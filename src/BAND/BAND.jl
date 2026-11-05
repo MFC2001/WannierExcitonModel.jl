@@ -37,10 +37,10 @@ Calculate the expectation value of an operator for each eigenstate.
 """
 function ExpectationValue(operator::AbstractMatrix{<:Number}, band::AbstractVector{<:Eigen})
 	size(band[1].vectors, 1) == size(operator, 1) == size(operator, 2) || error("Mismatched operator and band.")
-	expect_val = similar(band, Vector{Float64})
+	expect_val = similar(band, Vector{eltype(band[1].vectors)})
 	for i in eachindex(band)
 		expect_val[i] = map(eachcol(band[i].vectors)) do ψ
-			real(ψ ⋅ (operator * ψ))
+			ψ ⋅ (operator * ψ)
 		end
 	end
 	return expect_val
@@ -48,7 +48,7 @@ end
 function ExpectationValue(operator::AbstractMatrix{<:Number}, band::Eigen)
 	size(band.vectors, 1) == size(operator, 1) == size(operator, 2) || error("Mismatched operator and band.")
 	expect_val = map(eachcol(band.vectors)) do ψ
-		real(ψ ⋅ (operator * ψ))
+		ψ ⋅ (operator * ψ)
 	end
 	return expect_val
 end
