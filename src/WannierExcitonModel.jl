@@ -8,19 +8,13 @@ See also [`TightBindModel`](@ref), [`BSE`](@ref) and [`BAND`](@ref).
 """
 module WannierExcitonModel
 
-using WannierInterActionBase
+using Reexport
+@reexport using WannierInterActionBase
 
 using WannierInterActionBase.Requires
-
 using WannierInterActionBase.SpecialFunctions
-
 using WannierInterActionBase.StaticArrays
 using WannierInterActionBase.StructEquality
-
-Base_exports = names(WannierInterActionBase; all = false)
-for sym in Base_exports
-    @eval export $sym
-end
 
 using LinearAlgebra
 using TriangularIndices
