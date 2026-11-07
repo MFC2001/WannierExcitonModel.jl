@@ -1,3 +1,4 @@
+# calculate Wannier-interpolating band
 
 using WannierExcitonModel
 
@@ -22,7 +23,7 @@ kline = Kline(30, TB)
 
 band = BAND(kline, TB)
 
+# plot band
 using Plots
 plotlyjs()
-
 plot(kline, band)

@@ -26,9 +26,9 @@ Or, equivalently, via [`Pkg.jl`](https://pkgdocs.julialang.org/v1/):
 julia> import Pkg; Pkg.add("WannierExcitonModel")
 ```
 
-## Documentation
+<!-- ## Documentation
 
--   [**DEVEL**][docs-url] - *documentation of the in-development version.*
+-   [**DEVEL**][docs-url] - *documentation of the in-development version.* -->
 
 ## Quick start
 

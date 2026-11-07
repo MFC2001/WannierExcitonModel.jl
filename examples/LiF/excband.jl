@@ -34,5 +34,5 @@ kline = Kline(kline, 30, bse)
 eigsolveconfigure!(; verbosity=0, howmany=50, which=EigSorter(abs))
 band = BAND(kline, bse)
 
-write("./bsebandt.dat", band.bandt, BAND_dat; kline)
-write("./bsebands.dat", band.bands, BAND_dat; kline)
+write("./singlet.dat", band.bands, BAND_dat; kline)
+write("./triplet.dat", band.bandt, BAND_dat; kline)
