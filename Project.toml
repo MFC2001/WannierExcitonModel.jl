@@ -15,5 +15,5 @@ WannierInterActionBase = "30f46834-f0b0-4c0a-9db1-a1e95031f2fb"
 [compat]
 Reexport = "1"
 TriangularIndices = "0.1"
-WannierInterActionBase = "0.3"
+WannierInterActionBase = "=0.3.1"
 julia = "1.9"
