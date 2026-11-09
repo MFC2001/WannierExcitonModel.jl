@@ -12,7 +12,27 @@ function (ψ::RealSpaceBlochExciton_spinblind_wiTDA)(ih, Rₕ, ie, Rₑ)
         ψ.AU[ik, ih, ie] * cispi(2 * ψ.kgrid[ik] ⋅ ΔR)
     end
 end
-function realspace(bse::BSEspinblind_wiTDA, q, A::AbstractVector{<:Number})
+"""
+    realspace(bse::BSEspinblind_wiTDA, q::AbstractVector{<:Real}, A::AbstractVector{<:Number}) -> RealSpaceExciton
+
+Construct the real-space representation of an exciton in the electron-hole Wannier basis.
+This method is intended for the spin-degenerate and noncollinear cases.
+
+The exciton wavefunction with momentum `q` (in fractional coordinates, of length 3)
+given by the coefficients `A` in the electron-hole band basis is
+expanded in the product basis of electron and hole Wannier functions. 
+The returned object `ψ` is a subtype of [`RealSpaceExciton`](@ref) and is callable as
+
+    ψ(ih, Rₕ, ie, Rₑ)
+
+where `ih` and `ie` are the integer Wannier-function indices of the hole and the electron,
+respectively, and `Rₕ` and `Rₑ` are three-integer vectors specifying the lattice cells
+where the corresponding Wannier functions are centered.
+"""
+function WannierInterActionBase.realspace(bse::BSEspinblind_wiTDA, q::AbstractVector{<:Real}, A::AbstractVector{<:Number})
+    vck = bse.vck
+    length(A) == length(vck) || throw(DimensionMismatch(
+        "length of exciton wavefunction should be Nvck=$(length(vck)), got $(length(A))"))
 
     kgrid = bse.kgrid
     bandk = bse.bandk
@@ -20,7 +40,6 @@ function realspace(bse::BSEspinblind_wiTDA, q, A::AbstractVector{<:Number})
     bandkq = BAND(map(k -> k + q, kgrid), bse.eleH; vector=true)
     phase_normalize!(:positive_maxabs, bandkq)
 
-    vck = bse.vck
     v = values(vck)[1]
     c = values(vck)[2]
     (nv, nc, nk) = vsize(vck)

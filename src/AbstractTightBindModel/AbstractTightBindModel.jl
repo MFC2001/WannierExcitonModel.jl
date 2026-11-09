@@ -82,8 +82,7 @@ function Base.show(io::IO, TB::TightBindModel)
 end
 
 """
-	TightBindModel(;
-		hops::Union{AbstractString,AbstractHR,AbstractReciprocalHoppings},
+	TightBindModel(; hops::Union{AbstractString,AbstractHR,AbstractReciprocalHoppings},
         cell::Union{AbstractString,Cell},
         orbital::Union{AbstractString,wannier90_centres},
         period=Bool[1, 1, 1],

@@ -2,7 +2,7 @@ function (bse::BSEspinaware_wiTDA)(::Val{:vck2ijR}, q::AbstractVector{<:Real}, S
     if Sz == 0
         Nvck_Sz0 = length(bse.vck_uu) + length(bse.vck_dd)
         if iszero(Nvck_Sz0)
-            return Matrix{ComplexF64}(undef, 0, 0)
+            return Matrix{ComplexF64}(undef, 0, 0), Matrix{ComplexF64}(undef, 0, 0)
         end
     elseif Sz == -1
         Nvck_Szn1 = length(bse.vck_ud)
@@ -196,7 +196,7 @@ function _vck2ijR(bse::BSEspinaware_wiTDA,
     Threads.@threads for ivcks in ivck_chunk
         buffer_UU = Matrix{ComplexF64}(undef, norb_dn, norb_up)
         @inbounds for ivck in ivcks
-            (v, c, ik) = bse.vck_ud[ivck]
+            (v, c, ik) = bse.vck_du[ivck]
             ψv = view(bandk_dn[ik].vectors, :, v)
             ψc = view(bandkq_up[ik], :, c)
             for j in Base.OneTo(norb_up), i in Base.OneTo(norb_dn)

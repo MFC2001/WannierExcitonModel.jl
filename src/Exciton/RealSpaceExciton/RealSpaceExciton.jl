@@ -1,4 +1,3 @@
-export realspace
 
 abstract type RealSpaceExciton end
 

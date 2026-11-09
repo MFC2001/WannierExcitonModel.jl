@@ -1,5 +1,4 @@
 
-using JLD2
 using WannierExcitonModel
 
 period = [1, 1, 0]
@@ -26,7 +25,7 @@ Kˣ = PairInterAction(2) # This is an empty interaction, because magnon doesn't 
 # Provide models of electrons with different spins separately
 bse = BSE(kgrid, TB_up, TB_dn, Kᵈ, Kˣ; v_up=[1], c_up=Int[], v_dn=Int[], c_dn=[1])
 kline = Kline(30, bse)
-# for v_dn to c_up, the total spin of excitation is -1
+# for v_up to c_dn, the total spin of excitation is -1
 band = BAND(kline, bse).bandSzn1
 
 # ΔE_gap_g0w0 ≈ 3

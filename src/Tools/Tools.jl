@@ -4,10 +4,9 @@
 
 # include("./blockdiagm.jl")
 
-include("_eigen2val.jl")
 include("./Density_of_states.jl")
 # include("./Fourier.jl")
-include("./Gaussian.jl")
+# include("./Gaussian.jl")
 include("./gridmap.jl")
 include("./kronecker.jl")
 include("./smooth_AngleSingular.jl")
@@ -15,3 +14,11 @@ include("./smooth_AngleSingular.jl")
 # include("./translate_home_cell.jl")
 
 # include("./Task.jl")
+
+export eigsolveconfigure!
+"""
+    eigsolveconfigure!
+
+Please `using KrylovKit`.
+"""
+function eigsolveconfigure! end

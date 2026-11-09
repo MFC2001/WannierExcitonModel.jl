@@ -1,6 +1,3 @@
-
-export eigsolveconfigure!
-
 const eigsolveconfig = Dict{Symbol, Any}(
 	:howmany => 1,
 	:which => KrylovKit.EigSorter(abs; rev = false),
@@ -32,10 +29,20 @@ Available parameters are:
 Detailed description of parameters can be found in the [KrylovKit documentation](https://github.com/Jutho/KrylovKit.jl).
 """
 function eigsolveconfigure!(; kwards...)
-	for (k, v) in kwards
-		eigsolveconfig[k] = v
-		if k == :howmany
-			eigsolveconfig[:krylovdim] = max(2 * v + 10, 30)
-		end
-	end
+    # check first
+    valid = keys(eigsolveconfig)
+    for k in keys(kwards)
+        k in valid || throw(ArgumentError(
+            "Unknown eigsolve option `$k`. Valid options are: " *
+            join(sort!(collect(valid)), ", ") * "."
+        ))
+    end
+    # then set
+    for (k, v) in kwards
+        eigsolveconfig[k] = v
+        if k == :howmany
+            eigsolveconfig[:krylovdim] = max(2 * v + 10, 30)
+        end
+    end
+    return eigsolveconfig
 end

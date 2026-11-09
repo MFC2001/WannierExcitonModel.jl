@@ -1,3 +1,13 @@
+"""
+    (bse::BSEspinblind_wiTDA)(:mmn, uband::AbstractVector{<:BSE_uEigen}, nnkpts::AbstractMatrix{<:Integer}; λ::Real=1//2, bandindex=nothing)
+
+Compute the exciton overlap matrix, used for constructing maximally localized exciton Wannier functions.
+
+`uband` must contain the exciton eigenstates on the full exciton momentum grid. 
+`nnkpts` is a neighbor list specifying the neighboring k-points for each momentum point on the grid. 
+`λ` is the weight of the exciton center position. 
+`bandindex` selects the band indices involved in the calculation; if `nothing`, all bands are included.
+"""
 function (bse::BSEspinblind_wiTDA)(::Val{:mmn}, uband::AbstractVector{<:BSE_uEigen}, nnkpts::AbstractMatrix{<:Integer};
     λ::Real=1//2, bandindex=nothing)
     # uband

@@ -1,3 +1,25 @@
+"""
+    (bse::BSEspinaware_wiTDA)(:interpolation, q::AbstractVector{<:Real}, Avck::AbstractVecOrMat{<:Number}, Sz::Integer)
+
+Return a callable object that computes the expansion coefficients, in the band basis, of the exciton state(s) at an arbitrary momentum point in reciprocal space.
+
+`q` is the exciton momentum corresponding to `Avck`. 
+`Avck` is the exciton wavefunction; multiple exciton states may be passed at once, in which case its second dimension is the number of exciton states.
+`Sz` is the z-component of the exciton's total spin.
+
+# Example
+```julia
+julia> φ = bse(:interpolation, q, Avck, 0);
+julia> (Avc_uu, Avc_dd) = φ([0, 0, 0]);
+julia> size(Avc_uu) == (nv_up, nc_up, size(Avck, 2))
+
+true
+julia> φ = bse(:interpolation, q, Avck, 1);
+julia> size(φ([0, 0, 0])) == (nv_dn, nc_up, size(Avck, 2))
+
+true
+```
+"""
 function (bse::BSEspinaware_wiTDA)(::Val{:interpolation}, q::AbstractVector{<:Real}, Avck::AbstractVecOrMat{<:Number}, Sz::Integer)
     q = ReducedCoordinates(q)
     return _ReciprocalSpaceBlochExciton_spinaware_wiTDA(bse, q, Avck, Val(Sz))
@@ -60,7 +82,7 @@ function (φk::ReciprocalSpaceBlochExciton_Sz0_wiTDA)(k::AbstractVector{<:Real},
         Avc_uu = reshape(Avc_uu, φk.nv_up, φk.nc_up, :)
     else
         # it should be empty
-        Avc_uu = Matrix{ComplexF64}(undef, φk.nv_up, φk.nc_up, length(bandindex))
+        Avc_uu = Array{ComplexF64}(undef, φk.nv_up, φk.nc_up, length(bandindex))
     end
     if bandindex isa Integer
         Avc_uu = reshape(Avc_uu, φk.nv_up, φk.nc_up)
@@ -93,7 +115,7 @@ function (φk::ReciprocalSpaceBlochExciton_Sz0_wiTDA)(k::AbstractVector{<:Real},
         Avc_dd = reshape(Avc_dd, φk.nv_dn, φk.nc_dn, :)
     else
         # it should be empty
-        Avc_dd = Matrix{ComplexF64}(undef, φk.nv_dn, φk.nc_dn, length(bandindex))
+        Avc_dd = Array{ComplexF64}(undef, φk.nv_dn, φk.nc_dn, length(bandindex))
     end
     if bandindex isa Integer
         Avc_dd = reshape(Avc_dd, φk.nv_dn, φk.nc_dn)
@@ -104,7 +126,8 @@ function _ReciprocalSpaceBlochExciton_spinaware_wiTDA(bse::BSEspinaware_wiTDA, q
     Nvck_uu = length(bse.vck_uu)
     Nvck_dd = length(bse.vck_dd)
     size(Avck, 1) == Nvck_uu+Nvck_dd || throw(DimensionMismatch(
-        "vector length should be Nvck=$(Nvck_uu+Nvck_dd), got $(size(Avck, 1))"))
+        "length of exciton wavefunction should be Nvck=$(Nvck_uu+Nvck_dd), got $(size(Avck, 1))"))
+
     BM_uu, BM_dd = bse(Val(:vck2ijR), q, 0)
     if iszero(Nvck_uu)
         AijR_uu = Matrix{ComplexF64}(undef, 0, size(Avck, 2))
@@ -211,7 +234,8 @@ function (φk::ReciprocalSpaceBlochExciton_Sznp1_wiTDA)(k::AbstractVector{<:Real
 end
 function _ReciprocalSpaceBlochExciton_spinaware_wiTDA(bse::BSEspinaware_wiTDA, q::ReducedCoordinates{<:Real}, Avck::AbstractVecOrMat{<:Number}, ::Val{-1})
     size(Avck, 1) == length(bse.vck_ud) || throw(DimensionMismatch(
-        "vector length should be Nvck=$(length(bse.vck_ud)), got $(size(Avck, 1))"))
+        "length of exciton wavefunction should be Nvck=$(length(bse.vck_ud)), got $(size(Avck, 1))"))
+
     BM = bse(Val(:vck2ijR), q, -1)
     AijR = BM * Avck
     if AijR isa AbstractVector
@@ -234,7 +258,8 @@ function _ReciprocalSpaceBlochExciton_spinaware_wiTDA(bse::BSEspinaware_wiTDA, q
 end
 function _ReciprocalSpaceBlochExciton_spinaware_wiTDA(bse::BSEspinaware_wiTDA, q::ReducedCoordinates{<:Real}, Avck::AbstractVecOrMat{<:Number}, ::Val{1})
     size(Avck, 1) == length(bse.vck_du) || throw(DimensionMismatch(
-        "vector length should be Nvck=$(length(bse.vck_du)), got $(size(Avck, 1))"))
+        "length of eaciton wavefunction should be Nvck=$(length(bse.vck_du)), got $(size(Avck, 1))"))
+
     BM = bse(Val(:vck2ijR), q, 1)
     AijR = BM * Avck
     if AijR isa AbstractVector

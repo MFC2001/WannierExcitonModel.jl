@@ -1,4 +1,5 @@
 export BSE, numatom, allocate!, release!, isallocated
+export BSEspinblind_wiTDA, BSEspinaware_wiTDA
 
 """
 	_BSE_buffer
@@ -17,34 +18,35 @@ isallocated(bse::AbstractBSE) = bse.buffer.isallocated
 """
 Spin degeneracy situation:
 
-	BSE(kgrid, TB, Kᵈ, Kˣ; v::AbstractVector{<:Integer}, c::AbstractVector{<:Integer}, scissor::Real=0)
+	BSE(kgrid, TB, Kᵈ, Kˣ; v::AbstractVector{<:Integer}, c::AbstractVector{<:Integer}, scissor::Real=0) -> BSEspinblind_wiTDA
 
 - `v` and `c` are the indices of valence and conduction bands, respectively.
 - `scissor` is the scissor correction to the conduction bands, default is 0.
 
 Noncollinear situation:
 
-	BSE(kgrid, TB, Kᵈ, Kˣ; channel::Integer, v::AbstractVector{<:Integer}, c::AbstractVector{<:Integer}, scissor::Real=0)
+	BSE(kgrid, TB, Kᵈ, Kˣ; channel::Integer, v::AbstractVector{<:Integer}, c::AbstractVector{<:Integer}, scissor::Real=0) -> BSEspinblind_wiTDA
 
-- `channel` have to be set as 1.
+- `channel` must be set to `1` manually.
+
+Spin-polarized single-spin situation:
+
+    BSE(kgrid, TB, Kᵈ, Kˣ; channel::Integer, v::AbstractVector{<:Integer}, c::AbstractVector{<:Integer}, scissor::Real=0) -> BSEspinblind_wiTDA
+
+- Called in the same way as in the noncollinear situation, but `TB` contains spin-polarized bands from only one spin channel. `channel` must be set to `1` manually.
 
 Spin-polarized situation:
 
     BSE(kgrid, TB_up, TB_dn, Kᵈ, Kˣ; v_up::AbstractVector{<:Integer}=Int[], c_up::AbstractVector{<:Integer}=Int[],
     v_dn::AbstractVector{<:Integer}=Int[], c_dn::AbstractVector{<:Integer}=Int[],
     scissor::Real=0, scissor_up::Real=scissor, scissor_dn::Real=scissor,
-    scissor_c_up::Real=scissor_up, scissor_c_dn::Real=scissor_dn, scissor_v_up::Real=0, scissor_v_dn::Real=0) -> AbstractBSE
+    scissor_c_up::Real=scissor_up, scissor_c_dn::Real=scissor_dn, scissor_v_up::Real=0, scissor_v_dn::Real=0) -> BSEspinaware_wiTDA
 
 - `v_up`, `c_up`, `v_dn`, `c_dn` are the indices of valence and conduction bands for spin-up and spin-down channels, respectively.
 - `scissor_c_up` is the energy shift of the conduction bands for spin-up channel, the others are similar as well.
+- When `Kᵈ` (or `Kˣ`) covers both spin channels, i.e. `Kᵈ.nw == numorb(TB_up) + numorb(TB_dn)`, its orbital basis must list the `numorb(TB_up)` spin-up orbitals first and the `numorb(TB_dn)` spin-down orbitals afterwards.
 
-```julia
-julia> bse isa AbstractBSE
-true
-
-julia> bse([0.1, 0, 0]) isa Hermitian
-true
-```
+See also [`BSEspinblind_wiTDA`](@ref), [`BSEspinaware_wiTDA`](@ref), [`allocate!`](@ref), [`release!`](@ref).
 """
 function BSE(kgrid::Union{MonkhorstPack,RedKgrid,AbstractVector{<:Integer},NTuple{3,<:Integer}},
     args...; TDA::Bool=true, kwargs...)
@@ -57,7 +59,8 @@ function BSE(kgrid::Union{MonkhorstPack,RedKgrid,AbstractVector{<:Integer},NTupl
     if TDA
         return BSE_wiTDA(kgrid, args...; kwargs...)
     else
-        return BSE_woTDA(kgrid, args...; kwargs...)
+        error("woTDA is not implemented yet")
+        # return BSE_woTDA(kgrid, args...; kwargs...)
     end
 end
 

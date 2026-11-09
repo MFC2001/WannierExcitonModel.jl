@@ -1,5 +1,4 @@
 
-using JLD2
 using KrylovKit
 using WannierExcitonModel
 

@@ -1,3 +1,13 @@
+"""
+    (bse::BSEspinaware_wiTDA)(:mmn, uband::AbstractVector{<:BSE_uEigen}, nnkpts::AbstractMatrix{<:Integer}, Sz::Integer; λ::Real=1//2, bandindex=nothing)
+
+Compute the exciton overlap matrix, used for constructing maximally localized exciton Wannier functions.
+
+`uband` must contain the exciton eigenstates on the full exciton momentum grid, and `Sz` is the z-component of the exciton's total spin.
+`nnkpts` is a neighbor list specifying the neighboring k-points for each momentum point on the grid. 
+`λ` is the weight of the exciton center position. 
+`bandindex` selects the band indices involved in the calculation; if `nothing`, all bands are included.
+"""
 function (bse::BSEspinaware_wiTDA)(::Val{:mmn}, uband::AbstractVector{<:BSE_uEigen}, nnkpts::AbstractMatrix{<:Integer}, Sz::Integer;
     λ::Real=1//2, bandindex=nothing)
     # uband
@@ -6,7 +16,7 @@ function (bse::BSEspinaware_wiTDA)(::Val{:mmn}, uband::AbstractVector{<:BSE_uEig
     else
         uband = map(u->u(λ, bandindex).vectors, uband)
     end
-    center_ijR = _mmn_center_BSEspinaware_wiTDA(bse, Val(Sz))
+    center_ijR = _mmn_center_BSEspinaware_wiTDA(bse, λ, Val(Sz))
 
     nband = size(uband[1], 2)
     nqb = size(nnkpts, 2)
@@ -27,7 +37,7 @@ function (bse::BSEspinaware_wiTDA)(::Val{:mmn}, uband::AbstractVector{<:BSE_uEig
 
     return M
 end
-function _mmn_center_BSEspinaware_wiTDA(bse::BSEspinaware_wiTDA, ::Val{0})
+function _mmn_center_BSEspinaware_wiTDA(bse::BSEspinaware_wiTDA, λ::Real, ::Val{0})
     # the center of ijR
     NijR_uu = length(bse.ijR_uu)
     NijR_dd = length(bse.ijR_dd)
@@ -45,7 +55,7 @@ function _mmn_center_BSEspinaware_wiTDA(bse::BSEspinaware_wiTDA, ::Val{0})
     end
     return center_ijR
 end
-function _mmn_center_BSEspinaware_wiTDA(bse::BSEspinaware_wiTDA, ::Val{-1})
+function _mmn_center_BSEspinaware_wiTDA(bse::BSEspinaware_wiTDA, λ::Real, ::Val{-1})
     # the center of ijR
     NijR_ud = length(bse.ijR_ud)
     orblocat_up = bse.orb_location_up
@@ -58,7 +68,7 @@ function _mmn_center_BSEspinaware_wiTDA(bse::BSEspinaware_wiTDA, ::Val{-1})
     end
     return center_ijR
 end
-function _mmn_center_BSEspinaware_wiTDA(bse::BSEspinaware_wiTDA, ::Val{1})
+function _mmn_center_BSEspinaware_wiTDA(bse::BSEspinaware_wiTDA, λ::Real, ::Val{1})
     # the center of ijR
     NijR_du = length(bse.ijR_du)
     orblocat_up = bse.orb_location_up

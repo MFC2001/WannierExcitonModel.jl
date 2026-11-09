@@ -1,3 +1,12 @@
+"""
+    OpticalTransitionData(bse::BSEspinblind_wiTDA)
+    OpticalTransitionData(bse::BSEspinblind_wiTDA, eigen_vck::Eigen)
+
+Construct an object of `OpticalTransitionData`.
+
+The first constructor considers only electronic (independent-particle) transitions. 
+The second considers only excitonic transitions, using the eigenstates in `eigen_vck`.
+"""
 function WannierInterActionBase.OpticalTransitionData(bse::BSEspinblind_wiTDA)
 
     Nvck = length(bse.vck)
@@ -33,6 +42,7 @@ function WannierInterActionBase.OpticalTransitionData(bse::BSEspinblind_wiTDA)
     end
 end
 function WannierInterActionBase.OpticalTransitionData(bse::BSEspinblind_wiTDA, eigen_vck::Eigen)
+    @assert all(>(0), eigen_vck.values) "Non-positive exciton energy: min = $(minimum(eigen_vck.values))."
 
     Nvck = length(bse.vck)
 

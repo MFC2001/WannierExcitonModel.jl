@@ -1,14 +1,16 @@
 """
-	BSE_uEigen(bse::BSEspinaware_wiTDA, q::ReducedCoordinates{<:Real}, eigen_vck::Eigen, Sz::Integer) -> BSE_uEigen
+	(bse::BSEspinaware_wiTDA)(:periodic, q::AbstractVector{<:Real}, eigen_vck::Eigen, Sz::Integer) -> BSE_uEigen
 
-Create an object of `BSE_uEigen`.
+Construct an object of `BSE_uEigen`.
 `eigen_vck` contains the excitonic states.
-`Sz` is the excitonic Sz.
+`Sz` is the z-component of the exciton's total spin.
 
 ```julia
-julia> H = bse(0, q)
-julia> eigen_vck = eigen(H)
-julia> u = bse(:periodic, q, eigen_vck, 0)
+julia> H = bse(0, q).HSz0;
+julia> u = bse(:periodic, q, eigen(H), 0);
+julia> u_λ = u(λ); u_λ isa Eigen
+
+true
 ```
 """
 function (bse::BSEspinaware_wiTDA)(::Val{:periodic}, q::AbstractVector{<:Real}, eigen_vck::Eigen, Sz::Integer)
@@ -126,9 +128,9 @@ struct BSEspinaware_wiTDA_uEigen_Sznp1{eigenT<:Eigen,qT<:Real} <: BSE_uEigen
     eigen::eigenT
     inv_sqrt_ndegen::Vector{Float64}
     double_qR::Vector{qT}
-    double_qorb_v::Vector{Float64} # up for n1, dn for p1
-    double_qorb_c::Vector{Float64} # dn for n1, up for p1
-    ijR::TripleList{Int,Int,Int} # ud for n1, du for p1
+    double_qorb_v::Vector{Float64} # up for Szn1, dn for Szp1
+    double_qorb_c::Vector{Float64} # dn for Szn1, up for Szp1
+    ijR::TripleList{Int,Int,Int} # ud for Szn1, du for Szp1
 end
 function (u::BSEspinaware_wiTDA_uEigen_Sznp1)(λ::Real, bandindex::AbstractVector{<:Integer}=eachindex(u.eigen.values))
 
@@ -138,7 +140,7 @@ function (u::BSEspinaware_wiTDA_uEigen_Sznp1)(λ::Real, bandindex::AbstractVecto
 
     NijR = length(u.ijR)
     eigen_vectors = Matrix{eltype(u.eigen.vectors)}(undef, NijR, length(bandindex))
-    for idx in Base.OneTo(NijR)
+    Threads.@threads for idx in Base.OneTo(NijR)
         (i, j, iR) = u.ijR[idx]
         eigen_vectors[idx, :] .= u.eigen.vectors[idx, bandindex] .* (eqorb₀[i, j] * eqR[iR])
     end

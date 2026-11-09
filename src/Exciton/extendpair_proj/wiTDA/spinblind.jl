@@ -1,18 +1,18 @@
-"""
-```julia
-julia> bse(Val(:extendpair_proj), q, wave, pairs...)
-```
+# """
+# ```julia
+# julia> bse(Val(:extendpair_proj), q, wave, pairs...)
+# ```
 
-Project each eigenstate `wave[:, ib]` (coefficients in the `vck` basis) onto the
-extended pair basis `|q, ijR>`, and return the summed weight
+# Project each eigenstate `wave[:, ib]` (coefficients in the `vck` basis) onto the
+# extended pair basis `|q, ijR>`, and return the summed weight
 
-    P_{ijR}^{αq} = (1/√N) ∑_{vck} A_{vck}^{αq} U_{iv}^{k*} U_{jc}^{k+q} e^{i(k+q)·R},
-    weight[ib]  = ∑_{(i,j,R) ∈ pairs} |P_{ijR}^{αq}|².
+#     P_{ijR}^{αq} = (1/√N) ∑_{vck} A_{vck}^{αq} U_{iv}^{k*} U_{jc}^{k+q} e^{i(k+q)·R},
+#     weight[ib]  = ∑_{(i,j,R) ∈ pairs} |P_{ijR}^{αq}|².
 
-Each element of `pairs` is a tuple `(i, j, R)`, where `i` (`j`) is the hole
-(electron) orbital and `R` is the electron-hole separation in reduced
-coordinates.
-"""
+# Each element of `pairs` is a tuple `(i, j, R)`, where `i` (`j`) is the hole
+# (electron) orbital and `R` is the electron-hole separation in reduced
+# coordinates.
+# """
 function (bse::BSEspinblind_wiTDA)(::Val{:extendpair_proj}, q::AbstractVector{<:Real},
     wave::AbstractVecOrMat{<:Number}, pairs::WanIntPairVecType...)
     kgrid = bse.kgrid

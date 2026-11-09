@@ -1,7 +1,15 @@
 """
+    (bse::BSEspinblind_wiTDA)(:periodic, q::AbstractVector{<:Real}, eigen_vck::Eigen) -> BSE_uEigen
+
+Construct an object of `BSE_uEigen`.
+`eigen_vck` contains the excitonic states.
+
 ```julia
-julia> H = bse(q)
-julia> u = bse(:periodic, q, eigen!(H))
+julia> H = bse(q);
+julia> u = bse(:periodic, q, eigen!(H));
+julia> u_λ = u(λ); u_λ isa Eigen
+
+true
 ```
 """
 function (bse::BSEspinblind_wiTDA)(::Val{:periodic}, q::AbstractVector{<:Real}, eigen_vck::Eigen)

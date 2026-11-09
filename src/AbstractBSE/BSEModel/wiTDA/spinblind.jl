@@ -77,7 +77,7 @@ function Base.empty!(buffer::_BSEspinblind_wiTDA_buffer)
 end
 WannierInterActionBase.numorb(bse::BSEspinblind_wiTDA) = length(bse.orb_location)
 function Base.show(io::IO, bse::BSEspinblind_wiTDA)
-    print(io, "$(count(bse.period)) dimensinal BSE model with $(numatom(bse)) atoms and $(numorb(bse)) orbitals.")
+    print(io, "$(count(bse.period)) dimensional BSE model with $(numatom(bse)) atoms and $(numorb(bse)) orbitals.")
 end
 """
     BSE_wiTDA(kgrid, TB::AbstractTightBindModel, Kᵈ::PairInterAction, Kˣ::PairInterAction; 
@@ -163,6 +163,25 @@ function _BSEspinblind_process_spinindex(upindex, dnindex, nw)
     end
     return upindex, dnindex
 end
+"""
+    allocate!(bse::BSEspinblind_wiTDA; force::Bool=false, storage::Symbol=:memory,
+        Mmap_Mv::Bool=true, Mmap_Mc::Bool=false, Mmap_Mvck::Bool=false, Mmap_VMvck::Bool=false,
+        Mmapfolder::AbstractString="./BSE.Mmap")
+
+Pre-allocate the large arrays used when constructing the BSE Hamiltonian.
+
+# Arguments
+- `force`: If arrays have already been pre-allocated, whether to overwrite and reallocate them.
+- `storage`: Storage mode, either `:memory` or `:Mmap`. With `:Mmap`, Julia's built-in `Mmap` is used to store large arrays on disk. Note that this can severely slow down the calculation.
+- `Mmap_Mv`, `Mmap_Mc`, `Mmap_Mvck`, `Mmap_VMvck`: Only relevant when `storage = :Mmap`. Whether to store the corresponding large arrays on disk using `Mmap`. The arrays have dimensions
+  - `Mmap_Mv`: `[np, nv, nv, nk, nk]`
+  - `Mmap_Mc`: `[np, nc, nc, nk, nk]`
+  - `Mmap_Mvck`: `[np, nv * nc * nk]`
+  - `Mmap_VMvck`: `[np, nv * nc * nk]`
+
+  All have element type `ComplexF64`. In general, the first two arrays are much larger than the last two.
+- `Mmapfolder`: Directory in which the `Mmap` files are stored.
+"""
 function allocate!(bse::BSEspinblind_wiTDA; force::Bool=false, storage::Symbol=:memory,
     Mmap_Mv::Bool=true, Mmap_Mc::Bool=false, Mmap_Mvck::Bool=false, Mmap_VMvck::Bool=false,
     Mmapfolder::AbstractString="./BSE.Mmap")
@@ -206,22 +225,42 @@ function allocate!(bse::BSEspinblind_wiTDA; force::Bool=false, storage::Symbol=:
         Mvck = Matrix{ComplexF64}(undef, np_V, Nvck)
         VMvck = Matrix{ComplexF64}(undef, np_V, Nvck)
     elseif storage === :Mmap
-        rm(Mmapfolder; recursive=true, force=true)
         mkpath(Mmapfolder)
-        WMvvkk = Mmap_Mv && !iszero(np_W) ? Mmap.mmap(joinpath(Mmapfolder, "WMv"), Array{ComplexF64,5}, (np_W, nv, nv, nk, nk)) :
-                 Array{ComplexF64,5}(undef, np_W, nv, nv, nk, nk)
-        Mcckk = Mmap_Mc && !iszero(np_W) ? Mmap.mmap(joinpath(Mmapfolder, "Mc"), Array{ComplexF64,5}, (np_W, nc, nc, nk, nk)) :
-                Array{ComplexF64,5}(undef, np_W, nc, nc, nk, nk)
-        Mvck = Mmap_Mvck && !iszero(np_V) ? Mmap.mmap(joinpath(Mmapfolder, "Mvck"), Matrix{ComplexF64}, (np_V, Nvck)) :
-               Matrix{ComplexF64}(undef, np_V, Nvck)
-        VMvck = Mmap_VMvck && !iszero(np_V) ? Mmap.mmap(joinpath(Mmapfolder, "VMvck"), Matrix{ComplexF64}, (np_V, Nvck)) :
-                Matrix{ComplexF64}(undef, np_V, Nvck)
+        if Mmap_Mv && !iszero(np_W)
+            WMvvkk = open(joinpath(Mmapfolder, "WMv"), "w+") do io
+                Mmap.mmap(io, Array{ComplexF64,5}, (np_W, nv, nv, nk, nk))
+            end
+        else
+            WMvvkk = Array{ComplexF64,5}(undef, np_W, nv, nv, nk, nk)
+        end
+        if Mmap_Mc && !iszero(np_W)
+            Mcckk = open(joinpath(Mmapfolder, "Mc"), "w+") do io
+                Mmap.mmap(io, Array{ComplexF64,5}, (np_W, nc, nc, nk, nk))
+            end
+        else
+            Mcckk = Array{ComplexF64,5}(undef, np_W, nc, nc, nk, nk)
+        end
+        if Mmap_Mvck && !iszero(np_V)
+            Mvck = open(joinpath(Mmapfolder, "Mvck"), "w+") do io
+                Mmap.mmap(io, Matrix{ComplexF64}, (np_V, Nvck))
+            end
+        else
+            Mvck = Matrix{ComplexF64}(undef, np_V, Nvck)
+        end
+        if Mmap_VMvck && !iszero(np_V)
+            VMvck = open(joinpath(Mmapfolder, "VMvck"), "w+") do io
+                Mmap.mmap(io, Matrix{ComplexF64}, (np_V, Nvck))
+            end
+        else
+            VMvck = Matrix{ComplexF64}(undef, np_V, Nvck)
+        end
     end
 
     Kᵈ_ij = unique(map(p->(p[1], p[2]), Kᵈ.pair))
     Kᵈ_ij_idx = Dict{NTuple{2,Int},Int}(ij=>i for (i, ij) in enumerate(Kᵈ_ij))
     Kᵈ_pair = map(p->(Kᵈ_ij_idx[(p[1], p[2])], p[3]), Kᵈ.pair)
 
+    BLAS_nthreads = LinearAlgebra.BLAS.get_num_threads()
     LinearAlgebra.BLAS.set_num_threads(1)
     nt = Threads.nthreads()
 
@@ -246,7 +285,7 @@ function allocate!(bse::BSEspinblind_wiTDA; force::Bool=false, storage::Symbol=:
         WMvvkk, vvkk_chunk, bse.bandk, v, Kᵈ_ij, ek_pR, Kᵈ_pair, Wk, kgrid_minusmap,
         Kᵈ.nw, bse.upindex, bse.dnindex)
 
-    LinearAlgebra.BLAS.set_num_threads(nt)
+    LinearAlgebra.BLAS.set_num_threads(BLAS_nthreads)
 
     Kˣ_ij = unique(map(p->(p[1], p[2]), Kˣ.pair))
     Kˣ_ij_idx = Dict{NTuple{2,Int},Int}(ij=>i for (i, ij) in enumerate(Kˣ_ij))
@@ -270,6 +309,11 @@ function allocate!(bse::BSEspinblind_wiTDA; force::Bool=false, storage::Symbol=:
 
     return bse
 end
+"""
+    release!(bse::BSEspinblind_wiTDA)
+
+Release the large arrays pre-allocated by [`allocate!`](@ref).
+"""
 function release!(bse::BSEspinblind_wiTDA)
     isallocated(bse) || return bse
     empty!(bse.buffer)
@@ -504,7 +548,19 @@ function _BSEspinblind_Mvck!(::Val{false}, Mvck, ivck_chunk, vck, bandk, bandkq,
     end
 end
 (bse::BSEspinblind_wiTDA)(::Val{:dimension}) = length(bse.vck)
-# isΓ表示是否精确处理Γ点，这时输入的q表示方向，注意是分数坐标。
+"""
+    (bse::BSEspinblind_wiTDA)(q::AbstractVector{<:Real}; isΓ::Bool=false)
+
+Evaluate the BSE Hamiltonian at exciton momentum `q`, given in fractional coordinates (length 3).
+
+Returns a `NamedTuple`. 
+`bandkq` contains the electronic states at all `k + q` points. 
+If `channel == 1`, `H` is the BSE Hamiltonian; 
+otherwise, `Hs` and `Ht` are the singlet and triplet BSE Hamiltonian, respectively.
+
+For 3D systems, the BSE Hamiltonian at the Gamma point depends on the direction along which Gamma is approached. 
+When `isΓ = true`, `q` must be nonzero and specifies this direction; it is also given in fractional coordinates.
+"""
 function (bse::BSEspinblind_wiTDA)(q::ReducedCoordinates; isΓ::Bool=false)
     (q, isΓ) = _BSE_preprocess_Γ(q, isΓ, bse.period)
     bandkq = _BSE_preprocess_q!(bse, q; isΓ)
@@ -549,7 +605,7 @@ function (bse::BSEspinblind_wiTDA)(H::AbstractMatrix, q::ReducedCoordinates; is�
     return (bandkq=bandkq, H=H)
 end
 function (bse::BSEspinblind_wiTDA)(Hlist::NamedTuple, q::ReducedCoordinates; isΓ::Bool=false)
-    @assert issubset(keys(Hlist), (:H, :Ht, :Hs)) || "Hlist only can contain :H, :Ht and :Hs"
+    @assert issubset(keys(Hlist), (:H, :Ht, :Hs)) "Hlist only can contain :H, :Ht and :Hs"
     Nvck = length(bse.vck)
     if bse.channel == 1
         H = get(Hlist, :H, nothing)
@@ -603,6 +659,7 @@ function _BSE_Hamiltonian!(::Val{:mixed}, H::AbstractMatrix, bse::BSEspinblind_w
     WMvvkk = bse.buffer.WMvvkk
     Mvck = bse.buffer.Mvck
     VMvck = bse.buffer.VMvck
+    BLAS_nthreads = LinearAlgebra.BLAS.get_num_threads()
     LinearAlgebra.BLAS.set_num_threads(1)
     Threads.@threads for (ivck, ivck′) in UpperTriangularIndices(length(vck))
         (iv, ic, ik) = triple_index(vck, ivck)
@@ -623,7 +680,7 @@ function _BSE_Hamiltonian!(::Val{:mixed}, H::AbstractMatrix, bse::BSEspinblind_w
     if isΓ && count(bse.period) == 3
         _BSE_KˣΓ!(Val(1), H, bse, q)
     end
-    LinearAlgebra.BLAS.set_num_threads(Threads.nthreads())
+    LinearAlgebra.BLAS.set_num_threads(BLAS_nthreads)
     return Hermitian(H, :U)
 end
 function _BSE_Hamiltonian!(::Val{:triplet}, Ht::AbstractMatrix, bse::BSEspinblind_wiTDA, q; isΓ)
@@ -631,6 +688,7 @@ function _BSE_Hamiltonian!(::Val{:triplet}, Ht::AbstractMatrix, bse::BSEspinblin
     ΔE = bse.buffer.ΔE
     Mcckk = bse.buffer.Mcckk
     WMvvkk = bse.buffer.WMvvkk
+    BLAS_nthreads = LinearAlgebra.BLAS.get_num_threads()
     LinearAlgebra.BLAS.set_num_threads(1)
     Threads.@threads for (ivck, ivck′) in UpperTriangularIndices(length(vck))
         (iv, ic, ik) = triple_index(vck, ivck)
@@ -644,7 +702,7 @@ function _BSE_Hamiltonian!(::Val{:triplet}, Ht::AbstractMatrix, bse::BSEspinblin
             Ht[ivck, ivck′] = Kᵈ
         end
     end
-    LinearAlgebra.BLAS.set_num_threads(Threads.nthreads())
+    LinearAlgebra.BLAS.set_num_threads(BLAS_nthreads)
     return Hermitian(Ht, :U)
 end
 function _BSE_Hamiltonian!(::Val{:singlet}, Hs::AbstractMatrix, bse::BSEspinblind_wiTDA, q; isΓ)
@@ -654,6 +712,7 @@ function _BSE_Hamiltonian!(::Val{:singlet}, Hs::AbstractMatrix, bse::BSEspinblin
     WMvvkk = bse.buffer.WMvvkk
     Mvck = bse.buffer.Mvck
     VMvck = bse.buffer.VMvck
+    BLAS_nthreads = LinearAlgebra.BLAS.get_num_threads()
     LinearAlgebra.BLAS.set_num_threads(1)
     Threads.@threads for (ivck, ivck′) in UpperTriangularIndices(length(vck))
         (iv, ic, ik) = triple_index(vck, ivck)
@@ -674,7 +733,7 @@ function _BSE_Hamiltonian!(::Val{:singlet}, Hs::AbstractMatrix, bse::BSEspinblin
     if isΓ && count(bse.period) == 3
         _BSE_KˣΓ!(Val(2), Hs, bse, q)
     end
-    LinearAlgebra.BLAS.set_num_threads(Threads.nthreads())
+    LinearAlgebra.BLAS.set_num_threads(BLAS_nthreads)
     return Hermitian(Hs, :U)
 end
 function _BSE_Hamiltonian!(::Val{:separate}, Ht::AbstractMatrix, Hs::AbstractMatrix, bse::BSEspinblind_wiTDA, q; isΓ)
@@ -684,6 +743,7 @@ function _BSE_Hamiltonian!(::Val{:separate}, Ht::AbstractMatrix, Hs::AbstractMat
     WMvvkk = bse.buffer.WMvvkk
     Mvck = bse.buffer.Mvck
     VMvck = bse.buffer.VMvck
+    BLAS_nthreads = LinearAlgebra.BLAS.get_num_threads()
     LinearAlgebra.BLAS.set_num_threads(1)
     Threads.@threads for (ivck, ivck′) in UpperTriangularIndices(length(vck))
         (iv, ic, ik) = triple_index(vck, ivck)
@@ -706,7 +766,7 @@ function _BSE_Hamiltonian!(::Val{:separate}, Ht::AbstractMatrix, Hs::AbstractMat
     if isΓ && count(bse.period) == 3
         _BSE_KˣΓ!(Val(2), Hs, bse, q)
     end
-    LinearAlgebra.BLAS.set_num_threads(Threads.nthreads())
+    LinearAlgebra.BLAS.set_num_threads(BLAS_nthreads)
     return Hermitian(Ht, :U), Hermitian(Hs, :U)
 end
 function _BSE_KˣΓ!(::Val{1}, H::AbstractMatrix, bse::BSEspinblind_wiTDA, q)

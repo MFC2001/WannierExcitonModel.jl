@@ -10,8 +10,7 @@ struct ReciprocalSpaceBlochExciton_spinblind_wiTDA{eleHT<:HermitianReciprocalHop
     vc::Vector{Tuple{Int,Int}}
     eleH::eleHT
 end
-function (φk::ReciprocalSpaceBlochExciton_spinblind_wiTDA)(k::AbstractVector{<:Real},
-    bandindex::Union{Integer,AbstractVector{<:Integer},Nothing}=nothing)
+function (φk::ReciprocalSpaceBlochExciton_spinblind_wiTDA)(k::AbstractVector{<:Real}, bandindex::Union{Integer,AbstractVector{<:Integer},Nothing}=nothing)
     if isnothing(bandindex)
         if size(φk.AijR, 2) == 1
             bandindex = 1
@@ -53,9 +52,26 @@ function (φk::ReciprocalSpaceBlochExciton_spinblind_wiTDA)(k::AbstractVector{<:
         return Avc
     end
 end
+"""
+    (bse::BSEspinblind_wiTDA)(:interpolation, q::AbstractVector{<:Real}, Avck::AbstractVecOrMat{<:Number})
+
+Return a callable object that computes the expansion coefficients, in the band basis, of the exciton state(s) at an arbitrary momentum point in reciprocal space.
+
+`q` is the exciton momentum corresponding to `Avck`. 
+`Avck` is the exciton wavefunction; multiple exciton states may be passed at once, in which case its second dimension is the number of exciton states.
+
+# Example
+```julia
+julia> φ = bse(:interpolation, q, Avck);
+julia> size(φ([0, 0, 0])) == (nv, nc, size(Avck, 2))
+
+true
+```
+"""
 function (bse::BSEspinblind_wiTDA)(::Val{:interpolation}, q::AbstractVector{<:Real}, Avck::AbstractVecOrMat{<:Number})
     size(Avck, 1) == length(bse.vck) || throw(DimensionMismatch(
-        "vector length should be Nvck=$(length(bse.vck)), got $(size(Avck, 1))"))
+        "length of exciton wavefunction should be Nvck=$(length(bse.vck)), got $(size(Avck, 1))"))
+
     BM = bse(Val(:vck2ijR), q)
     AijR = BM * Avck
     if AijR isa AbstractVector

@@ -16,12 +16,13 @@ function _BSE_berryconnection_vck(H, kgrid, bandk, lattice, orblocat, vckmap)
 
     berrconnection = Array{ComplexF64}(undef, 3, Nvck) # Å
     Threads.@threads for ivck in Base.OneTo(Nvck)
-        (v, c, k) = vckmap[ivck]
-        ψv = view(bandk[k].vectors, :, v)
-        ψc = view(bandk[k].vectors, :, c)
-        ΔE = bandk[k].values[c] - bandk[k].values[v]
+        (v, c, ik) = vckmap[ivck]
+        ψv = view(bandk[ik].vectors, :, v)
+        ψc = view(bandk[ik].vectors, :, c)
+        ΔE = bandk[ik].values[c] - bandk[ik].values[v]
+        @assert ΔE > 0 "Non-positive gap: ΔE = $ΔE for conduction band $c and valence band $v at k-point $(kgrid[ik])."
         for α in 1:3
-            ipHαk = view(ipH, :, :, α, k)
+            ipHαk = view(ipH, :, :, α, ik)
             berrconnection[α, ivck] = ψv ⋅ (ipHαk * ψc) / ΔE
         end
         UUτ = zeros(ComplexF64, 3)

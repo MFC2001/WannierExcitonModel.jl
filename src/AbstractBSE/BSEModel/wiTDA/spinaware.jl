@@ -150,7 +150,7 @@ function Base.empty!(buffer::_BSEspinaware_wiTDA_buffer)
 end
 WannierInterActionBase.numorb(bse::BSEspinaware_wiTDA) = length(bse.orb_location_up) + length(bse.orb_location_dn)
 function Base.show(io::IO, bse::BSEspinaware_wiTDA)
-    print(io, "$(count(bse.period)) dimensinal BSE model with $(numatom(bse)) atoms and $(numorb(bse)) orbitals.")
+    print(io, "$(count(bse.period)) dimensional BSE model with $(numatom(bse)) atoms and $(numorb(bse)) orbitals.")
 end
 """
     BSE_wiTDA(kgrid::RedKgrid, TB_up::AbstractTightBindModel, TB_dn::AbstractTightBindModel,
@@ -182,8 +182,16 @@ function BSE_wiTDA(kgrid::RedKgrid, TB_up::AbstractTightBindModel, TB_dn::Abstra
     @assert (Kᵈ.nw == nw) || (Kᵈ.nw == nw_up == nw_dn) "Only accept Kᵈ.nw=nw_up+nw_dn or Kᵈ.nw=nw_up=nw_dn!"
     @assert (Kˣ.nw == nw) || (Kˣ.nw == nw_up == nw_dn) "Only accept Kˣ.nw=nw_up+nw_dn or Kˣ.nw=nw_up=nw_dn!"
 
+    # check lattice and period
+    @assert all(isapprox.(parent(TB_up.lattice), parent(TB_dn.lattice); atol=1e-8, rtol=1e-6)) "Lattice mismatch between TB_up and TB_dn."
+    @assert TB_up.period == TB_dn.period "Period mismatch between TB_up and TB_dn."
+    lattice = TB_up.lattice
+    atom_name = TB_up.atom_name
+    atom_location = TB_up.atom_location
+    period = TB_up.period
+
     # Rgrid
-    Rgrid, ndegen = gridindex(Val(:WignerSeitz), TB_up.lattice, kgrid.kgrid_size)
+    Rgrid, ndegen = gridindex(Val(:WignerSeitz), lattice, kgrid.kgrid_size)
 
     nk = length(kgrid)
     nR = length(Rgrid)
@@ -209,8 +217,8 @@ function BSE_wiTDA(kgrid::RedKgrid, TB_up::AbstractTightBindModel, TB_dn::Abstra
     phase_normalize!(:positive_maxabs, bandk_up)
     phase_normalize!(:positive_maxabs, bandk_dn)
 
-    berryconnection_up = _BSE_berryconnection_vck(TB_up.H, kgrid, bandk_up, TB_up.lattice, TB_up.orb_location, vck_uu)
-    berryconnection_dn = _BSE_berryconnection_vck(TB_dn.H, kgrid, bandk_dn, TB_up.lattice, TB_dn.orb_location, vck_dd)
+    berryconnection_up = _BSE_berryconnection_vck(TB_up.H, kgrid, bandk_up, lattice, TB_up.orb_location, vck_uu)
+    berryconnection_dn = _BSE_berryconnection_vck(TB_dn.H, kgrid, bandk_dn, lattice, TB_dn.orb_location, vck_dd)
 
     Nvck_Sz0 = length(vck_uu) + length(vck_dd)
     Nvck_Szn1 = length(vck_ud)
@@ -222,12 +230,27 @@ function BSE_wiTDA(kgrid::RedKgrid, TB_up::AbstractTightBindModel, TB_dn::Abstra
 
     buffer = empty(_BSEspinaware_wiTDA_buffer)
     return BSEspinaware_wiTDA{typeof(TB_up.H),typeof(TB_dn.H),typeof(Kᵈ),typeof(Kˣ),typeof(buffer)}(
-        TB_up.lattice, TB_up.atom_name, TB_up.atom_location,
+        lattice, atom_name, atom_location,
         TB_up.orb_name, TB_up.orb_location, TB_dn.orb_name, TB_dn.orb_location,
-        TB_up.period, TB_up.H, TB_dn.H, scissor_c_up, scissor_v_up, scissor_c_dn, scissor_v_dn,
+        period, TB_up.H, TB_dn.H, scissor_c_up, scissor_v_up, scissor_c_dn, scissor_v_dn,
         Kᵈ, Kˣ, kgrid, Rgrid, ndegen, vck_uu, vck_dd, vck_ud, vck_du, ijR_uu, ijR_dd, ijR_ud, ijR_du,
         bandk_up, bandk_dn, Sz, berryconnection_up, berryconnection_dn, buffer)
 end
+"""
+    allocate!(bse::BSEspinaware_wiTDA; force::Bool=false, storage::Symbol=:memory,
+        Mmap_Mv::Bool=true, Mmap_Mc::Bool=false, Mmap_Mvck::Bool=false, Mmap_VMvck::Bool=false,
+        Mmapfolder::AbstractString="./BSE.Mmap")
+
+Pre-allocate the large arrays used when constructing the BSE Hamiltonian.
+
+# Arguments
+- `force`: If arrays have already been pre-allocated, whether to overwrite and reallocate them.
+- `storage`: Storage mode, either `:memory` or `:Mmap`. With `:Mmap`, Julia's built-in `Mmap` is used to store large arrays on disk. Note that this can severely slow down the calculation.
+- `Mmap_Mv`, `Mmap_Mc`, `Mmap_Mvck`, `Mmap_VMvck`: Only relevant when `storage = :Mmap`. Whether to store the corresponding large arrays on disk using `Mmap`. 
+  Since there are two independent sets of electronic bands with different spins, each of these parameters actually manages more than one large array, corresponding to different spin combinations. 
+  All arrays have element type `ComplexF64`. In general, the arrays managed by `Mmap_Mv` and `Mmap_Mc` are much larger than those managed by `Mmap_Mvck` and `Mmap_VMvck`.
+- `Mmapfolder`: Directory in which the `Mmap` files are stored.
+"""
 function allocate!(bse::BSEspinaware_wiTDA; force::Bool=false, storage::Symbol=:memory,
     Mmap_Mv::Bool=true, Mmap_Mc::Bool=false, Mmap_Mvck::Bool=false, Mmap_VMvck::Bool=false,
     Mmapfolder::AbstractString="./BSE.Mmap")
@@ -281,6 +304,9 @@ function allocate!(bse::BSEspinaware_wiTDA; force::Bool=false, storage::Symbol=:
     np_V_up = length(Kˣ_pair_upindex)
     np_V_dn = length(Kˣ_pair_dnindex)
 
+    # Note that WMvvkk_du means W_du * Mvvkk_up, so it's used in Mcckk_dn * WMvvkk_du of Sz = -1;
+    # Also, WMvvkk_ud means W_ud * Mvvkk_dn, so it's used in Mcckk_up * WMvvkk_ud of Sz = 1.
+
     # report memory
     if !iszero(Nvck_uu)
         WMvvkk_uu_size = format_memory(sizeof(ComplexF64) * np_W_up * nv_up * nv_up * nk * nk)
@@ -328,7 +354,6 @@ function allocate!(bse::BSEspinaware_wiTDA; force::Bool=false, storage::Symbol=:
 
     # allocate
     if storage === :Mmap
-        rm(Mmapfolder; recursive=true, force=true)
         mkpath(Mmapfolder)
     end
     if Kᵈ.nw == nw
@@ -338,9 +363,13 @@ function allocate!(bse::BSEspinaware_wiTDA; force::Bool=false, storage::Symbol=:
             if storage === :memory
                 WMvvkk_uu = Array{ComplexF64,5}(undef, np_W_up, nv_up, nv_up, nk, nk)
             elseif storage === :Mmap
-                WMvvkk_uu = Mmap_Mv && !iszero(np_W_up) && !iszero(nv_up) ?
-                            Mmap.mmap(joinpath(Mmapfolder, "WMv_uu"), Array{ComplexF64,5}, (np_W_up, nv_up, nv_up, nk, nk)) :
-                            Array{ComplexF64,5}(undef, np_W_up, nv_up, nv_up, nk, nk)
+                if Mmap_Mv && !iszero(np_W_up) && !iszero(nv_up)
+                    WMvvkk_uu = open(joinpath(Mmapfolder, "WMv_uu"), "w+") do io
+                        Mmap.mmap(io, Array{ComplexF64,5}, (np_W_up, nv_up, nv_up, nk, nk))
+                    end
+                else
+                    WMvvkk_uu = Array{ComplexF64,5}(undef, np_W_up, nv_up, nv_up, nk, nk)
+                end
             end
         end
         if iszero(Nvck_dd)
@@ -349,9 +378,13 @@ function allocate!(bse::BSEspinaware_wiTDA; force::Bool=false, storage::Symbol=:
             if storage === :memory
                 WMvvkk_dd = Array{ComplexF64,5}(undef, np_W_dn, nv_dn, nv_dn, nk, nk)
             elseif storage === :Mmap
-                WMvvkk_dd = Mmap_Mv && !iszero(np_W_dn) && !iszero(nv_dn) ?
-                            Mmap.mmap(joinpath(Mmapfolder, "WMv_dd"), Array{ComplexF64,5}, (np_W_dn, nv_dn, nv_dn, nk, nk)) :
-                            Array{ComplexF64,5}(undef, np_W_dn, nv_dn, nv_dn, nk, nk)
+                if Mmap_Mv && !iszero(np_W_dn) && !iszero(nv_dn)
+                    WMvvkk_dd = open(joinpath(Mmapfolder, "WMv_dd"), "w+") do io
+                        Mmap.mmap(io, Array{ComplexF64,5}, (np_W_dn, nv_dn, nv_dn, nk, nk))
+                    end
+                else
+                    WMvvkk_dd = Array{ComplexF64,5}(undef, np_W_dn, nv_dn, nv_dn, nk, nk)
+                end
             end
         end
         if iszero(Nvck_ud)
@@ -360,9 +393,13 @@ function allocate!(bse::BSEspinaware_wiTDA; force::Bool=false, storage::Symbol=:
             if storage === :memory
                 WMvvkk_du = Array{ComplexF64,5}(undef, np_W_dn, nv_up, nv_up, nk, nk)
             elseif storage === :Mmap
-                WMvvkk_du = Mmap_Mv && !iszero(np_W_dn) && !iszero(nv_up) ?
-                            Mmap.mmap(joinpath(Mmapfolder, "WMv_du"), Array{ComplexF64,5}, (np_W_dn, nv_up, nv_up, nk, nk)) :
-                            Array{ComplexF64,5}(undef, np_W_dn, nv_up, nv_up, nk, nk)
+                if Mmap_Mv && !iszero(np_W_dn) && !iszero(nv_up)
+                    WMvvkk_du = open(joinpath(Mmapfolder, "WMv_du"), "w+") do io
+                        Mmap.mmap(io, Array{ComplexF64,5}, (np_W_dn, nv_up, nv_up, nk, nk))
+                    end
+                else
+                    WMvvkk_du = Array{ComplexF64,5}(undef, np_W_dn, nv_up, nv_up, nk, nk)
+                end
             end
         end
         if iszero(Nvck_du)
@@ -371,25 +408,37 @@ function allocate!(bse::BSEspinaware_wiTDA; force::Bool=false, storage::Symbol=:
             if storage === :memory
                 WMvvkk_ud = Array{ComplexF64,5}(undef, np_W_up, nv_dn, nv_dn, nk, nk)
             elseif storage === :Mmap
-                WMvvkk_ud = Mmap_Mv && !iszero(np_W_up) && !iszero(nv_dn) ?
-                            Mmap.mmap(joinpath(Mmapfolder, "WMv_ud"), Array{ComplexF64,5}, (np_W_up, nv_dn, nv_dn, nk, nk)) :
-                            Array{ComplexF64,5}(undef, np_W_up, nv_dn, nv_dn, nk, nk)
+                if Mmap_Mv && !iszero(np_W_up) && !iszero(nv_dn)
+                    WMvvkk_ud = open(joinpath(Mmapfolder, "WMv_ud"), "w+") do io
+                        Mmap.mmap(io, Array{ComplexF64,5}, (np_W_up, nv_dn, nv_dn, nk, nk))
+                    end
+                else
+                    WMvvkk_ud = Array{ComplexF64,5}(undef, np_W_up, nv_dn, nv_dn, nk, nk)
+                end
             end
         end
     else
         if storage === :memory
             WMvvkk_uu = Array{ComplexF64,5}(undef, np_W_up, nv_up, nv_up, nk, nk)
         elseif storage === :Mmap
-            WMvvkk_uu = Mmap_Mv && !iszero(np_W_up) && !iszero(nv_up) ?
-                        Mmap.mmap(joinpath(Mmapfolder, "WMv_uu"), Array{ComplexF64,5}, (np_W_up, nv_up, nv_up, nk, nk)) :
-                        Array{ComplexF64,5}(undef, np_W_up, nv_up, nv_up, nk, nk)
+            if Mmap_Mv && !iszero(np_W_up) && !iszero(nv_up)
+                WMvvkk_uu = open(joinpath(Mmapfolder, "WMv_uu"), "w+") do io
+                    Mmap.mmap(io, Array{ComplexF64,5}, (np_W_up, nv_up, nv_up, nk, nk))
+                end
+            else
+                WMvvkk_uu = Array{ComplexF64,5}(undef, np_W_up, nv_up, nv_up, nk, nk)
+            end
         end
         if storage === :memory
             WMvvkk_dd = Array{ComplexF64,5}(undef, np_W_dn, nv_dn, nv_dn, nk, nk)
         elseif storage === :Mmap
-            WMvvkk_dd = Mmap_Mv && !iszero(np_W_dn) && !iszero(nv_dn) ?
-                        Mmap.mmap(joinpath(Mmapfolder, "WMv_dd"), Array{ComplexF64,5}, (np_W_dn, nv_dn, nv_dn, nk, nk)) :
-                        Array{ComplexF64,5}(undef, np_W_dn, nv_dn, nv_dn, nk, nk)
+            if Mmap_Mv && !iszero(np_W_dn) && !iszero(nv_dn)
+                WMvvkk_dd = open(joinpath(Mmapfolder, "WMv_dd"), "w+") do io
+                    Mmap.mmap(io, Array{ComplexF64,5}, (np_W_dn, nv_dn, nv_dn, nk, nk))
+                end
+            else
+                WMvvkk_dd = Array{ComplexF64,5}(undef, np_W_dn, nv_dn, nv_dn, nk, nk)
+            end
         end
         WMvvkk_du = WMvvkk_uu
         WMvvkk_ud = WMvvkk_dd
@@ -407,28 +456,56 @@ function allocate!(bse::BSEspinaware_wiTDA; force::Bool=false, storage::Symbol=:
             VMvck_ud = VMvck_dd
         end
     elseif storage === :Mmap
-        Mcckk_up = Mmap_Mc && !iszero(np_W_up) && !iszero(nc_up) ?
-                   Mmap.mmap(joinpath(Mmapfolder, "Mc_up"), Array{ComplexF64,5}, (np_W_up, nc_up, nc_up, nk, nk)) :
-                   Array{ComplexF64,5}(undef, np_W_up, nc_up, nc_up, nk, nk)
-        Mcckk_dn = Mmap_Mc && !iszero(np_W_dn) && !iszero(nc_dn) ?
-                   Mmap.mmap(joinpath(Mmapfolder, "Mc_dn"), Array{ComplexF64,5}, (np_W_dn, nc_dn, nc_dn, nk, nk)) :
-                   Array{ComplexF64,5}(undef, np_W_dn, nc_dn, nc_dn, nk, nk)
-        Mvck_uu = Mmap_Mvck && !iszero(np_V_up) && !iszero(Nvck_uu) ?
-                  Mmap.mmap(joinpath(Mmapfolder, "Mvck_uu"), Matrix{ComplexF64}, (np_V_up, Nvck_uu)) :
-                  Matrix{ComplexF64}(undef, np_V_up, Nvck_uu)
-        Mvck_dd = Mmap_Mvck && !iszero(np_V_dn) && !iszero(Nvck_dd) ?
-                  Mmap.mmap(joinpath(Mmapfolder, "Mvck_dd"), Matrix{ComplexF64}, (np_V_dn, Nvck_dd)) :
-                  Matrix{ComplexF64}(undef, np_V_dn, Nvck_dd)
-        VMvck_uu = Mmap_VMvck && !iszero(np_V_up) && !iszero(Nvck_uu) ?
-                   Mmap.mmap(joinpath(Mmapfolder, "VMvck_uu"), Matrix{ComplexF64}, (np_V_up, Nvck_uu)) :
-                   Matrix{ComplexF64}(undef, np_V_up, Nvck_uu)
-        VMvck_dd = Mmap_VMvck && !iszero(np_V_dn) && !iszero(Nvck_dd) ?
-                   Mmap.mmap(joinpath(Mmapfolder, "VMvck_dd"), Matrix{ComplexF64}, (np_V_dn, Nvck_dd)) :
-                   Matrix{ComplexF64}(undef, np_V_dn, Nvck_dd)
+        if Mmap_Mc && !iszero(np_W_up) && !iszero(nc_up)
+            Mcckk_up = open(joinpath(Mmapfolder, "Mc_up"), "w+") do io
+                Mmap.mmap(io, Array{ComplexF64,5}, (np_W_up, nc_up, nc_up, nk, nk))
+            end
+        else
+            Mcckk_up = Array{ComplexF64,5}(undef, np_W_up, nc_up, nc_up, nk, nk)
+        end
+        if Mmap_Mc && !iszero(np_W_dn) && !iszero(nc_dn)
+            Mcckk_dn = open(joinpath(Mmapfolder, "Mc_dn"), "w+") do io
+                Mmap.mmap(io, Array{ComplexF64,5}, (np_W_dn, nc_dn, nc_dn, nk, nk))
+            end
+        else
+            Mcckk_dn = Array{ComplexF64,5}(undef, np_W_dn, nc_dn, nc_dn, nk, nk)
+        end
+        if Mmap_Mvck && !iszero(np_V_up) && !iszero(Nvck_uu)
+            Mvck_uu = open(joinpath(Mmapfolder, "Mvck_uu"), "w+") do io
+                Mmap.mmap(io, Matrix{ComplexF64}, (np_V_up, Nvck_uu))
+            end
+        else
+            Mvck_uu = Matrix{ComplexF64}(undef, np_V_up, Nvck_uu)
+        end
+        if Mmap_Mvck && !iszero(np_V_dn) && !iszero(Nvck_dd)
+            Mvck_dd = open(joinpath(Mmapfolder, "Mvck_dd"), "w+") do io
+                Mmap.mmap(io, Matrix{ComplexF64}, (np_V_dn, Nvck_dd))
+            end
+        else
+            Mvck_dd = Matrix{ComplexF64}(undef, np_V_dn, Nvck_dd)
+        end
+        if Mmap_VMvck && !iszero(np_V_up) && !iszero(Nvck_uu)
+            VMvck_uu = open(joinpath(Mmapfolder, "VMvck_uu"), "w+") do io
+                Mmap.mmap(io, Matrix{ComplexF64}, (np_V_up, Nvck_uu))
+            end
+        else
+            VMvck_uu = Matrix{ComplexF64}(undef, np_V_up, Nvck_uu)
+        end
+        if Mmap_VMvck && !iszero(np_V_dn) && !iszero(Nvck_dd)
+            VMvck_dd = open(joinpath(Mmapfolder, "VMvck_dd"), "w+") do io
+                Mmap.mmap(io, Matrix{ComplexF64}, (np_V_dn, Nvck_dd))
+            end
+        else
+            VMvck_dd = Matrix{ComplexF64}(undef, np_V_dn, Nvck_dd)
+        end
         if Kˣ.nw == nw
-            VMvck_ud = Mmap_VMvck && !iszero(np_V_up) && !iszero(Nvck_dd) ?
-                       Mmap.mmap(joinpath(Mmapfolder, "VMvck_ud"), Matrix{ComplexF64}, (np_V_up, Nvck_dd)) :
-                       Matrix{ComplexF64}(undef, np_V_up, Nvck_dd)
+            if Mmap_VMvck && !iszero(np_V_up) && !iszero(Nvck_dd)
+                VMvck_ud = open(joinpath(Mmapfolder, "VMvck_ud"), "w+") do io
+                    Mmap.mmap(io, Matrix{ComplexF64}, (np_V_up, Nvck_dd))
+                end
+            else
+                VMvck_ud = Matrix{ComplexF64}(undef, np_V_up, Nvck_dd)
+            end
         else
             VMvck_ud = VMvck_dd
         end
@@ -451,6 +528,7 @@ function allocate!(bse::BSEspinaware_wiTDA; force::Bool=false, storage::Symbol=:
     Kᵈ_ij_dn_idx = Dict{NTuple{2,Int},Int}(ij=>i for (i, ij) in enumerate(Kᵈ_ij_dn))
     Kᵈ_pair_dn = map(p->(Kᵈ_ij_dn_idx[(p[1], p[2])], p[3]), Kᵈ_pair_dn)
 
+    BLAS_nthreads = LinearAlgebra.BLAS.get_num_threads()
     LinearAlgebra.BLAS.set_num_threads(1)
     nt = Threads.nthreads()
 
@@ -475,7 +553,7 @@ function allocate!(bse::BSEspinaware_wiTDA; force::Bool=false, storage::Symbol=:
         ek_pR, Kᵈ_ij_up, Kᵈ_pair_up, Kᵈ_ij_dn, Kᵈ_pair_dn, Wk, kgrid_minusmap,
         Kᵈ_pair_upindex, Kᵈ_pair_dnindex, Nvck_uu, Nvck_dd, Nvck_ud, Nvck_du)
 
-    LinearAlgebra.BLAS.set_num_threads(nt)
+    LinearAlgebra.BLAS.set_num_threads(BLAS_nthreads)
 
     if Kˣ.nw == nw
         Kˣ_pair_up = Kˣ.pair[Kˣ_pair_upindex]
@@ -663,6 +741,11 @@ function _BSEspinaware_WMvvkk!(::Val{false}, WMvvkk_uu, WMvvkk_dd, WMvvkk_ud, WM
         end
     end
 end
+"""
+    release!(bse::BSEspinaware_wiTDA)
+
+Release the large arrays pre-allocated by [`allocate!`](@ref).
+"""
 function release!(bse::BSEspinaware_wiTDA)
     isallocated(bse) || return bse
     empty!(bse.buffer)
@@ -692,7 +775,7 @@ function _BSE_preprocess_q!(bse::BSEspinaware_wiTDA, q::ReducedCoordinates; Sz=b
         bandkq_up = has_c_up ? bse.bandk_up : nothing
         bandkq_dn = has_c_dn ? bse.bandk_dn : nothing
     else
-        kq = map(k -> k + q, bse.kgrid)
+        kq = map(k -> k + q_value, bse.kgrid)
         if has_c_up
             bandkq_up = BAND(kq, bse.eleH_up; vector=true)
             phase_normalize!(:positive_maxabs, bandkq_up)
@@ -725,7 +808,7 @@ function _BSE_preprocess_q!(bse::BSEspinaware_wiTDA, q::ReducedCoordinates; Sz=b
         has_c_up, has_c_dn, bandkq_up, bandkq_dn, values(bse.vck_uu)[2], values(bse.vck_dd)[2],
         ekq_pR, bse.buffer.Kᵈ_ij_up, bse.buffer.Kᵈ_pair_up, bse.buffer.Kᵈ_ij_dn, bse.buffer.Kᵈ_pair_dn)
 
-    0 ∈ Sz && _BSEspinaware_preprocess_q!(Val(0), bse, bandkq_up, bandkq_dn, q, isΓ)
+    0 ∈ Sz && _BSEspinaware_preprocess_q!(Val(0), bse, bandkq_up, bandkq_dn, q_value, isΓ)
     -1 ∈ Sz && _BSEspinaware_preprocess_q!(Val(-1), bse, bandkq_dn)
     1 ∈ Sz && _BSEspinaware_preprocess_q!(Val(1), bse, bandkq_up)
 
@@ -779,7 +862,7 @@ function _BSEspinaware_Mcckk!(Mcckk_up, Mcckk_dn, cckk_up_chunk, cckk_dn_chunk,
         end
     end
 end
-function _BSEspinaware_preprocess_q!(::Val{0}, bse::BSEspinaware_wiTDA, bandkq_up, bandkq_dn, q, isΓ)
+function _BSEspinaware_preprocess_q!(::Val{0}, bse::BSEspinaware_wiTDA, bandkq_up, bandkq_dn, q_value, isΓ)
     bandk_up = bse.bandk_up
     bandk_dn = bse.bandk_dn
     # ΔE
@@ -812,7 +895,7 @@ function _BSEspinaware_preprocess_q!(::Val{0}, bse::BSEspinaware_wiTDA, bandkq_u
     nw = numorb(bse)
     Kˣ = bse.Kˣ
     Vq = bse.buffer.Sz0.Vq
-    Kˣ(Vq, q; isΓ)
+    Kˣ(Vq, q_value; isΓ)
     Vq ./= length(bse.kgrid)
     if Kˣ.nw == nw
         Kˣ_pair_upindex = bse.buffer.Sz0.Kˣ_pair_upindex
@@ -912,7 +995,19 @@ end
 (bse::BSEspinaware_wiTDA)(::Val{:dimension_Sz0}) = length(bse.vck_uu) + length(bse.vck_dd)
 (bse::BSEspinaware_wiTDA)(::Val{:dimension_Szn1}) = length(bse.vck_ud)
 (bse::BSEspinaware_wiTDA)(::Val{:dimension_Szp1}) = length(bse.vck_du)
-# isΓ表示是否精确处理Γ点，这时输入的q表示方向，注意是分数坐标。
+"""
+    (bse::BSEspinaware_wiTDA)(q::AbstractVector{<:Real}; isΓ::Bool=false)
+
+Evaluate the BSE Hamiltonian at exciton momentum `q`, given in fractional coordinates (length 3).
+
+Returns a `NamedTuple`. 
+`bandkq_up` and `bandkq_dn` contain the electronic states at all `k + q` points for the up and down spins, respectively. 
+Since the exciton `Sz` is a good quantum number in the spin-polarized case, 
+`HSz0`, `HSzn1`, and `HSzp1` are the exciton BSE Hamiltonians for `Sz = 0`, `-1`, and `1`, respectively.
+
+For 3D systems, the BSE Hamiltonian at the Gamma point depends on the direction along which Gamma is approached. 
+When `isΓ = true`, `q` must be nonzero and specifies this direction; it is also given in fractional coordinates.
+"""
 function (bse::BSEspinaware_wiTDA)(q::ReducedCoordinates; isΓ::Bool=false)
     (Nvck_Sz0, Nvck_Szn1, Nvck_Szp1) = bse(Val(:dimension))
     (q, isΓ) = _BSE_preprocess_Γ(q, isΓ, bse.period)
@@ -925,12 +1020,15 @@ function (bse::BSEspinaware_wiTDA)(q::ReducedCoordinates; isΓ::Bool=false)
             _BSE_Hamiltonian!(Val(1), Matrix{ComplexF64}(undef, Nvck_Szp1, Nvck_Szp1), bse)
     return (bandkq_up=bandkq_up, bandkq_dn=bandkq_dn, HSz0=HSz0, HSzn1=HSzn1, HSzp1=HSzp1)
 end
+function (bse::BSEspinaware_wiTDA)(Sz::Union{Integer,AbstractVector{<:Integer}}, q::AbstractVector{<:Real}; kwargs...)
+    return bse(Sz, ReducedCoordinates(q); kwargs...)
+end
 function (bse::BSEspinaware_wiTDA)(Sz::Union{Integer,AbstractVector{<:Integer}},
     q::ReducedCoordinates; isΓ::Bool=false)
     if Sz isa Integer
         Sz = [Sz]
     end
-    @assert issubset(Sz, (0, -1, 1)) || "Sz only can contain 0, -1 and 1"
+    @assert issubset(Sz, (0, -1, 1)) "Sz only can contain 0, -1 and 1"
     Sz = intersect(bse.Sz, Sz)
     (Nvck_Sz0, Nvck_Szn1, Nvck_Szp1) = bse(Val(:dimension))
     has_Sz0 = 0 ∈ Sz
@@ -947,7 +1045,7 @@ function (bse::BSEspinaware_wiTDA)(Sz::Union{Integer,AbstractVector{<:Integer}},
     return (bandkq_up=bandkq_up, bandkq_dn=bandkq_dn, HSz0=HSz0, HSzn1=HSzn1, HSzp1=HSzp1)
 end
 function (bse::BSEspinaware_wiTDA)(Hlist::NamedTuple, q::ReducedCoordinates; isΓ::Bool=false)
-    @assert issubset(keys(Hlist), (:HSz0, :HSzn1, :HSzp1)) || "Hlist only can contain :HSz0, :HSzn1 and :HSzp1"
+    @assert issubset(keys(Hlist), (:HSz0, :HSzn1, :HSzp1)) "Hlist only can contain :HSz0, :HSzn1 and :HSzp1"
     (Nvck_Sz0, Nvck_Szn1, Nvck_Szp1) = bse(Val(:dimension))
     HSz0 = get(Hlist, :HSz0, nothing)
     has_Sz0 = !iszero(Nvck_Sz0) && HSz0 isa AbstractMatrix{<:Number}
@@ -997,6 +1095,7 @@ function _BSE_Hamiltonian!(::Val{0}, H0::AbstractMatrix, bse::BSEspinaware_wiTDA
     VMvck_uu = bse.buffer.Sz0.VMvck_uu
     VMvck_dd = bse.buffer.Sz0.VMvck_dd
     VMvck_ud = bse.buffer.Sz0.VMvck_ud
+    BLAS_nthreads = LinearAlgebra.BLAS.get_num_threads()
     LinearAlgebra.BLAS.set_num_threads(1)
     Threads.@threads for (ivck, ivck′) in UpperTriangularIndices(Nvck_uu)
         (iv, ic, ik) = triple_index(vck_uu, ivck)
@@ -1040,7 +1139,7 @@ function _BSE_Hamiltonian!(::Val{0}, H0::AbstractMatrix, bse::BSEspinaware_wiTDA
     if isΓ && count(bse.period) == 3
         _BSE_KˣΓ!(H0, bse, q)
     end
-    LinearAlgebra.BLAS.set_num_threads(Threads.nthreads())
+    LinearAlgebra.BLAS.set_num_threads(BLAS_nthreads)
     return Hermitian(H0, :U)
 end
 function _BSE_KˣΓ!(H0, bse::BSEspinaware_wiTDA, q)
@@ -1076,6 +1175,7 @@ function _BSE_Hamiltonian!(::Val{-1}, Hn1::AbstractMatrix, bse::BSEspinaware_wiT
     Mcckk_dn = bse.buffer.Mcckk_dn
     ΔE_ud = bse.buffer.Szn1.ΔE_ud
     WMvvkk_du = bse.buffer.Szn1.WMvvkk_du
+    BLAS_nthreads = LinearAlgebra.BLAS.get_num_threads()
     LinearAlgebra.BLAS.set_num_threads(1)
     Threads.@threads for (ivck, ivck′) in UpperTriangularIndices(length(vck_ud))
         (iv, ic, ik) = triple_index(vck_ud, ivck)
@@ -1089,7 +1189,7 @@ function _BSE_Hamiltonian!(::Val{-1}, Hn1::AbstractMatrix, bse::BSEspinaware_wiT
             Hn1[ivck, ivck′] = Kᵈ
         end
     end
-    LinearAlgebra.BLAS.set_num_threads(Threads.nthreads())
+    LinearAlgebra.BLAS.set_num_threads(BLAS_nthreads)
     return Hermitian(Hn1, :U)
 end
 function _BSE_Hamiltonian!(::Val{1}, Hp1::AbstractMatrix, bse::BSEspinaware_wiTDA)
@@ -1097,6 +1197,7 @@ function _BSE_Hamiltonian!(::Val{1}, Hp1::AbstractMatrix, bse::BSEspinaware_wiTD
     Mcckk_up = bse.buffer.Mcckk_up
     ΔE_du = bse.buffer.Szp1.ΔE_du
     WMvvkk_ud = bse.buffer.Szp1.WMvvkk_ud
+    BLAS_nthreads = LinearAlgebra.BLAS.get_num_threads()
     LinearAlgebra.BLAS.set_num_threads(1)
     Threads.@threads for (ivck, ivck′) in UpperTriangularIndices(length(vck_du))
         (iv, ic, ik) = triple_index(vck_du, ivck)
@@ -1110,6 +1211,6 @@ function _BSE_Hamiltonian!(::Val{1}, Hp1::AbstractMatrix, bse::BSEspinaware_wiTD
             Hp1[ivck, ivck′] = Kᵈ
         end
     end
-    LinearAlgebra.BLAS.set_num_threads(Threads.nthreads())
+    LinearAlgebra.BLAS.set_num_threads(BLAS_nthreads)
     return Hermitian(Hp1, :U)
 end
