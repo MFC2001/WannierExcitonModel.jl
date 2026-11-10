@@ -55,17 +55,16 @@ Kˣ = PairInterAction(load("unitcell/U_bare_mirror.jld2")["Uwithlr"],
                      load("unitcell/pair_bare.jld2")["interaction"])
 
 # 3. BSE Hamiltonian on a k-grid
-bse = BSE(MonkhorstPack([36, 36, 1]), TB, Kᵈ, Kˣ; v = 13:14, c = 15:16, scissor = 1.2)
+bse = BSE(MonkhorstPack([36, 36, 1]), TB, Kᵈ, Kˣ; channel = 1, v = 13:14, c = 15:16, scissor = 1.2)
 
 # 4. exciton band structure along a k-path
 kline = Kline(30, bse)
 band = BAND(kline, bse)
 ```
 
-Spin-polarized systems are handled by the `BSE(kgrid, TB_up, TB_dn, ...; v_up, c_up, v_dn, c_dn)`
-variant, and noncollinear ones by passing `channel = 1`. See
-[`examples/MoS2/bseband.jl`](examples/MoS2/bseband.jl),
-[`examples/LiF/excband.jl`](examples/LiF/excband.jl) and
-[`examples/Graphone/bseband.jl`](examples/Graphone/bseband.jl) for complete cases;
-post-processing such as Berry curvature and its integration is shown in
-[`examples/eleBC.jl`](examples/eleBC.jl) and [`examples/MoS2/excBC.jl`](examples/MoS2/excBC.jl).
+For more information, use Julia's built-in help mode. After loading `WannierExcitonModel`, type `?` followed by the name of an exported symbol to view its docstring:
+
+```julia
+julia> using WannierExcitonModel
+julia> ?BSE
+```

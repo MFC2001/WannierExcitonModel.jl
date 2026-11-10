@@ -1,7 +1,6 @@
 # work as a post-processing of wannierberri
 # generate date file with the format of Wannier90.
 
-
 using WannierExcitonModel
 
 period = [1, 1, 1]
